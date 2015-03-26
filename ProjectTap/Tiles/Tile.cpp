@@ -3,26 +3,38 @@
 #include "ProjectTap.h"
 #include "Tile.h"
 
-
 // Sets default values
-ATile::ATile()
+ATile::ATile(const FObjectInitializer& initializer) :Super(initializer)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
+	TileMesh = initializer.CreateDefaultSubobject<UStaticMeshComponent>( this , TEXT( "Tile mesh" ) );
+	TileMesh->SetWorldScale3D( FVector( 1 , 1 , 0.1f ) );
+	this->SetRootComponent( TileMesh );
 }
 
-// Called when the game starts or when spawned
-void ATile::BeginPlay()
+bool ATile::Touched()
 {
-	Super::BeginPlay();
-	
+	if ( isTouchable )
+	{
+		UE_LOG( LogTemp , Warning , TEXT( "Touched" ) );
+		return true;
+	}
+	else
+	{
+		UE_LOG( LogTemp , Warning , TEXT( "Can't be touched" ) );
+		return false;
+	}
 }
 
-// Called every frame
-void ATile::Tick( float DeltaTime )
+bool ATile::BallTouched()
 {
-	Super::Tick( DeltaTime );
-
+	if ( isBallTouchable )
+	{
+		UE_LOG( LogTemp , Warning , TEXT( "Ball Touched" ) );
+		return true;
+	}
+	else
+	{
+		UE_LOG( LogTemp , Warning , TEXT( "Can't be ball touched" ) );
+		return false;
+	}
 }
-

@@ -11,17 +11,16 @@ ATile::ATile(const FObjectInitializer& initializer) :Super(initializer)
 	this->SetRootComponent( TileMesh );
 }
 
-bool ATile::Touched()
+void ATile::ReceiveActorOnClicked()
 {
 	if ( isTouchable )
 	{
+	  
 		UE_LOG( LogTemp , Warning , TEXT( "Touched" ) );
-		return true;
 	}
 	else
 	{
 		UE_LOG( LogTemp , Warning , TEXT( "Can't be touched" ) );
-		return false;
 	}
 }
 

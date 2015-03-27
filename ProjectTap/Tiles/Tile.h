@@ -27,13 +27,13 @@ public:
 	/// <summary>
 	/// Called if touched by player
 	/// </summary>
-	virtual bool Touched();
+	virtual void ReceiveActorOnClicked() override;
 
 	/// <summary>
 	/// Called if touched by ball
 	/// </summary>
 	virtual bool BallTouched();
-
+	
 	// Sets default values for this actor's properties
 	ATile( const FObjectInitializer& initializer );
 

@@ -12,8 +12,6 @@ UCLASS()
 class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
-	
-	
-	
+public:
+  AProjectTapGameMode(const FObjectInitializer& initializer);
 };

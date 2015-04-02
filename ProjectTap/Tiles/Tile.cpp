@@ -7,7 +7,6 @@
 ATile::ATile(const FObjectInitializer& initializer) :Super(initializer)
 {
 	TileMesh = initializer.CreateDefaultSubobject<UStaticMeshComponent>( this , TEXT( "Tile mesh" ) );
-	TileMesh->SetWorldScale3D( FVector( 1 , 1 , 0.1f ) );
 	this->SetRootComponent( TileMesh );
 }
 

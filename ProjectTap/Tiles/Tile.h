@@ -17,11 +17,13 @@ public:
 	/// <summary>
 	/// Bool for if can be clicked.
 	/// </summary>
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=TileMesh)
 	bool isTouchable;
 	
 	/// <summary>
 	/// Bool for if ball can activate tile.
 	/// </summary>
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=TileMesh)
 	bool isBallTouchable;
 
 	/// <summary>
@@ -37,6 +39,5 @@ public:
 	// Sets default values for this actor's properties
 	ATile( const FObjectInitializer& initializer );
 
-protected:
 	UStaticMeshComponent* TileMesh;
 };

@@ -14,4 +14,8 @@ class PROJECTTAP_API AMouseController : public APlayerController
 	GENERATED_BODY()
 public:
   AMouseController(const FObjectInitializer& initializer);
+  // Begin PlayerController interface
+  virtual void PlayerTick(float DeltaTime) override;
+  virtual void SetupInputComponent() override;
+  void ActivateCube();
 };

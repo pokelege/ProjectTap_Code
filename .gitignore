@@ -10,3 +10,4 @@ CMakeLists.txt
 Makefile
 *.kdev4
 *.pro
+*.pri

@@ -10,29 +10,22 @@ ATile::ATile(const FObjectInitializer& initializer) :Super(initializer)
 	this->SetRootComponent( TileMesh );
 }
 
-void ATile::ReceiveActorOnClicked()
+void ATile::activate()
 {
-	if ( isTouchable )
-	{
-	  
-		UE_LOG( LogTemp , Warning , TEXT( "Touched" ) );
-	}
-	else
-	{
-		UE_LOG( LogTemp , Warning , TEXT( "Can't be touched" ) );
-	}
+	activated = true;
 }
 
-bool ATile::BallTouched()
+void ATile::deactivate()
 {
-	if ( isBallTouchable )
-	{
-		UE_LOG( LogTemp , Warning , TEXT( "Ball Touched" ) );
-		return true;
-	}
-	else
-	{
-		UE_LOG( LogTemp , Warning , TEXT( "Can't be ball touched" ) );
-		return false;
-	}
+	activated = false;
+}
+
+void ATile::BeginPlay()
+{
+  Super::BeginPlay();
+}
+
+void ATile::Tick(float DeltaTime)
+{
+  Super::Tick(DeltaTime);
 }

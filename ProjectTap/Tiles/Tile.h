@@ -12,32 +12,18 @@ UCLASS()
 class PROJECTTAP_API ATile : public AActor
 {
 	GENERATED_BODY()
-
+protected:
+  bool activated = false;
 public:	
-	/// <summary>
-	/// Bool for if can be clicked.
-	/// </summary>
-	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=TileMesh)
-	bool isTouchable;
-	
-	/// <summary>
-	/// Bool for if ball can activate tile.
-	/// </summary>
-	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=TileMesh)
-	bool isBallTouchable;
-
-	/// <summary>
-	/// Called if touched by player
-	/// </summary>
-	virtual void ReceiveActorOnClicked() override;
-
-	/// <summary>
-	/// Called if touched by ball
-	/// </summary>
-	virtual bool BallTouched();
+	UStaticMeshComponent* TileMesh;
 	
 	// Sets default values for this actor's properties
 	ATile( const FObjectInitializer& initializer );
+	
+	void activate();
 
-	UStaticMeshComponent* TileMesh;
+	void deactivate();
+	
+	virtual void BeginPlay();
+	virtual void Tick( float DeltaTime );
 };

@@ -9,4 +9,5 @@ AMouseController::AMouseController(const FObjectInitializer& initializer):Super(
   this->bShowMouseCursor = true;
   this->bEnableClickEvents = true;
   this->bEnableTouchEvents = true;
+  this->DefaultMouseCursor = EMouseCursor::Crosshairs;
 }

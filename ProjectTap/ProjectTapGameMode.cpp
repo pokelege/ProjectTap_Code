@@ -7,11 +7,4 @@ AProjectTapGameMode::AProjectTapGameMode(const FObjectInitializer& initializer):
 {
   UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
   PlayerControllerClass = AMouseController::StaticClass();
-  
-  // set default pawn class to our Blueprinted character
-  static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/TopDown/Blueprints/TopDownCharacter"));
-  if (PlayerPawnBPClass.Class != NULL)
-  {
-    DefaultPawnClass = PlayerPawnBPClass.Class;
-  }
 }

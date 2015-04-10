@@ -7,4 +7,5 @@ AProjectTapGameMode::AProjectTapGameMode(const FObjectInitializer& initializer):
 {
   UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
   PlayerControllerClass = AMouseController::StaticClass();
+  
 }

@@ -20,9 +20,9 @@ public:
 	// Sets default values for this actor's properties
 	ATile( const FObjectInitializer& initializer );
 	
-	void activate();
+	virtual void activate();
 
-	void deactivate();
+	virtual void deactivate();
 	
 	virtual void BeginPlay();
 	virtual void Tick( float DeltaTime );

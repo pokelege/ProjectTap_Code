@@ -15,6 +15,7 @@ class PROJECTTAP_API ATile : public AActor
 protected:
   bool activated = false;
 public:	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UStaticMeshComponent* TileMesh;
 	
 	// Sets default values for this actor's properties

@@ -12,9 +12,11 @@ UCLASS()
 class PROJECTTAP_API ARamp : public ATile
 {
 	GENERATED_BODY()
-public:
-	FVector pivot;
 	FMatrix originalMatrix;
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	FVector pivot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	FCurveSequence* rotationSequence;
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;

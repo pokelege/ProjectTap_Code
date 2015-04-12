@@ -13,18 +13,14 @@ class PROJECTTAP_API ABlockingTile : public ATile
 {
 	GENERATED_BODY()
 public:
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-  float original = 550.0f;
-  
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+
   float move_speed = 800.0f;
   
-  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+  UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
   float move_distance_tolerance = 500.0f;
-  
-  UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Tile)
-  UBoxComponent* boxCollision;
-  
+
   ABlockingTile(const FObjectInitializer& initializer );
   
   virtual void BeginPlay() override;

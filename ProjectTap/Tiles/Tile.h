@@ -14,8 +14,15 @@ class PROJECTTAP_API ATile : public AActor
 	GENERATED_BODY()
 protected:
   bool activated = false;
+
+  FVector original;
 public:	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UStaticMeshComponent* TileMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	UBoxComponent* BoxCollision;
 	
 	// Sets default values for this actor's properties
 	ATile( const FObjectInitializer& initializer );

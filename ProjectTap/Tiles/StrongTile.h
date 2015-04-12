@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Tiles/Tile.h"
+#include "Tile.h"
 #include "StrongTile.generated.h"
 
 UCLASS()
@@ -12,7 +12,7 @@ class PROJECTTAP_API AStrongTile : public ATile
 	
 public:	
 	// Sets default values for this actor's properties
-	AStrongTile();
+	AStrongTile(const FObjectInitializer& initializer);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

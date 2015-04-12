@@ -15,14 +15,15 @@ class PROJECTTAP_API ATile : public AActor
 protected:
   bool activated = false;
 public:	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UStaticMeshComponent* TileMesh;
 	
 	// Sets default values for this actor's properties
 	ATile( const FObjectInitializer& initializer );
 	
-	void activate();
+	virtual void activate();
 
-	void deactivate();
+	virtual void deactivate();
 	
 	virtual void BeginPlay();
 	virtual void Tick( float DeltaTime );

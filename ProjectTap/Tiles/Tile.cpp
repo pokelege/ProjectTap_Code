@@ -23,6 +23,7 @@ void ATile::deactivate()
 void ATile::BeginPlay()
 {
   Super::BeginPlay();
+  original = GetActorLocation();
 }
 
 void ATile::Tick(float DeltaTime)

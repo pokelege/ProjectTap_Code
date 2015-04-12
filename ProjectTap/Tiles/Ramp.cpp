@@ -11,7 +11,8 @@ void ARamp::BeginPlay()
 	time = 0;
 	reverse = false;
 	float nothing = 0;
-	//duration = rotationSequence.GetTimeRange(nothing, duration);
+	rotationSequence->GetTimeRange(nothing, duration);
+	activate();
 }
 
 void ARamp::Tick(float DeltaTime)

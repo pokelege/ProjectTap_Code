@@ -20,6 +20,8 @@ AStrongBlockingTile::AStrongBlockingTile(const FObjectInitializer& initializer) 
 	BoxCollision->AttachTo(RootComponent);
 	BoxCollision->SetBoxExtent(FVector(20.0f, 20.0f, 20.0f));
 	BoxCollision->SetWorldScale3D(FVector(6.0f, 6.0f, 6.4f));
+
+	move_speed = 400.0f;
 }
 
 // Called when the game starts or when spawned

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Tiles/Tile.h"
-#include "Runtime/SlateCore/Public/Animation/CurveSequence.h"
 #include "Ramp.generated.h"
 /**
  * 
@@ -13,12 +12,14 @@ class PROJECTTAP_API ARamp : public ATile
 {
 	GENERATED_BODY()
 	FMatrix originalMatrix;
+	float time;
+	float duration;
+	bool reverse;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	FVector pivot;
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	//FCurveSequence* rotationSequence;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	UCurveFloat* rotationSequence;
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
-	virtual void activate() override;
 };

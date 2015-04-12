@@ -8,29 +8,34 @@ void ARamp::BeginPlay()
 {
 	Super::BeginPlay();
 	originalMatrix = this->GetTransform().ToMatrixWithScale();
+	time = 0;
+	reverse = false;
+	float nothing = 0;
+	//duration = rotationSequence.GetTimeRange(nothing, duration);
 }
 
 void ARamp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	/*if(activated)
+	if(activated)
 	{
-		if(rotationSequence->IsAtStart() && rotationSequence->IsInReverse())
+		if(reverse) time-=DeltaTime;
+		else time+=DeltaTime;
+		if(time>=duration)
 		{
+			reverse = true;
+			time = duration;
+		}
+		else if(time<=0)
+		{
+			reverse = false;
+			time = 0;
 			deactivate();
 		}
-		else if(rotationSequence->IsAtEnd())
-		{
-			rotationSequence->PlayReverse();
-		}
-	}*/
-
-	//FMatrix transform = FTranslationMatrix::Make(pivot) * FRotationMatrix::Make(FRotator::FRotator(0,0,rotationSequence->GetLerp())) * FTranslationMatrix::Make(-pivot) * originalMatrix;
+		FMatrix transform = FTranslationMatrix::Make(pivot)
+		* FRotationMatrix::Make(FRotator::FRotator(0,0,rotationSequence->GetFloatValue(time)))
+		* FTranslationMatrix::Make(-pivot)
+		* originalMatrix;
+	}
 	
-}
-void ARamp::activate()
-{
-	if(activated) return;
-	Super::activate();
-	//rotationSequence->Play();
 }

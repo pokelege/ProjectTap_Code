@@ -15,7 +15,6 @@ class PROJECTTAP_API ATile : public AActor
 protected:
   FVector original;
   bool activated = false;
-
 public:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UStaticMeshComponent* TileMesh;

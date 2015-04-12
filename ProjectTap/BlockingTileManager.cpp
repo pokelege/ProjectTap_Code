@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectTap.h"
+#include "Tiles/StrongBlockingTile.h"
+#include "Tiles/BlockingTile.h"
 #include "BlockingTileManager.h"
-
-std::vector<ABlockingTile*> BlockingTileManager::activatedBlocks = std::vector<ABlockingTile*>();
 
 BlockingTileManager::BlockingTileManager()
 {
@@ -11,26 +11,71 @@ BlockingTileManager::BlockingTileManager()
 
 BlockingTileManager::~BlockingTileManager()
 {
-  
+	activatedBlocks.clear();
 }
+
+void BlockingTileManager::DeactivateBlockingTiles()
+{
+	for (auto t : activatedBlocks)
+	{
+		t->deactivate();
+	}
+
+	activatedBlocks.clear();
+}
+
 
 void BlockingTileManager::AddTile(ABlockingTile* tile)
 {
-	bool not_full = activatedBlocks.size() < size_limit;
+	if (tile != nullptr)
+	{	
+		SetBlockingTileCurrent();
 
-	if (not_full)
-	{
-		BlockingTileManager::activatedBlocks.push_back(tile);
-	}
-	else
-	{
-		for (auto t : activatedBlocks)
+		bool not_full = activatedBlocks.size() < size_limit;
+
+		if (not_full)
 		{
-			t->deactivate();
+			activatedBlocks.push_back(tile);
 		}
-
-		BlockingTileManager::activatedBlocks.clear();
-		BlockingTileManager::activatedBlocks.push_back(tile);
+		else
+		{
+			DeactivateBlockingTiles();
+			activatedBlocks.push_back(tile);
+		}
+		tile->activate();
 	}
-	tile->activate();
+}
+
+void BlockingTileManager::AddTile(AStrongBlockingTile* tile)
+{	
+	if (tile != nullptr && tile != prevStrongBlockingTile)
+	{
+		SetStrongBlockingTileCurrent();
+
+		if (prevStrongBlockingTile != nullptr){
+			prevStrongBlockingTile->deactivate();
+		}
+		prevStrongBlockingTile = tile;
+		tile->activate();
+	}
+}
+
+void BlockingTileManager::DeactivateStrongBlockingTile()
+{
+	if (prevStrongBlockingTile != nullptr){
+		prevStrongBlockingTile->deactivate();
+		prevStrongBlockingTile = nullptr;
+	}
+}
+
+void BlockingTileManager::SetBlockingTileCurrent()
+{
+	currentTileType = CurrentTileType::BLOCKING_TILE;
+	DeactivateStrongBlockingTile();
+}
+
+void BlockingTileManager::SetStrongBlockingTileCurrent()
+{
+	currentTileType = CurrentTileType::STRONG_BLOCKING_TILE;
+	DeactivateBlockingTiles();
 }

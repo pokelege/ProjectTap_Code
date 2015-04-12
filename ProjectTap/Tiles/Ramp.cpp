@@ -13,7 +13,7 @@ void ARamp::BeginPlay()
 void ARamp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(activated)
+	/*if(activated)
 	{
 		if(rotationSequence->IsAtStart() && rotationSequence->IsInReverse())
 		{
@@ -23,14 +23,14 @@ void ARamp::Tick(float DeltaTime)
 		{
 			rotationSequence->PlayReverse();
 		}
-	}
+	}*/
 
-	FMatrix transform = FTranslationMatrix::Make(pivot) * FRotationMatrix::Make(FRotator::FRotator(0,0,rotationSequence->GetLerp())) * FTranslationMatrix::Make(-pivot) * originalMatrix;
+	//FMatrix transform = FTranslationMatrix::Make(pivot) * FRotationMatrix::Make(FRotator::FRotator(0,0,rotationSequence->GetLerp())) * FTranslationMatrix::Make(-pivot) * originalMatrix;
 	
 }
 void ARamp::activate()
 {
 	if(activated) return;
 	Super::activate();
-	rotationSequence->Play();
+	//rotationSequence->Play();
 }

@@ -3,7 +3,9 @@
 #include "ProjectTap.h"
 #include "MouseController.h"
 #include "AI/Navigation/NavigationSystem.h"
-#include "BlockingTileManager.h"
+#include "../Tiles/BlockingTile.h"
+#include "../Tiles/StrongBlockingTile.h"
+
 
 AMouseController::AMouseController(const FObjectInitializer& initializer):Super(initializer)
 {
@@ -24,21 +26,46 @@ void AMouseController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::ActivateCube);
+	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::SendBlockingTile);
+	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::SendStrongBlockingTile);
+	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::NotifyMouseReleased);
 }
 
-void AMouseController::ActivateCube()
+void AMouseController::SendBlockingTile()
 {
 	FHitResult hit;
 	GetHitResultUnderCursor(ECC_Visibility, false, hit);
 
 	if (hit.bBlockingHit)
 	{
-		auto block = dynamic_cast<ABlockingTile*>(hit.Actor.Get());
+		auto bt = Cast<ABlockingTile>(hit.Actor.Get());
+		bool canContinue = true;
 
-		if (block != nullptr)
+		if (bt != nullptr)
 		{
-			BlockingTileManager::AddTile(block);
+			canContinue = false;
+			btManager.AddTile(bt);
 		}
+		
 	}
 }
+
+void AMouseController::SendStrongBlockingTile()
+{
+	FHitResult hit;
+	GetHitResultUnderCursor(ECC_Visibility, false, hit);
+
+
+	auto sbt = Cast<AStrongBlockingTile>(hit.Actor.Get());
+	if (sbt != nullptr)
+	{
+		btManager.AddTile(sbt);
+	}
+
+}
+
+void AMouseController::NotifyMouseReleased()
+{
+	btManager.DeactivateStrongBlockingTile();
+}
+

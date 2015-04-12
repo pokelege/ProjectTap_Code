@@ -16,8 +16,8 @@ class PROJECTTAP_API ARamp : public ATile
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	FVector pivot;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	FCurveSequence* rotationSequence;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	//FCurveSequence* rotationSequence;
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
 	virtual void activate() override;

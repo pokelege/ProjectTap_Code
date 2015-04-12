@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/PlayerController.h"
+#include "BlockingTileManager.h"
 #include "MouseController.generated.h"
 
 /**
@@ -12,10 +13,15 @@ UCLASS(config=Game)
 class PROJECTTAP_API AMouseController : public APlayerController
 {
 	GENERATED_BODY()
+
+	BlockingTileManager btManager;
+
 public:
   AMouseController(const FObjectInitializer& initializer);
   // Begin PlayerController interface
   virtual void PlayerTick(float DeltaTime) override;
   virtual void SetupInputComponent() override;
-  void ActivateCube();
+  void SendBlockingTile();
+  void SendStrongBlockingTile();
+  void NotifyMouseReleased();
 };

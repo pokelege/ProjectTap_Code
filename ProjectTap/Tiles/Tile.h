@@ -35,6 +35,8 @@ public:
 	virtual void activate();
 
 	virtual void deactivate();
+
+	virtual bool isActivated();
 	
 	virtual void BeginPlay();
 	virtual void Tick( float DeltaTime );

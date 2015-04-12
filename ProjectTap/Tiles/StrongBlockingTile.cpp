@@ -15,11 +15,8 @@ AStrongBlockingTile::AStrongBlockingTile(const FObjectInitializer& initializer) 
 	TileMesh->SetStaticMesh(mesh.Object);
 	TileMesh->SetWorldScale3D(FVector(1.0f, 1.0f, 5.0f));
 	
-	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("collision"));
-
-	BoxCollision->AttachTo(RootComponent);
-	BoxCollision->SetBoxExtent(FVector(20.0f, 20.0f, 20.0f));
-	BoxCollision->SetWorldScale3D(FVector(6.0f, 6.0f, 6.4f));
+	//BoxCollision->SetBoxExtent(FVector(20.0f, 20.0f, 20.0f));
+	BoxCollision->SetWorldScale3D(FVector(4.0f, 4.0f, 20.0f));
 
 	move_speed = 400.0f;
 }

@@ -1,35 +1,32 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectTap.h"
-#include "BlockingTile.h"
-#include "../Utils/LoadAssetsHelper.h"
+#include "GroupedBlockingTile.h"
+
 
 // Sets default values
-ABlockingTile::ABlockingTile(const FObjectInitializer& initializer ) : Super(initializer)
+AGroupedBlockingTile::AGroupedBlockingTile(const FObjectInitializer& initializer) : Super(initializer)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	FName path("/Game/Models/BlockingTile");
+	FName path("/Game/Models/GroupedBlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	TileMesh->SetWorldScale3D(FVector(.5f, .5f, 5.0f));
-	
-	BoxCollision->SetBoxExtent(FVector(20.0f, 20.0f, 20.0f));
-	BoxCollision->SetWorldScale3D(FVector(6.0f, 6.0f, 6.4f));
+	TileMesh->SetWorldScale3D(FVector(.25f, .25f, 5.0f));
 
-	//SetActorScale3D(FVector(.25f, 0.25f, .1f));
-
+	//BoxCollision->SetBoxExtent(FVector(20.0f, 20.0f, 20.0f));
+	BoxCollision->SetWorldScale3D(FVector(1.0f, 1.0f, 20.0f));
 }
 
 // Called when the game starts or when spawned
-void ABlockingTile::BeginPlay()
+void AGroupedBlockingTile::BeginPlay()
 {
 	Super::BeginPlay();
+	
 }
 
 // Called every frame
-void ABlockingTile::Tick( float DeltaTime )
+void AGroupedBlockingTile::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 	auto pos = GetActorLocation();
@@ -38,16 +35,39 @@ void ABlockingTile::Tick( float DeltaTime )
 
 	if (activated && canRise)
 	{
-		pos.Z += move_speed * DeltaTime;
-	} 
+		pos.Z += move_speed * DeltaTime;		
+	}
+
 	else if (!activated && canDesend)
 	{
 		pos.Z -= move_speed * DeltaTime;
 	}
-	else if(!activated)
+	else if (!activated)
 	{
 		pos.Z = original.Z;
 	}
 
 	SetActorLocation(pos);
+
+	//count time
+	if (activated) {
+
+		if (time_counter < activation_time)
+		{
+			time_counter += DeltaTime;
+		} 
+		else
+		{
+			deactivate();
+		}
+	}
+
 }
+
+
+void AGroupedBlockingTile::deactivate()
+{
+	time_counter = .0f;
+	activated = false;
+}
+

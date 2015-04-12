@@ -12,16 +12,22 @@ UCLASS()
 class PROJECTTAP_API ATile : public AActor
 {
 	GENERATED_BODY()
-
 protected:
-  bool activated = false;
   FVector original;
+  bool activated = false;
 public:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UStaticMeshComponent* TileMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UBoxComponent* BoxCollision;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+		float move_speed = 800.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+		float move_distance_tolerance = 500.0f;
+	
 	// Sets default values for this actor's properties
 	ATile( const FObjectInitializer& initializer );
 	

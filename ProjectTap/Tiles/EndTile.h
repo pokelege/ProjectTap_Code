@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Tiles/Tile.h"
+#include "Tiles/PlayerBall.h"
 #include "EndTile.generated.h"
 
 /**
@@ -18,7 +19,7 @@ public:
 	UBoxComponent* BallCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	AActor* ball;
+	APlayerBall* ball;
 	
 	virtual void Tick( float DeltaTime ) override;
 };

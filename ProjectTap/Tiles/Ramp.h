@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Tiles/Tile.h"
+#include "Tiles/PlayerBall.h"
 #include "Ramp.generated.h"
 /**
  * 
@@ -25,14 +26,17 @@ public:
 	UBoxComponent* BallCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	AActor* ball;
+	APlayerBall* ball;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	FVector moveDirection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float forceMultiplier;
-	
+
+
+	ARamp(const FObjectInitializer& initializer);
+
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
 };

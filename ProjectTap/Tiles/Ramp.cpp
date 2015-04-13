@@ -3,14 +3,34 @@
 #include "ProjectTap.h"
 #include "Ramp.h"
 
+ARamp::ARamp( const FObjectInitializer& initializer ): ATile( initializer )
+{
+	PrimaryActorTick.bCanEverTick = true;
+	FName path("/Game/Models/Ramp");
+	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
+	TileMesh->SetStaticMesh(mesh.Object);
+	if(BoxCollision)
+	{
+		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
+	}
+	if(!BallCollision)
+	{
+		BallCollision = initializer.CreateDefaultSubobject<UBoxComponent>(TileMesh, TEXT("BallCollision"));
+		BallCollision->AttachTo(RootComponent);
+		BallCollision->SetBoxExtent(FVector(1,1,1), false);
+		BallCollision->SetRelativeLocation(FVector(0,0,2));
+	}
+}
+
 void ARamp::BeginPlay()
 {
-	Super::BeginPlay();
+	Super::BeginPlay();	//todo Set transforms
 	//originalMatrix = this->GetTransform().ToMatrixWithScale();
 	//time = 0;
 	//reverse = false;
 	//float nothing = 0;
 	//rotationSequence->GetTimeRange(nothing, duration);
+	BallCollision->SetRelativeLocation(FVector(0,0,RootComponent->GetRelativeTransform().GetScale3D().Z));
 	//activate();
 }
 
@@ -43,9 +63,7 @@ void ARamp::Tick(float DeltaTime)
 	{
 		if(BallCollision->IsOverlappingActor(ball))
 		{
-
-			UPrimitiveComponent* physics = ball->FindComponentByClass<UPrimitiveComponent>();
-			if(physics != 0) physics->AddForce(forceMultiplier * moveDirection );
+			ball->AddVelocity(forceMultiplier * moveDirection );
 		}
 	}
 }

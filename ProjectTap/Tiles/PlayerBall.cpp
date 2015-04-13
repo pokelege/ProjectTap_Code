@@ -47,8 +47,8 @@ APlayerBall::APlayerBall()
 void APlayerBall::BeginPlay()
 {
 	Super::BeginPlay();
-	FVector v(0.0f, 60000.0f, 0.0f);
-	AddVelocity(v);
+	//FVector v(0.0f, 60000.0f, 0.0f);
+	//AddVelocity(v);
 }
 
 // Called every frame

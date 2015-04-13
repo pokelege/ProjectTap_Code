@@ -3,40 +3,49 @@
 #include "ProjectTap.h"
 #include "Ramp.h"
 
-
 void ARamp::BeginPlay()
 {
 	Super::BeginPlay();
-	originalMatrix = this->GetTransform().ToMatrixWithScale();
-	time = 0;
-	reverse = false;
-	float nothing = 0;
-	rotationSequence->GetTimeRange(nothing, duration);
-	activate();
+	//originalMatrix = this->GetTransform().ToMatrixWithScale();
+	//time = 0;
+	//reverse = false;
+	//float nothing = 0;
+	//rotationSequence->GetTimeRange(nothing, duration);
+	//activate();
 }
 
 void ARamp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//todo animation
+// 	if(activated)
+// 	{
+// 		if(reverse) time-=DeltaTime;
+// 		else time+=DeltaTime;
+// 		if(time>=duration)
+// 		{
+// 			reverse = true;
+// 			time = duration;
+// 		}
+// 		else if(time<=0)
+// 		{
+// 			reverse = false;
+// 			time = 0;
+// 			deactivate();
+// 		}
+// 		FMatrix transform = FTranslationMatrix::Make(pivot)
+// 		* FRotationMatrix::Make(FRotator::FRotator(0,0,rotationSequence->GetFloatValue(time)))
+// 		* FTranslationMatrix::Make(-pivot)
+// 		* originalMatrix;
+// 	}
+	
 	if(activated)
 	{
-		if(reverse) time-=DeltaTime;
-		else time+=DeltaTime;
-		if(time>=duration)
+		if(BallCollision->IsOverlappingActor(ball))
 		{
-			reverse = true;
-			time = duration;
+
+			UPrimitiveComponent* physics = ball->FindComponentByClass<UPrimitiveComponent>();
+			if(physics != 0) physics->AddForce(forceMultiplier * moveDirection );
 		}
-		else if(time<=0)
-		{
-			reverse = false;
-			time = 0;
-			deactivate();
-		}
-		FMatrix transform = FTranslationMatrix::Make(pivot)
-		* FRotationMatrix::Make(FRotator::FRotator(0,0,rotationSequence->GetFloatValue(time)))
-		* FTranslationMatrix::Make(-pivot)
-		* originalMatrix;
 	}
-	
 }

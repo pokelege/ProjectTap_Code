@@ -20,6 +20,19 @@ public:
 	FVector pivot;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UCurveFloat* rotationSequence;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	UBoxComponent* BallCollision;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	AActor* ball;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	FVector moveDirection;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	float forceMultiplier;
+	
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
 };

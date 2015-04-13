@@ -30,7 +30,7 @@ void ARamp::BeginPlay()
 	//reverse = false;
 	//float nothing = 0;
 	//rotationSequence->GetTimeRange(nothing, duration);
-	BallCollision->SetRelativeLocation(FVector(0,0,RootComponent->GetRelativeTransform().GetScale3D().Z));
+	//BallCollision->SetRelativeLocation(FVector(0,0,RootComponent->GetRelativeTransform().GetScale3D().Z * 2));
 	//activate();
 }
 

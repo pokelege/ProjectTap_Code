@@ -4,13 +4,18 @@
 #include "Tile.h"
 
 // Sets default values
-ATile::ATile(const FObjectInitializer& initializer) :Super(initializer)
+ATile::ATile() 
 {
-	TileMesh = initializer.CreateDefaultSubobject<UStaticMeshComponent>( this , TEXT( "Tile mesh" ) );
-	this->SetRootComponent( TileMesh );
+	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Tile mesh" ) );
 
-	BoxCollision = initializer.CreateDefaultSubobject<UBoxComponent>(TileMesh, TEXT("Tile collision"));
-	BoxCollision->AttachTo(RootComponent);
+	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Tile collision"));
+	
+	TileMesh->AttachTo(BoxCollision);
+
+	this->SetRootComponent(BoxCollision);
+	
+	TileMesh->AttachTo(BoxCollision);
+
 }
 
 void ATile::activate()

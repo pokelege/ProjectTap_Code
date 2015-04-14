@@ -12,7 +12,7 @@ class PROJECTTAP_API AStrongBlockingTile : public ATile
 	
 public:	
 	// Sets default values for this actor's properties
-	AStrongBlockingTile(const FObjectInitializer& initializer);
+	AStrongBlockingTile();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

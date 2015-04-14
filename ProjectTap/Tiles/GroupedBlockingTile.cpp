@@ -5,17 +5,16 @@
 
 
 // Sets default values
-AGroupedBlockingTile::AGroupedBlockingTile(const FObjectInitializer& initializer) : Super(initializer)
+AGroupedBlockingTile::AGroupedBlockingTile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	FName path("/Game/Models/GroupedBlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	TileMesh->SetWorldScale3D(FVector(.25f, .25f, 5.0f));
 
-	//BoxCollision->SetBoxExtent(FVector(20.0f, 20.0f, 20.0f));
-	BoxCollision->SetWorldScale3D(FVector(1.0f, 1.0f, 20.0f));
+	BoxCollision->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
+	BoxCollision->SetWorldScale3D(FVector(20.0f, 20.0f, 80.0f));
 }
 
 // Called when the game starts or when spawned

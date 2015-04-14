@@ -21,8 +21,6 @@ void AMouseController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	btManager.Tick(DeltaTime);
-
 	if (swipeElapseTimeCounter < swipeElapseTime && bCheckForSwipe)
 	{
 		swipeElapseTimeCounter += DeltaTime;

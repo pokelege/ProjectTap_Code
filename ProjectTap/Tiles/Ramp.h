@@ -35,7 +35,7 @@ public:
 	float forceMultiplier;
 
 
-	ARamp(const FObjectInitializer& initializer);
+	ARamp();
 
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;

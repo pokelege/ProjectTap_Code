@@ -3,7 +3,7 @@
 #include "ProjectTap.h"
 #include "Ramp.h"
 
-ARamp::ARamp( const FObjectInitializer& initializer ): ATile( initializer )
+ARamp::ARamp(): ATile(  )
 {
 	PrimaryActorTick.bCanEverTick = true;
 	FName path("/Game/Models/Ramp");
@@ -15,7 +15,7 @@ ARamp::ARamp( const FObjectInitializer& initializer ): ATile( initializer )
 	}
 	if(!BallCollision)
 	{
-		BallCollision = initializer.CreateDefaultSubobject<UBoxComponent>(TileMesh, TEXT("BallCollision"));
+		BallCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BallCollision"));
 		BallCollision->AttachTo(RootComponent);
 		BallCollision->SetBoxExtent(FVector(1,1,1), false);
 		BallCollision->SetRelativeLocation(FVector(0,0,2));

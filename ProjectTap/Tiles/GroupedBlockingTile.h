@@ -13,10 +13,10 @@ class PROJECTTAP_API AGroupedBlockingTile : public ATile
 public:	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		float activation_time = 2.0f;
+		float activation_time = .5f;
 
 	// Sets default values for this actor's properties
-	AGroupedBlockingTile(const FObjectInitializer& initializer);
+	AGroupedBlockingTile();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

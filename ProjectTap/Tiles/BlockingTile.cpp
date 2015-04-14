@@ -5,7 +5,7 @@
 #include "../Utils/LoadAssetsHelper.h"
 
 // Sets default values
-ABlockingTile::ABlockingTile(const FObjectInitializer& initializer ) : Super(initializer)
+ABlockingTile::ABlockingTile( )
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -13,19 +13,18 @@ ABlockingTile::ABlockingTile(const FObjectInitializer& initializer ) : Super(ini
 	FName path("/Game/Models/BlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	TileMesh->SetWorldScale3D(FVector(.5f, .5f, 5.0f));
+	TileMesh->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 	
-	BoxCollision->SetBoxExtent(FVector(20.0f, 20.0f, 20.0f));
-	BoxCollision->SetWorldScale3D(FVector(6.0f, 6.0f, 6.4f));
-
+	BoxCollision->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
+	BoxCollision->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
 	//SetActorScale3D(FVector(.25f, 0.25f, .1f));
-
 }
 
 // Called when the game starts or when spawned
 void ABlockingTile::BeginPlay()
 {
 	Super::BeginPlay();
+
 }
 
 // Called every frame
@@ -50,4 +49,18 @@ void ABlockingTile::Tick( float DeltaTime )
 	}
 
 	SetActorLocation(pos);
+
+	//count time
+	if (activated) {
+
+		if (time_counter < activation_time)
+		{
+			time_counter += DeltaTime;
+		}
+		else
+		{
+			deactivate();
+			time_counter = 0.0f;
+		}
+	}
 }

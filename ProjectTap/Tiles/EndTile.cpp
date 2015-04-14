@@ -3,7 +3,7 @@
 #include "ProjectTap.h"
 #include "EndTile.h"
 
-AEndTile::AEndTile(const FObjectInitializer& initializer) : ATile(initializer)
+AEndTile::AEndTile() : ATile()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	FName path("/Game/Models/End");
@@ -15,7 +15,7 @@ AEndTile::AEndTile(const FObjectInitializer& initializer) : ATile(initializer)
 	}
 	if(!BallCollision)
 	{
-		BallCollision = initializer.CreateDefaultSubobject<UBoxComponent>(TileMesh, TEXT("BallCollision"));
+		BallCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BallCollision"));
 		BallCollision->AttachTo(RootComponent);
 		BallCollision->SetBoxExtent(FVector(1,1,1), false);
 		BallCollision->SetRelativeLocation(FVector(0,0,2));

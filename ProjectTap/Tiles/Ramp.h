@@ -12,7 +12,6 @@ UCLASS()
 class PROJECTTAP_API ARamp : public ATile
 {
 	GENERATED_BODY()
-
 	float time;
 	float duration;
 	bool reverse;
@@ -29,7 +28,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float forceMultiplier;
 
-	ARamp(const FObjectInitializer& initializer);
+
+	ARamp();
 
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;

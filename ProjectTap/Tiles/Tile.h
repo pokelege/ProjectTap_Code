@@ -26,10 +26,10 @@ public:
 		float move_speed = 800.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		float move_distance_tolerance = 500.0f;
+		float move_distance_tolerance = 100.0f;
 	
 	// Sets default values for this actor's properties
-	ATile( const FObjectInitializer& initializer );
+	ATile(  );
 	
 	UFUNCTION(BlueprintCallable, Category = "Tile")
 	virtual void activate();

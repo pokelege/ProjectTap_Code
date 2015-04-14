@@ -13,7 +13,7 @@ enum class CurrentTileType : char
 	GROUPED_BLOCKING_TILE
 };
 
-class PROJECTTAP_API BlockingTileManager
+class BlockingTileManager
 {
 	std::vector<class ABlockingTile*> activatedBlocks;
 	std::vector<class AGroupedBlockingTile*> activatedGroupedBlocks;

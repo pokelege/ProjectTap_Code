@@ -3,7 +3,7 @@
 #include "ProjectTap.h"
 #include "Ramp.h"
 
-ARamp::ARamp( const FObjectInitializer& initializer ): ATile( initializer )
+ARamp::ARamp(): ATile(  )
 {
 	PrimaryActorTick.bCanEverTick = true;
 	FName path("/Game/Models/Ramp");
@@ -36,22 +36,26 @@ void ARamp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//todo animation
-	if(activated)
-	{
-		if(reverse) time-=DeltaTime;
-		else time+=DeltaTime;
-		if(time>=duration)
-		{
-			reverse = true;
-			time = duration;
-		}
-		else if(time<=0)
-		{
-			reverse = false;
-			time = 0;
-			deactivate();
-		}
-	}
+// 	if(activated)
+// 	{
+// 		if(reverse) time-=DeltaTime;
+// 		else time+=DeltaTime;
+// 		if(time>=duration)
+// 		{
+// 			reverse = true;
+// 			time = duration;
+// 		}
+// 		else if(time<=0)
+// 		{
+// 			reverse = false;
+// 			time = 0;
+// 			deactivate();
+// 		}
+// 		FMatrix transform = FTranslationMatrix::Make(pivot)
+// 		* FRotationMatrix::Make(FRotator::FRotator(0,0,rotationSequence->GetFloatValue(time)))
+// 		* FTranslationMatrix::Make(-pivot)
+// 		* originalMatrix;
+// 	}
 	
 	if(activated)
 	{

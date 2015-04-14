@@ -12,9 +12,12 @@ UCLASS()
 class PROJECTTAP_API ABlockingTile : public ATile
 {
 	GENERATED_BODY()
+	float time_counter = 0.0f;
 public:
 
-  ABlockingTile(const FObjectInitializer& initializer );
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+		float activation_time = 3.0f;
+  ABlockingTile( );
   
   virtual void BeginPlay() override;
   virtual void Tick( float DeltaTime ) override;

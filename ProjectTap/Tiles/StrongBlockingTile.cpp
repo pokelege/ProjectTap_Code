@@ -5,7 +5,7 @@
 
 
 // Sets default values
-AStrongBlockingTile::AStrongBlockingTile(const FObjectInitializer& initializer) : Super(initializer)
+AStrongBlockingTile::AStrongBlockingTile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -13,10 +13,9 @@ AStrongBlockingTile::AStrongBlockingTile(const FObjectInitializer& initializer) 
 	FName path("/Game/Models/StrongBlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	TileMesh->SetWorldScale3D(FVector(1.0f, 1.0f, 5.0f));
 	
-	//BoxCollision->SetBoxExtent(FVector(20.0f, 20.0f, 20.0f));
-	BoxCollision->SetWorldScale3D(FVector(4.0f, 4.0f, 20.0f));
+	BoxCollision->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
+	BoxCollision->SetWorldScale3D(FVector(80.0f, 80.0f, 80.0f));
 
 	move_speed = 400.0f;
 }

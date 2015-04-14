@@ -3,7 +3,7 @@
 #include "ProjectTap.h"
 #include "EndTile.h"
 
-AEndTile::AEndTile(const FObjectInitializer& initializer) : ATile(initializer)
+AEndTile::AEndTile() : ATile()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	FName path("/Game/Models/End");

@@ -9,16 +9,14 @@ ARamp::ARamp( const FObjectInitializer& initializer ): ATile( initializer )
 	FName path("/Game/Models/Ramp");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
+// 	TileMesh->SetRelativeTransform(
+// 		TileMesh->GetRelativeTransform()
+// 		.SetLocation(
+// 			FVector(0,1,1)));
+
 	if(BoxCollision)
 	{
 		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
-	}
-	if(!BallCollision)
-	{
-		BallCollision = initializer.CreateDefaultSubobject<UBoxComponent>(TileMesh, TEXT("BallCollision"));
-		BallCollision->AttachTo(RootComponent);
-		BallCollision->SetBoxExtent(FVector(1,1,1), false);
-		BallCollision->SetRelativeLocation(FVector(0,0,2));
 	}
 }
 
@@ -38,30 +36,26 @@ void ARamp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//todo animation
-// 	if(activated)
-// 	{
-// 		if(reverse) time-=DeltaTime;
-// 		else time+=DeltaTime;
-// 		if(time>=duration)
-// 		{
-// 			reverse = true;
-// 			time = duration;
-// 		}
-// 		else if(time<=0)
-// 		{
-// 			reverse = false;
-// 			time = 0;
-// 			deactivate();
-// 		}
-// 		FMatrix transform = FTranslationMatrix::Make(pivot)
-// 		* FRotationMatrix::Make(FRotator::FRotator(0,0,rotationSequence->GetFloatValue(time)))
-// 		* FTranslationMatrix::Make(-pivot)
-// 		* originalMatrix;
-// 	}
+	if(activated)
+	{
+		if(reverse) time-=DeltaTime;
+		else time+=DeltaTime;
+		if(time>=duration)
+		{
+			reverse = true;
+			time = duration;
+		}
+		else if(time<=0)
+		{
+			reverse = false;
+			time = 0;
+			deactivate();
+		}
+	}
 	
 	if(activated)
 	{
-		if(BallCollision->IsOverlappingActor(ball))
+		if(BoxCollision->IsOverlappingActor(ball))
 		{
 			ball->AddVelocity(forceMultiplier * moveDirection );
 		}

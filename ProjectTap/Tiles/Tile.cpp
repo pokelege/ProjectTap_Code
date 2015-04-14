@@ -7,10 +7,10 @@
 ATile::ATile(const FObjectInitializer& initializer) :Super(initializer)
 {
 	TileMesh = initializer.CreateDefaultSubobject<UStaticMeshComponent>( this , TEXT( "Tile mesh" ) );
-	this->SetRootComponent( TileMesh );
 
 	BoxCollision = initializer.CreateDefaultSubobject<UBoxComponent>(TileMesh, TEXT("Tile collision"));
-	BoxCollision->AttachTo(RootComponent);
+	this->SetRootComponent( BoxCollision );
+	TileMesh->AttachTo(RootComponent);
 }
 
 void ATile::activate()

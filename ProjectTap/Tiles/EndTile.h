@@ -21,5 +21,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	APlayerBall* ball;
 	
+	AEndTile(const FObjectInitializer& initializer);
+
 	virtual void Tick( float DeltaTime ) override;
 };

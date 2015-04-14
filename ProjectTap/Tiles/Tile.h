@@ -31,8 +31,10 @@ public:
 	// Sets default values for this actor's properties
 	ATile(  );
 	
+	UFUNCTION(BlueprintCallable, Category = "Tile")
 	virtual void activate();
 
+	UFUNCTION(BlueprintCallable, Category = "Tile")
 	virtual void deactivate();
 
 	virtual bool isActivated();

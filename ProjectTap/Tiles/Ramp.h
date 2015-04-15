@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Tiles/Tile.h"
-#include "Tiles/PlayerBall.h"
+#include "Pawns/BallPawn.h"
 #include "Ramp.generated.h"
 /**
  * 
@@ -20,14 +20,16 @@ public:
 	UCurveFloat* rotationSequence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	APlayerBall* ball;
+	UBoxComponent* BallTrigger;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	ABallPawn* ball;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	FVector moveDirection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float forceMultiplier;
-
 
 	ARamp();
 

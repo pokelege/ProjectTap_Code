@@ -12,9 +12,7 @@ AStrongBlockingTile::AStrongBlockingTile()
 	
 	FName path("/Game/Models/StrongBlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
-	TileMesh->SetStaticMesh(mesh.Object);
-	
-	BoxCollision->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
+
 	BoxCollision->SetWorldScale3D(FVector(80.0f, 80.0f, 80.0f));
 
 	move_speed = 400.0f;
@@ -31,25 +29,6 @@ void AStrongBlockingTile::BeginPlay()
 void AStrongBlockingTile::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-
-	auto pos = GetActorLocation();
-	bool canRise = pos.Z - original.Z < move_distance_tolerance;
-	bool canDesend = pos.Z - original.Z > FLT_EPSILON;
-
-	if (activated && canRise)
-	{
-		pos.Z += move_speed * DeltaTime;
-	}
-	else if (!activated && canDesend)
-	{
-		pos.Z -= move_speed * DeltaTime;
-	}
-	else if (!activated)
-	{
-		pos.Z = original.Z;
-	}
-
-	SetActorLocation(pos);
 
 }
 

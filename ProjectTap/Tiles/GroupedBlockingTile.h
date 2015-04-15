@@ -6,7 +6,7 @@
 #include "GroupedBlockingTile.generated.h"
 
 UCLASS()
-class PROJECTTAP_API AGroupedBlockingTile : public ATile
+class PROJECTTAP_API AGroupedBlockingTile : public ABlockingTileBase
 {
 	GENERATED_BODY()
 	float time_counter = 0.0f;
@@ -22,7 +22,7 @@ public:
 	virtual void BeginPlay() override;
 	
 	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
+	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void deactivate() override;
 	

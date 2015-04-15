@@ -25,6 +25,7 @@ public:
   virtual void PlayerTick(float DeltaTime) override;
   virtual void SetupInputComponent() override;
 
+  void ActivateOtherTiles();
   void SendBlockingTile();
   void SendStrongBlockingTile();
   void SendGroupedBlockingTile();

@@ -3,22 +3,22 @@
 #pragma once
 
 #include "Tile.h"
-#include "StrongBlockingTile.generated.h"
+#include "BlockingTileBase.generated.h"
 
 UCLASS()
-class PROJECTTAP_API AStrongBlockingTile : public ABlockingTileBase
+class PROJECTTAP_API ABlockingTileBase : public ATile
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AStrongBlockingTile();
+	ABlockingTileBase();
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
+	virtual void Tick(float DeltaSeconds)override;
 
 	
 	

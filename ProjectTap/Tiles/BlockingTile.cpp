@@ -13,9 +13,7 @@ ABlockingTile::ABlockingTile( )
 	FName path("/Game/Models/BlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	TileMesh->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
-	
-	BoxCollision->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
+
 	BoxCollision->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
 	//SetActorScale3D(FVector(.25f, 0.25f, .1f));
 }
@@ -31,24 +29,6 @@ void ABlockingTile::BeginPlay()
 void ABlockingTile::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-	auto pos = GetActorLocation();
-	bool canRise = pos.Z - original.Z < move_distance_tolerance;
-	bool canDesend = pos.Z - original.Z > FLT_EPSILON;
-
-	if (activated && canRise)
-	{
-		pos.Z += move_speed * DeltaTime;
-	} 
-	else if (!activated && canDesend)
-	{
-		pos.Z -= move_speed * DeltaTime;
-	}
-	else if(!activated)
-	{
-		pos.Z = original.Z;
-	}
-
-	SetActorLocation(pos);
 
 	//count time
 	if (activated) {

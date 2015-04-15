@@ -22,7 +22,7 @@ void UTilesManager::DeactivateBlockingTiles()
 		t->deactivate();
 	}
 
-	activatedBlocks.Empty();
+	activatedBlocks.Reset();
 }
 
 void UTilesManager::DeactivateGroupedBlockingTiles()
@@ -31,7 +31,7 @@ void UTilesManager::DeactivateGroupedBlockingTiles()
 	{
 		t->deactivate();
 	}
-	activatedGroupedBlocks.Empty();
+	activatedGroupedBlocks.Reset();
 }
 
 
@@ -43,12 +43,15 @@ void UTilesManager::AddTile(AGroupedBlockingTile* tile)
 		bool reached_size_limit = activatedGroupedBlocks.Num() >= grouped_size_limit;
 		bool hasBeenAdded = false;
 
-		for (auto t : activatedGroupedBlocks)
+		if (activatedGroupedBlocks.Num() > 0)
 		{
-			if (t == tile)
+			for (auto t : activatedGroupedBlocks)
 			{
-				hasBeenAdded = true;
-				break;
+				if (t == tile)
+				{
+					hasBeenAdded = true;
+					break;
+				}
 			}
 		}
 
@@ -99,7 +102,10 @@ void UTilesManager::AddTile(AStrongBlockingTile* tile)
 
 void UTilesManager::Tick(float dt)
 {
-	UpdateGroupedBlockingTiles();
+	if (isMousePressed)
+	{
+		UpdateGroupedBlockingTiles();
+	}
 
 }
 

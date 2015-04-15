@@ -1,10 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ //Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include <vector>
-/**
- * 
- */
+
+#include "TilesManager.generated.h"
+
 enum class CurrentTileType : char
 {
 	NONE,
@@ -13,16 +12,19 @@ enum class CurrentTileType : char
 	GROUPED_BLOCKING_TILE
 };
 
-class BlockingTileManager
+UCLASS()
+class PROJECTTAP_API UTilesManager : public UObject
 {
-	std::vector<class ABlockingTile*> activatedBlocks;
-	std::vector<class AGroupedBlockingTile*> activatedGroupedBlocks;
+	GENERATED_BODY()
+
+	TArray<class ABlockingTile*> activatedBlocks;
+	TArray<class AGroupedBlockingTile*> activatedGroupedBlocks;
 	class AStrongBlockingTile* prevStrongBlockingTile;
 	bool isMousePressed = false;
 
 	unsigned char size_limit{ 3 };
 	unsigned char grouped_size_limit{ 6 };
-	CurrentTileType currentTileType{CurrentTileType::NONE};
+	CurrentTileType currentTileType{ CurrentTileType::NONE };
 
 	void UpdateGroupedBlockingTiles();
 
@@ -33,12 +35,19 @@ class BlockingTileManager
 	void DeactivateBlockingTiles();
 	void DeactivateGroupedBlockingTiles();
 public:
-	BlockingTileManager();
-	~BlockingTileManager();
+	
 	void AddTile(ABlockingTile* tile);
 	void AddTile(AStrongBlockingTile* tile);
 	void AddTile(AGroupedBlockingTile* tile);
 	void DeactivateStrongBlockingTile();
-	void Tick(float dt);
 	void SetEnableSwipeCheck(bool b);
+
+	 //Sets default values for this actor's properties
+	UTilesManager();
+
+	 //Called every frame
+	void Tick( float DeltaSeconds );
+
+	
+	
 };

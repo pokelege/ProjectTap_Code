@@ -20,6 +20,9 @@ public:
 	UCurveFloat* rotationSequence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	UBoxComponent* BallTrigger;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	APlayerBall* ball;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
@@ -27,7 +30,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float forceMultiplier;
-
 
 	ARamp();
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Tiles/Tile.h"
-#include "Tiles/PlayerBall.h"
+#include "Pawns/BallPawn.h"
 #include "EndTile.generated.h"
 
 /**
@@ -16,7 +16,7 @@ class PROJECTTAP_API AEndTile : public ATile
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	APlayerBall* ball;
+	ABallPawn* ball;
 	
 	AEndTile();
 

@@ -38,9 +38,6 @@ APlayerBall::APlayerBall()
 	ballMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	ballMesh->AttachTo(ballCollision);
-
-
-	
 }
 
 // Called when the game starts or when spawned
@@ -55,7 +52,6 @@ void APlayerBall::BeginPlay()
 void APlayerBall::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-
 }
 
 void APlayerBall::AddVelocity(const FVector& vel)

@@ -17,6 +17,17 @@ ARamp::ARamp(): ATile(  )
 	{
 		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
 	}
+	if(!BallTrigger)
+	{
+		BallTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Ball trigger"));
+		BallTrigger->SetBoxExtent(FVector(1,1,1), false);
+		FTransform transform = BallTrigger->GetRelativeTransform();
+		transform.SetLocation(FVector(0,0,2));
+
+		BallTrigger->SetRelativeTransform(transform);
+		BallTrigger->AttachTo(BoxCollision);
+	}
+
 	GetRootPrimitiveComponent()->SetWorldScale3D(FVector(20.0f, 20.0f, 80.0f));
 }
 
@@ -56,10 +67,10 @@ void ARamp::Tick(float DeltaTime)
 // 		* FTranslationMatrix::Make(-pivot)
 // 		* originalMatrix;
 // 	}
-	
+
 	if(activated)
 	{
-		if(BoxCollision->IsOverlappingActor(ball))
+		if(BallTrigger->IsOverlappingActor(ball))
 		{
 			ball->AddVelocity(forceMultiplier * moveDirection );
 		}

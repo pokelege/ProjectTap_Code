@@ -13,6 +13,7 @@ AEndTile::AEndTile() : ATile()
 	{
 		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
 	}
+	GetRootPrimitiveComponent()->SetWorldScale3D(FVector(20.0f, 20.0f, 80.0f));
 }
 
 void AEndTile::Tick(float DeltaTime)

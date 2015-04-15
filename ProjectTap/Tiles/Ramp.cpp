@@ -13,11 +13,11 @@ ARamp::ARamp(): ATile(  )
 // 		TileMesh->GetRelativeTransform()
 // 		.SetLocation(
 // 			FVector(0,1,1)));
-
 	if(BoxCollision)
 	{
 		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
 	}
+	GetRootPrimitiveComponent()->SetWorldScale3D(FVector(20.0f, 20.0f, 80.0f));
 }
 
 void ARamp::BeginPlay()

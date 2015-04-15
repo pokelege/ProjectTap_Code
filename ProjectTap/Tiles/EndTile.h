@@ -16,9 +16,6 @@ class PROJECTTAP_API AEndTile : public ATile
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UBoxComponent* BallCollision;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	APlayerBall* ball;
 	
 	AEndTile();

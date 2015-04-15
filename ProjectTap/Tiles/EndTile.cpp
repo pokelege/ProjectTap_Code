@@ -13,20 +13,14 @@ AEndTile::AEndTile() : ATile()
 	{
 		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
 	}
-	if(!BallCollision)
-	{
-		BallCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BallCollision"));
-		BallCollision->AttachTo(RootComponent);
-		BallCollision->SetBoxExtent(FVector(1,1,1), false);
-		BallCollision->SetRelativeLocation(FVector(0,0,2));
-	}
+	GetRootPrimitiveComponent()->SetWorldScale3D(FVector(20.0f, 20.0f, 80.0f));
 }
 
 void AEndTile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(BallCollision->IsOverlappingActor(ball))
+	if(BoxCollision->IsOverlappingActor(ball))
 	{
 		ball->GetRootPrimitiveComponent()->SetSimulatePhysics(false);
 	}

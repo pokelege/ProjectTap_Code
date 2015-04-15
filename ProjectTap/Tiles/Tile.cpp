@@ -9,8 +9,6 @@ ATile::ATile()
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Tile mesh" ) );
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Tile collision"));
-	
-	TileMesh->AttachTo(BoxCollision);
 
 	this->SetRootComponent(BoxCollision);
 	

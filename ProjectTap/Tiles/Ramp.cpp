@@ -9,17 +9,15 @@ ARamp::ARamp(): ATile(  )
 	FName path("/Game/Models/Ramp");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
+// 	TileMesh->SetRelativeTransform(
+// 		TileMesh->GetRelativeTransform()
+// 		.SetLocation(
+// 			FVector(0,1,1)));
 	if(BoxCollision)
 	{
 		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
 	}
-	if(!BallCollision)
-	{
-		BallCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BallCollision"));
-		BallCollision->AttachTo(RootComponent);
-		BallCollision->SetBoxExtent(FVector(1,1,1), false);
-		BallCollision->SetRelativeLocation(FVector(0,0,2));
-	}
+	GetRootPrimitiveComponent()->SetWorldScale3D(FVector(20.0f, 20.0f, 80.0f));
 }
 
 void ARamp::BeginPlay()
@@ -61,7 +59,7 @@ void ARamp::Tick(float DeltaTime)
 	
 	if(activated)
 	{
-		if(BallCollision->IsOverlappingActor(ball))
+		if(BoxCollision->IsOverlappingActor(ball))
 		{
 			ball->AddVelocity(forceMultiplier * moveDirection );
 		}

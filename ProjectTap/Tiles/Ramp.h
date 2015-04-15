@@ -12,18 +12,12 @@ UCLASS()
 class PROJECTTAP_API ARamp : public ATile
 {
 	GENERATED_BODY()
-	FMatrix originalMatrix;
 	float time;
 	float duration;
 	bool reverse;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	FVector pivot;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UCurveFloat* rotationSequence;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UBoxComponent* BallCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	APlayerBall* ball;

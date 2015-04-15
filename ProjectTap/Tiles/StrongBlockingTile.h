@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Tile.h"
+#include "Tiles/BlockingTileBase.h"
 #include "StrongBlockingTile.generated.h"
 
 UCLASS()

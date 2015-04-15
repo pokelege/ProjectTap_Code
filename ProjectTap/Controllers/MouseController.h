@@ -3,7 +3,7 @@
 #pragma once
 
 #include "GameFramework/PlayerController.h"
-#include "BlockingTileManager.h"
+#include "../Tiles/TilesManager.h"
 #include "MouseController.generated.h"
 
 /**
@@ -14,10 +14,11 @@ class PROJECTTAP_API AMouseController : public APlayerController
 {
 	GENERATED_BODY()
 
-	BlockingTileManager btManager;
-	bool bCheckForSwipe = false;
+	UTilesManager* btManager;
 	float swipeElapseTime = 0.1f;
 	float swipeElapseTimeCounter = 0.0f;
+	bool bCheckForSwipe = false;
+
 public:
   AMouseController(const FObjectInitializer& initializer);
   // Begin PlayerController interface

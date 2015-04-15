@@ -15,6 +15,7 @@ AMouseController::AMouseController(const FObjectInitializer& initializer):Super(
   this->bEnableClickEvents = true;
   this->bEnableTouchEvents = true;
   this->DefaultMouseCursor = EMouseCursor::Crosshairs;
+  btManager = NewObject<UTilesManager>();
 }
 
 void AMouseController::PlayerTick(float DeltaTime)
@@ -31,6 +32,8 @@ void AMouseController::PlayerTick(float DeltaTime)
 	{
 		swipeElapseTimeCounter = 0.0f;
 	}
+
+	btManager->Tick(DeltaTime);
 }
 
 void AMouseController::SetupInputComponent()
@@ -55,7 +58,7 @@ void AMouseController::EnableSwipeCheck()
 	auto gbt = Cast<AGroupedBlockingTile>(hit.Actor.Get());
 	if (gbt != nullptr)
 	{
-		btManager.SetEnableSwipeCheck(true);
+		btManager->SetEnableSwipeCheck(true);
 		bCheckForSwipe = true;
 	}
 	//else
@@ -66,7 +69,7 @@ void AMouseController::EnableSwipeCheck()
 
 void AMouseController::DisnableSwipeCheck()
 {
-	btManager.SetEnableSwipeCheck(false);
+	btManager->SetEnableSwipeCheck(false);
 	bCheckForSwipe = false;
 }
 
@@ -84,7 +87,7 @@ void AMouseController::SendBlockingTile()
 		if (bt != nullptr)
 		{
 			canContinue = false;
-			btManager.AddTile(bt);
+			btManager->AddTile(bt);
 		}
 	}
 }
@@ -96,7 +99,7 @@ void AMouseController::SendStrongBlockingTile()
 	auto sbt = Cast<AStrongBlockingTile>(hit.Actor.Get());
 	if (sbt != nullptr)
 	{
-		btManager.AddTile(sbt);
+		btManager->AddTile(sbt);
 	}
 }
 
@@ -108,15 +111,15 @@ void AMouseController::SendGroupedBlockingTile()
 	auto gbt = Cast<AGroupedBlockingTile>(hit.Actor.Get());
 	if (gbt != nullptr)
 	{
-		btManager.SetEnableSwipeCheck(true);
-		btManager.AddTile(gbt);
+		btManager->SetEnableSwipeCheck(true);
+		btManager->AddTile(gbt);
 	}
 }
 
 void AMouseController::NotifyMouseReleased()
 {
-	btManager.DeactivateStrongBlockingTile();
-	btManager.SetEnableSwipeCheck(false);
+	btManager->DeactivateStrongBlockingTile();
+	btManager->SetEnableSwipeCheck(false);
 }
 
 

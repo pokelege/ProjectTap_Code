@@ -6,6 +6,7 @@
 #include "../Tiles/BlockingTile.h"
 #include "../Tiles/StrongBlockingTile.h"
 #include "../Tiles/GroupedBlockingTile.h"
+#include "../Tiles/Ramp.h"
 
 
 AMouseController::AMouseController(const FObjectInitializer& initializer):Super(initializer)
@@ -45,11 +46,23 @@ void AMouseController::SetupInputComponent()
 	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::NotifyMouseReleased);
 	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::DisnableSwipeCheck);
 
-
+	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::ActivateOtherTiles);
 	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::SendStrongBlockingTile);
 	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::EnableSwipeCheck);
 
 }
+
+void AMouseController::ActivateOtherTiles()
+{
+	FHitResult hit;
+	GetHitResultUnderCursor(ECC_Visibility, false, hit);
+	auto ramp = Cast<ARamp>(hit.Actor.Get());
+	if (ramp != nullptr)
+	{
+		ramp->activate();
+	}
+}
+
 
 void AMouseController::EnableSwipeCheck()
 {

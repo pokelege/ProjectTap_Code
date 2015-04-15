@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "Tile.h"
+#include "Tiles/BlockingTileBase.h"
 #include "StrongBlockingTile.generated.h"
 
 UCLASS()
-class PROJECTTAP_API AStrongBlockingTile : public ATile
+class PROJECTTAP_API AStrongBlockingTile : public ABlockingTileBase
 {
 	GENERATED_BODY()
 	

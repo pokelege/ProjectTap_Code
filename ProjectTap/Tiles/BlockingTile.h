@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "Tiles/Tile.h"
+#include "Tiles/BlockingTileBase.h"
 #include "BlockingTile.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTTAP_API ABlockingTile : public ATile
+class PROJECTTAP_API ABlockingTile : public ABlockingTileBase
 {
 	GENERATED_BODY()
 	float time_counter = 0.0f;
@@ -19,6 +19,6 @@ public:
 		float activation_time = 3.0f;
   ABlockingTile( );
   
-  virtual void BeginPlay() override;
-  virtual void Tick( float DeltaTime ) override;
+   virtual void BeginPlay() override;
+   virtual void Tick( float DeltaTime ) override;
 };

@@ -70,9 +70,13 @@ void ARamp::Tick(float DeltaTime)
 
 	if(activated)
 	{
-		if(BallTrigger->IsOverlappingActor(ball))
+		TArray< AActor * > OverlappingActors;
+		BallTrigger->GetOverlappingActors(OverlappingActors, ABallPawn::StaticClass());
+		if(OverlappingActors.Num())
 		{
-			ball->AddVelocity(forceMultiplier * moveDirection );
+			ABallPawn* pawn = Cast<ABallPawn>(OverlappingActors[0]);
+			if(pawn != 0)
+			pawn->AddVelocity(forceMultiplier * moveDirection );
 		}
 	}
 }

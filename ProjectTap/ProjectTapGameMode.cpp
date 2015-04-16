@@ -7,5 +7,11 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 {
 	UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
 	PlayerControllerClass = AMouseController::StaticClass();
+	DefaultPawnClass = ABallPawn::StaticClass();
+}
 
+void AProjectTapGameMode::BeginPlay()
+{
+	AActor* ballTest = FindPlayerStart(0, FString("Player"));
+	if(ballTest) ball = Cast<ABallPawn>(ballTest);
 }

@@ -28,7 +28,8 @@ ARamp::ARamp(): ATile(  )
 		BallTrigger->AttachTo(BoxCollision);
 	}
 
-	GetRootPrimitiveComponent()->SetWorldScale3D(FVector(20.0f, 20.0f, 80.0f));
+	auto pc = Cast<UPrimitiveComponent>(RootComponent);
+	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
 }
 
 void ARamp::BeginPlay()

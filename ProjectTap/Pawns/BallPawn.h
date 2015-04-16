@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	USphereComponent* ballCollision;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
+		FVector initialVelocity = FVector(0.0f, 0.0f, 0.0f);
+
 	// Sets default values for this actor's properties
 	ABallPawn();
 
@@ -28,8 +31,7 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Ball")
-	void AddVelocity(const FVector& vel);
-
+	void AddVelocity(const FVector& vel, bool clearForce = true);
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;

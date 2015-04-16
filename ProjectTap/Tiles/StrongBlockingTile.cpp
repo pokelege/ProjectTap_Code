@@ -12,7 +12,7 @@ AStrongBlockingTile::AStrongBlockingTile()
 	
 	FName path("/Game/Models/StrongBlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
-
+	TileMesh->SetStaticMesh(mesh.Object);
 	BoxCollision->SetWorldScale3D(FVector(80.0f, 80.0f, 80.0f));
 
 	move_speed = 400.0f;

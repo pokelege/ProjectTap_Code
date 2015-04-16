@@ -22,6 +22,16 @@ ABallPawn::ABallPawn()
 
 	ballCollision->bGenerateOverlapEvents = true;
 
+	ballCollision->SetCollisionProfileName(TEXT("Custom"));
+
+
+	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
+	ballCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ballCollision->GetBodyInstance()->bOverrideMass = true;
+	ballCollision->GetBodyInstance()->MassInKg = 10.0f;
+
 	ballMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallMesh"));
 
 
@@ -35,9 +45,9 @@ ABallPawn::ABallPawn()
 
 	ballMesh->SetSimulatePhysics(false);
 
-	ballMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 	ballMesh->AttachTo(ballCollision);
+
+	
 }
 
 // Called when the game starts or when spawned
@@ -45,7 +55,8 @@ void ABallPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ballCollision->AddImpulse(initialVelocity);
+	auto temp = FVector(900.0f, 0.0f, 0.0f);
+	ballCollision->AddImpulse(temp);
 }
 
 // Called every frame

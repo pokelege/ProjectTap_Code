@@ -50,6 +50,7 @@ void AMouseController::SetupInputComponent()
 	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::SendStrongBlockingTile);
 	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::EnableSwipeCheck);
 
+	InputComponent->BindAction("Respawn", IE_Pressed, this, &AMouseController::RespawnPressed);
 }
 
 void AMouseController::ActivateOtherTiles()
@@ -135,4 +136,8 @@ void AMouseController::NotifyMouseReleased()
 	btManager->SetEnableSwipeCheck(false);
 }
 
-
+void AMouseController::RespawnPressed()
+{
+	AProjectTapGameMode* gameMode = Cast<AProjectTapGameMode>(GetWorld()->GetAuthGameMode());
+	gameMode->Respawn();
+}

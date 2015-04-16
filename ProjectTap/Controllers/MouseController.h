@@ -4,6 +4,7 @@
 
 #include "GameFramework/PlayerController.h"
 #include "../Tiles/TilesManager.h"
+#include "ProjectTapGameMode.h"
 #include "MouseController.generated.h"
 
 /**
@@ -18,7 +19,6 @@ class PROJECTTAP_API AMouseController : public APlayerController
 	float swipeElapseTime = 0.1f;
 	float swipeElapseTimeCounter = 0.0f;
 	bool bCheckForSwipe = false;
-
 public:
   AMouseController(const FObjectInitializer& initializer);
   // Begin PlayerController interface
@@ -33,4 +33,6 @@ public:
   void NotifyMouseReleased();
   void DisnableSwipeCheck();
   void EnableSwipeCheck();
+
+  void RespawnPressed();
 };

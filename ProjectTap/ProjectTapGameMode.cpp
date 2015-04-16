@@ -3,15 +3,33 @@
 #include "ProjectTap.h"
 #include "ProjectTapGameMode.h"
 #include "Controllers/MouseController.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
 AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer ): Super( initializer )
 {
 	UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
 	PlayerControllerClass = AMouseController::StaticClass();
-	DefaultPawnClass = ABallPawn::StaticClass();
+	DefaultPawnClass = 0;
 }
 
 void AProjectTapGameMode::BeginPlay()
 {
-	AActor* ballTest = FindPlayerStart(0, FString("Player"));
-	if(ballTest) ball = Cast<ABallPawn>(ballTest);
+	if (UWorld* world = GetWorld())
+	{
+		FTransform playerStart = FindPlayerStart(0, FString("Player"))->GetTransform();
+		FActorSpawnParameters params;
+		//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
+		ball = world->SpawnActor<ABallPawn>(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotator(playerStart.GetRotation()), params);
+	}
+}
+
+void AProjectTapGameMode::Respawn()
+{
+    if(ball) Destroy(ball);
+	if (UWorld* world = GetWorld())
+	{
+		FTransform playerStart = FindPlayerStart(0, FString("Player"))->GetTransform();
+		FActorSpawnParameters params;
+		//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
+		ball = world->SpawnActor<ABallPawn>(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotator(playerStart.GetRotation()), params);
+	}
 }

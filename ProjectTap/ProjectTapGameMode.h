@@ -22,4 +22,6 @@ public:
   AProjectTapGameMode(const FObjectInitializer& initializer);
 
   virtual void BeginPlay() override;
+
+  void Respawn();
 };

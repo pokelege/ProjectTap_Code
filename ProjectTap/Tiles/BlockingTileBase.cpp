@@ -9,8 +9,6 @@ ABlockingTileBase::ABlockingTileBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	TileMesh->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
-
 	BoxCollision->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
 }
 
@@ -43,5 +41,7 @@ void ABlockingTileBase::Tick( float DeltaTime )
 	}
 
 	SetActorLocation(pos);
+
+	TileMesh->SetRenderCustomDepth(true);
 }
 

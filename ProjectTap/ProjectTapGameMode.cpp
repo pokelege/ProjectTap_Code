@@ -32,10 +32,12 @@ void AProjectTapGameMode::Tick(float DeltaTime)
 
 void AProjectTapGameMode::Respawn()
 {
-	if(ball &&  Destroy(ball))
+	if (ball != nullptr)
 	{
-		ball = 0;
+		ball->BeginDestroy();
+		ball = nullptr;
 	}
+
 	if (UWorld* world = GetWorld())
 	{
 		FTransform playerStart = FindPlayerStart(0, FString("Player"))->GetTransform();

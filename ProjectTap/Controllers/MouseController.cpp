@@ -59,7 +59,7 @@ void AMouseController::ActivateOtherTiles()
 	auto ramp = Cast<ARamp>(hit.Actor.Get());
 	if (ramp != nullptr)
 	{
-		ramp->BootBall();
+		ramp->BoostBall();
 	}
 	
 }

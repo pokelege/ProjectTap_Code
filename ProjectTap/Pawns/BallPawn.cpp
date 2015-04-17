@@ -58,8 +58,7 @@ void ABallPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto temp = FVector(900.0f, 0.0f, 0.0f);
-	ballCollision->AddImpulse(temp);
+	ballCollision->AddImpulse(initialVelocity);
 }
 
 // Called every frame

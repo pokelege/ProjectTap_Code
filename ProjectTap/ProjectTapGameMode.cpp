@@ -24,7 +24,12 @@ void AProjectTapGameMode::BeginPlay()
 
 void AProjectTapGameMode::Respawn()
 {
-    if(ball) Destroy(ball);
+	if (ball != nullptr)
+	{
+		ball->BeginDestroy();
+		ball = nullptr;
+	}
+
 	if (UWorld* world = GetWorld())
 	{
 		FTransform playerStart = FindPlayerStart(0, FString("Player"))->GetTransform();

@@ -22,7 +22,7 @@ void UTilesManager::DeactivateBlockingTiles()
 		t->deactivate();
 	}
 
-	activatedBlocks.Reset();
+	activatedBlocks.RemoveAll([](ABlockingTile* b){return true; });
 }
 
 void UTilesManager::DeactivateGroupedBlockingTiles()
@@ -31,7 +31,7 @@ void UTilesManager::DeactivateGroupedBlockingTiles()
 	{
 		t->deactivate();
 	}
-	activatedGroupedBlocks.Reset();
+	activatedGroupedBlocks.RemoveAll([](AGroupedBlockingTile* b){return true; });
 }
 
 
@@ -123,8 +123,8 @@ void UTilesManager::UpdateGroupedBlockingTiles()
 
 	for (size_t i = 0; i < activatedBlocks.Num(); i++)
 	{
-		auto gbt = activatedBlocks[i];
-		if (!gbt->isActivated())
+		auto bt = activatedBlocks[i];
+		if (!bt->isActivated())
 		{
 			activatedBlocks.RemoveAt(i);
 			i--;
@@ -166,4 +166,5 @@ void UTilesManager::SetGroupedBlockingTileCurrent()
 	DeactivateBlockingTiles();
 	DeactivateStrongBlockingTile();
 }
+
 

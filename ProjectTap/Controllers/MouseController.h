@@ -15,7 +15,7 @@ class PROJECTTAP_API AMouseController : public APlayerController
 {
 	GENERATED_BODY()
 
-	UTilesManager* btManager;
+	UTilesManager btManager;
 	float swipeElapseTime = 0.1f;
 	float swipeElapseTimeCounter = 0.0f;
 	bool bCheckForSwipe = false;

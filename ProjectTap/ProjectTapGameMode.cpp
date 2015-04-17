@@ -2,6 +2,7 @@
 
 #include "ProjectTap.h"
 #include "ProjectTapGameMode.h"
+#include "Pawns/BallPawn.h"
 #include "Controllers/MouseController.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer ): Super( initializer )
@@ -26,7 +27,7 @@ void AProjectTapGameMode::Respawn()
 {
 	if (ball != nullptr)
 	{
-		ball->BeginDestroy();
+		//Destroy(true);
 		ball = nullptr;
 	}
 

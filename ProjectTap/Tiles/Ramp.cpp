@@ -69,15 +69,20 @@ void ARamp::Tick(float DeltaTime)
 // 		* originalMatrix;
 // 	}
 
-	if(activated)
+}
+
+
+void ARamp::BoostBall()
+{
+	TArray< AActor * > OverlappingActors;
+	BallTrigger->GetOverlappingActors(OverlappingActors, ABallPawn::StaticClass());
+	if (OverlappingActors.Num())
 	{
-		TArray< AActor * > OverlappingActors;
-		BallTrigger->GetOverlappingActors(OverlappingActors, ABallPawn::StaticClass());
-		if(OverlappingActors.Num())
+		ABallPawn* pawn = Cast<ABallPawn>(OverlappingActors[0]);
+		if (pawn != nullptr)
 		{
-			ABallPawn* pawn = Cast<ABallPawn>(OverlappingActors[0]);
-			if(pawn != 0)
-			pawn->AddVelocity(forceMultiplier * moveDirection );
+			pawn->AddVelocity(forceMultiplier * moveDirection);
+			deactivate();
 		}
 	}
 }

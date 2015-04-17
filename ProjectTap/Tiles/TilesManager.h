@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include "TilesManager.generated.h"
-
 enum class CurrentTileType : char
 {
 	NONE,
@@ -12,11 +10,8 @@ enum class CurrentTileType : char
 	GROUPED_BLOCKING_TILE
 };
 
-UCLASS()
-class PROJECTTAP_API UTilesManager : public UObject
+class UTilesManager
 {
-	GENERATED_BODY()
-
 	TArray<class ABlockingTile*> activatedBlocks;
 	TArray<class AGroupedBlockingTile*> activatedGroupedBlocks;
 	class AStrongBlockingTile* prevStrongBlockingTile;
@@ -42,12 +37,8 @@ public:
 	void DeactivateStrongBlockingTile();
 	void SetEnableSwipeCheck(bool b);
 
-	 //Sets default values for this actor's properties
 	UTilesManager();
 
-	 //Called every frame
 	void Tick( float DeltaSeconds );
 
-	
-	
 };

@@ -24,7 +24,7 @@ ABallPawn::ABallPawn()
 
 	ballCollision->SetCollisionProfileName(TEXT("Custom"));
 
-
+	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
@@ -42,6 +42,9 @@ ABallPawn::ABallPawn()
 	//ballMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
 	ballMesh->SetStaticMesh(tempMesh.Object);
+	ballMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+	ballMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 
 	ballMesh->SetSimulatePhysics(false);
 
@@ -76,7 +79,14 @@ void ABallPawn::AddVelocity(const FVector& vel, bool clearForce)
 	if (clearForce)
 	{
 		ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
+		ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
 	}
 
 	ballCollision->AddImpulse(vel);
+}
+
+
+void ABallPawn::Kill()
+{
+	BeginDestroy();
 }

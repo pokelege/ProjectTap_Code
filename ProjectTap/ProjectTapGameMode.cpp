@@ -9,6 +9,8 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 	UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
 	PlayerControllerClass = AMouseController::StaticClass();
 	DefaultPawnClass = 0;
+
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AProjectTapGameMode::BeginPlay()
@@ -19,12 +21,21 @@ void AProjectTapGameMode::BeginPlay()
 		FActorSpawnParameters params;
 		//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
 		ball = world->SpawnActor<ABallPawn>(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotator(playerStart.GetRotation()), params);
-	}
+ 	}
+}
+
+void AProjectTapGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
 }
 
 void AProjectTapGameMode::Respawn()
 {
-    if(ball) Destroy(ball);
+	if(ball &&  Destroy(ball))
+	{
+		ball = 0;
+	}
 	if (UWorld* world = GetWorld())
 	{
 		FTransform playerStart = FindPlayerStart(0, FString("Player"))->GetTransform();

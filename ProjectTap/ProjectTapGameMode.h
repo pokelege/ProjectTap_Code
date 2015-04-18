@@ -8,21 +8,22 @@ class ABallPawn;
 
 
 /**
- * 
+ *
  */
 UCLASS()
 class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	class ABallPawn* ball;
+    class ABallPawn* ball;
 
 public:
-  AProjectTapGameMode(const FObjectInitializer& initializer);
 
-  virtual void BeginPlay() override;
+    AProjectTapGameMode ( const FObjectInitializer& initializer );
 
-  virtual void Tick(float DeltaTime) override;
+    virtual void BeginPlay() override;
 
-  void Respawn();
+    virtual void Tick ( float DeltaTime ) override;
+
+    void Respawn();
 };

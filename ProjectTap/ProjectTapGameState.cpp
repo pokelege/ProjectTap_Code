@@ -6,3 +6,12 @@
 
 
 
+void AProjectTapGameState::SetState(GameState NewState)
+{
+	CurrentState = NewState;
+}
+
+AProjectTapGameState::GameState AProjectTapGameState::GetState()
+{
+	return CurrentState;
+}

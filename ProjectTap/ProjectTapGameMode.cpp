@@ -2,9 +2,12 @@
 
 #include "ProjectTap.h"
 #include "ProjectTapGameMode.h"
+#include "Pawns/BallPawn.h"
 #include "ProjectTapGameState.h"
 #include "Controllers/MouseController.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
+#include "Pawns/BallPawn.h"
+#include "Pawns/BallPlayerStart.h"
 #define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
 AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer ): Super( initializer )
 {
@@ -19,12 +22,22 @@ void AProjectTapGameMode::BeginPlay()
 {
 	if (UWorld* world = GetWorld())
 	{
-		FTransform playerStart = FindPlayerStart(0, FString("Player"))->GetTransform();
-		FActorSpawnParameters params;
-		//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
-		ball = world->SpawnActor<ABallPawn>(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotator(playerStart.GetRotation()), params);
- 	}
- 	GetGameState<AProjectTapGameState>()->SetMatchState(GAME_STATE_GAME_OVER);
+		AActor* playerStart = FindPlayerStart(0, FString("Player"));
+		FTransform playerTransform = playerStart->GetTransform();
+		if(ABallPlayerStart* realPlayerStart = Cast<ABallPlayerStart>(playerStart))
+		{
+			FActorSpawnParameters params;
+			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
+			ball = world->SpawnActor<ABallPawn>(ABallPawn::StaticClass(), playerTransform.GetTranslation(),FRotator(playerTransform.GetRotation()), params);
+			ball->AddVelocity(realPlayerStart->initialVelocity);
+		}
+		else
+		{
+			FActorSpawnParameters params;
+			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
+			ball = world->SpawnActor<ABallPawn>(ABallPawn::StaticClass(), playerTransform.GetTranslation(),FRotator(playerTransform.GetRotation()), params);
+		}
+	}
 }
 
 void AProjectTapGameMode::Tick(float DeltaTime)
@@ -41,7 +54,7 @@ void AProjectTapGameMode::Respawn()
 {
 	if (ball != nullptr)
 	{
-		ball->BeginDestroy();
+		//Destroy(true);
 		ball = nullptr;
 	}
 

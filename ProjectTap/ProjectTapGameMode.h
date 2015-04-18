@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
+class ABallPawn;
 #include "GameFramework/GameMode.h"
-#include "Pawns/BallPawn.h"
 #include "ProjectTapGameMode.generated.h"
 
 
@@ -16,7 +15,7 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
-	ABallPawn* ball;
+	class ABallPawn* ball;
 
 public:
   AProjectTapGameMode(const FObjectInitializer& initializer);

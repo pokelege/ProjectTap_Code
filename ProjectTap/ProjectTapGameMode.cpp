@@ -30,12 +30,14 @@ void AProjectTapGameMode::BeginPlay()
 			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
 			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
 			ball->AddVelocity( realPlayerStart->initialVelocity );
+			ball->OnDestroyed.Add(&AProjectTapGameMode::Respawn);
 		}
 		else
 		{
 			FActorSpawnParameters params;
 			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
 			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
+			ball->OnDestroyed.Add(&AProjectTapGameMode::Respawn);
 		}
 	}
 	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::AProjectTapGameState::GAME_STATE_PLAYING);

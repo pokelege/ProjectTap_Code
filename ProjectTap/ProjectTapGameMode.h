@@ -3,6 +3,7 @@
 #pragma once
 class ABallPawn;
 #include "GameFramework/GameMode.h"
+
 #include "ProjectTapGameMode.generated.h"
 
 
@@ -15,10 +16,13 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 {
     GENERATED_BODY()
 
+	DECLARE_DELEGATE(OnPlayerDestroyDelegate)
+
     class ABallPawn* ball;
 
 public:
 
+	OnPlayerDestroyDelegate onPlayerDestroy;
     AProjectTapGameMode ( const FObjectInitializer& initializer );
 
     virtual void BeginPlay() override;

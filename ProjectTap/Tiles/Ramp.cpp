@@ -7,6 +7,8 @@ const FName ARamp::RAMP_MESH_PATH = FName("/Game/Models/Ramp");
 
 const FName ARamp::RAMP_TOP_MESH_PATH = FName("/Game/Models/RampTop");
 
+const FName ARamp::RAMP_CURVE_PATH = FName("/Game/Curves/Ramp");
+
 ARamp::ARamp(): ATile(  )
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -23,11 +25,17 @@ ARamp::ARamp(): ATile(  )
 	TopMesh->SetStaticMesh(topMesh.Object);
 	TopMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
 	TopMesh->AttachTo(this->GetRootComponent());
+	TopMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	TopMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	TopMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 	if(BoxCollision)
 	{
 		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
 		BoxCollision->SetRelativeLocation(FVector(0,0,-1), false, nullptr);
 	}
+
+	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(*RAMP_CURVE_PATH.ToString());
+	if(curve.Object != nullptr) rotationSequence = curve.Object;
 // 	if(!BallTrigger)
 // 	{
 // 		BallTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Ball trigger"));
@@ -76,7 +84,10 @@ void ARamp::Tick(float DeltaTime)
 
 }
 
-
+///<summary>
+///DEPRECATED activate the tile to use ramp
+///will do nothing
+///</summary>
 void ARamp::BoostBall()
 {
 // 	TArray< AActor * > OverlappingActors;
@@ -94,7 +105,7 @@ void ARamp::BoostBall()
 
 void ARamp::activate()
 {
-	if(rotationSequence == nullptr) return;
+	if(rotationSequence == nullptr || activated) return;
 	Super::activate();
 	time = 0;
 }

@@ -16,7 +16,9 @@ ATile::ATile()
 	
 	BoxCollision->AttachTo(this->GetRootComponent());
 	TileMesh->AttachTo(this->GetRootComponent());
-
+	TileMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 }
 
 void ATile::activate()

@@ -12,9 +12,9 @@ UCLASS()
 class PROJECTTAP_API ARamp : public ATile
 {
 	GENERATED_BODY()
-	float time;
-	float duration;
-	bool reverse;
+	static const FName RAMP_MESH_PATH;
+	static const FName RAMP_TOP_MESH_PATH;
+	float time = 0;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UCurveFloat* rotationSequence;
@@ -23,10 +23,7 @@ public:
 	UBoxComponent* BallTrigger;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	ABallPawn* ball;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	FVector moveDirection;
+	UStaticMeshComponent* TopMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float forceMultiplier;
@@ -35,6 +32,8 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
+
+	virtual void activate() override;
 
 	void BoostBall();
 

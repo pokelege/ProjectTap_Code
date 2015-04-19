@@ -60,6 +60,7 @@ void AMouseController::ActivateOtherTiles()
 	if (ramp != nullptr)
 	{
 		ramp->BoostBall();
+		ramp->activate();
 	}
 	
 }

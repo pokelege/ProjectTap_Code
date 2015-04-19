@@ -2,7 +2,7 @@
 
 #include "ProjectTap.h"
 #include "Tile.h"
-
+#include "EmptyComponent.h"
 // Sets default values
 ATile::ATile() 
 {
@@ -10,9 +10,12 @@ ATile::ATile()
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Tile collision"));
 
-	this->SetRootComponent(BoxCollision);
+	UEmptyComponent* root = CreateDefaultSubobject<UEmptyComponent>(TEXT("Tile root"));
+
+	this->SetRootComponent(root);
 	
-	TileMesh->AttachTo(BoxCollision);
+	BoxCollision->AttachTo(this->GetRootComponent());
+	TileMesh->AttachTo(this->GetRootComponent());
 
 }
 

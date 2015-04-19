@@ -26,18 +26,18 @@ ARamp::ARamp(): ATile(  )
 	if(BoxCollision)
 	{
 		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
-		BoxCollision->SetRelativeLocation(FVector(0,0,-0.5f), false, nullptr);
+		BoxCollision->SetRelativeLocation(FVector(0,0,-1), false, nullptr);
 	}
-	if(!BallTrigger)
-	{
-		BallTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Ball trigger"));
-		BallTrigger->SetBoxExtent(FVector(1,1,1), false);
-		FTransform transform = BallTrigger->GetRelativeTransform();
-		transform.SetLocation(FVector(0,0,1));
-
-		BallTrigger->SetRelativeTransform(transform);
-		BallTrigger->AttachTo(this->GetRootComponent());
-	}
+// 	if(!BallTrigger)
+// 	{
+// 		BallTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Ball trigger"));
+// 		BallTrigger->SetBoxExtent(FVector(1,1,1), false);
+// 		FTransform transform = BallTrigger->GetRelativeTransform();
+// 		transform.SetLocation(FVector(0,0,1));
+//
+// 		BallTrigger->SetRelativeTransform(transform);
+// 		BallTrigger->AttachTo(this->GetRootComponent());
+// 	}
 
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
@@ -53,59 +53,48 @@ void ARamp::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if(activated)
 	{
+// 		TArray< AActor * > OverlappingActors;
+// 		BallTrigger->GetOverlappingActors(OverlappingActors, ABallPawn::StaticClass());
+// 		if (OverlappingActors.Num())
+// 		{
+// 			ABallPawn* pawn = Cast<ABallPawn>(OverlappingActors[0]);
+// 			if (pawn != nullptr)
+// 			{
+// 				pawn->AddVelocity(forceMultiplier * GetActorForwardVector());
+// 			}
+// 		}
 		float minTime, maxTime;
 		rotationSequence->GetTimeRange(minTime, maxTime);
-		if(time+= DeltaTime >= maxTime)
+		if((time += DeltaTime) >= maxTime)
 		{
 			time = maxTime;
 			deactivate();
 		}
 		float curveValue = rotationSequence->GetFloatValue(time);
-		TopMesh->SetRelativeRotation(FRotator(0, 0, curveValue));
+		TopMesh->SetRelativeRotation(FRotator(curveValue, 0, 0));
 	}
-	//todo animation
-// 	if(activated)
-// 	{
-// 		if(reverse) time-=DeltaTime;
-// 		else time+=DeltaTime;
-// 		if(time>=duration)
-// 		{
-// 			reverse = true;
-// 			time = duration;
-// 		}
-// 		else if(time<=0)
-// 		{
-// 			reverse = false;
-// 			time = 0;
-// 			deactivate();
-// 		}
-// 		FMatrix transform = FTranslationMatrix::Make(pivot)
-// 		* FRotationMatrix::Make(FRotator::FRotator(0,0,rotationSequence->GetFloatValue(time)))
-// 		* FTranslationMatrix::Make(-pivot)
-// 		* originalMatrix;
-// 	}
 
 }
 
 
 void ARamp::BoostBall()
 {
-	TArray< AActor * > OverlappingActors;
-	BallTrigger->GetOverlappingActors(OverlappingActors, ABallPawn::StaticClass());
-	if (OverlappingActors.Num())
-	{
-		ABallPawn* pawn = Cast<ABallPawn>(OverlappingActors[0]);
-		if (pawn != nullptr)
-		{
-			pawn->AddVelocity(forceMultiplier * GetActorForwardVector());
-			//deactivate();
-		}
-	}
+// 	TArray< AActor * > OverlappingActors;
+// 	BallTrigger->GetOverlappingActors(OverlappingActors, ABallPawn::StaticClass());
+// 	if (OverlappingActors.Num())
+// 	{
+// 		ABallPawn* pawn = Cast<ABallPawn>(OverlappingActors[0]);
+// 		if (pawn != nullptr)
+// 		{
+// 			pawn->AddVelocity(forceMultiplier * GetActorForwardVector());
+// 			//deactivate();
+// 		}
+// 	}
 }
 
 void ARamp::activate()
 {
-	//if(rotationSequence == nullptr)
+	if(rotationSequence == nullptr) return;
 	Super::activate();
 	time = 0;
 }

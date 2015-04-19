@@ -19,8 +19,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UCurveFloat* rotationSequence;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UBoxComponent* BallTrigger;
+// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+// 	UBoxComponent* BallTrigger;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UStaticMeshComponent* TopMesh;

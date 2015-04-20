@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectTap.h"
+#include "ProjectTapGameState.h"
+#include "Engine/GameInstance.h"
 #include "BallPawn.h"
 
 
@@ -29,6 +31,7 @@ ABallPawn::ABallPawn()
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 	ballCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ballCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	ballCollision->GetBodyInstance()->bOverrideMass = true;
 	ballCollision->GetBodyInstance()->MassInKg = 10.0f;
 
@@ -87,5 +90,15 @@ void ABallPawn::AddVelocity(const FVector& vel, bool clearForce)
 
 void ABallPawn::Kill()
 {
-	BeginDestroy();
+	UGameInstance* gameInstance = GetGameInstance();
+	FWorldContext* worldContext = gameInstance->GetWorldContext();
+	UWorld* world = worldContext->World();
+	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+	if(gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
+	Destroy();
+}
+
+void ABallPawn::FellOutOfWorld(const class UDamageType & dmgType)
+{
+	Kill();
 }

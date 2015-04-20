@@ -93,6 +93,7 @@ void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 	if (ramp != nullptr)
 	{
 		ramp->BoostBall();
+		ramp->activate();
 	}
 	
 }

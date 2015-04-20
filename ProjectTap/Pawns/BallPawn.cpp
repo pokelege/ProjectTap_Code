@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectTap.h"
+#include "ProjectTapGameState.h"
+#include "Engine/GameInstance.h"
 #include "BallPawn.h"
 
 
@@ -88,5 +90,15 @@ void ABallPawn::AddVelocity(const FVector& vel, bool clearForce)
 
 void ABallPawn::Kill()
 {
-	BeginDestroy();
+	UGameInstance* gameInstance = GetGameInstance();
+	FWorldContext* worldContext = gameInstance->GetWorldContext();
+	UWorld* world = worldContext->World();
+	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+	if(gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
+	Destroy();
+}
+
+void ABallPawn::FellOutOfWorld(const class UDamageType & dmgType)
+{
+	Kill();
 }

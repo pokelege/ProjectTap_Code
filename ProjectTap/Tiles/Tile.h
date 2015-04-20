@@ -17,10 +17,13 @@ protected:
   bool activated = false;
 public:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UStaticMeshComponent* TileMesh;
+	UStaticMeshComponent* TileMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UBoxComponent* BoxCollision;
+		UBoxComponent* BoxCollision = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+		UMaterialInstanceDynamic* material = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		float move_speed = 800.0f;
@@ -42,6 +45,6 @@ public:
 	virtual void BeginPlay();
 	virtual void Tick( float DeltaTime );
 
-	virtual void Highlight();
+	virtual void MaterialHighlight();
 	virtual void CancelHighlight();
 };

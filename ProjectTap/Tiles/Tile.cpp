@@ -12,9 +12,8 @@ ATile::ATile()
 
 	UEmptyComponent* root = CreateDefaultSubobject<UEmptyComponent>(TEXT("Tile root"));
 
-	this->SetRootComponent(root);
+	this->SetRootComponent(BoxCollision);
 	
-	BoxCollision->AttachTo(this->GetRootComponent());
 	TileMesh->AttachTo(this->GetRootComponent());
 	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	TileMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -23,6 +22,8 @@ ATile::ATile()
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 	BoxCollision->SetNotifyRigidBodyCollision(true);
+
+
 }
 
 void ATile::activate()
@@ -52,12 +53,9 @@ void ATile::Tick(float DeltaTime)
   Super::Tick(DeltaTime);
 }
 
-void ATile::Highlight()
+void ATile::MaterialHighlight()
 {
-	auto m = TileMesh->GetMaterial(0);
-	m->SetOverrideEmissiveBoost(true);
-	m->SetEmissiveBoost(100.0f);
-	
+
 }
 
 void ATile::CancelHighlight()

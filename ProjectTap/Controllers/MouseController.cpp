@@ -10,7 +10,6 @@
 
 
 
-
 AMouseController::AMouseController(const FObjectInitializer& initializer):Super(initializer)
 {
   UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
@@ -67,7 +66,7 @@ void AMouseController::checkObjectHighlight(const FHitResult& hit)
 	auto tile = Cast<ATile>(hit.Actor.Get());
 	if (tile != nullptr)
 	{
-		tile->Highlight();
+		tile->MaterialHighlight();
 	}
 }
 
@@ -120,16 +119,14 @@ void AMouseController::DisnableSwipeCheck()
 void AMouseController::SendBlockingTile(const FHitResult& hit)
 {
 
-	if (hit.bBlockingHit)
-	{
-		auto bt = Cast<ABlockingTile>(hit.Actor.Get());
-		bool canContinue = true;
+	auto bt = Cast<ABlockingTile>(hit.Actor.Get());
+	auto type = hit.Actor.Get();
+	bool canContinue = true;
 
-		if (bt != nullptr)
-		{
-			canContinue = false;
-			btManager.AddTile(bt);
-		}
+	if (bt != nullptr)
+	{
+		canContinue = false;
+		btManager.AddTile(bt);
 	}
 }
 

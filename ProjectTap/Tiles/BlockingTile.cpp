@@ -16,6 +16,8 @@ ABlockingTile::ABlockingTile( )
 
 	BoxCollision->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
 	//SetActorScale3D(FVector(.25f, 0.25f, .1f));
+	auto m = TileMesh->GetMaterial(0);
+	//TileMesh->SetMaterial(0, material);
 }
 
 // Called when the game starts or when spawned
@@ -42,5 +44,16 @@ void ABlockingTile::Tick( float DeltaTime )
 			deactivate();
 			time_counter = 0.0f;
 		}
+	}
+}
+
+void ABlockingTile::MaterialHighlight()
+{
+	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
+
+	if (material != nullptr)
+	{
+		material->SetVectorParameterValue(TEXT("BaseColor"), FLinearColor(0.2f, 0.2f, .2f));
+		material->SetScalarParameterValue(TEXT("glow"), 100.0f);
 	}
 }

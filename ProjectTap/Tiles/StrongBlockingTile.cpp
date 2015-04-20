@@ -16,6 +16,7 @@ AStrongBlockingTile::AStrongBlockingTile()
 	BoxCollision->SetWorldScale3D(FVector(80.0f, 80.0f, 80.0f));
 
 	move_speed = 400.0f;
+
 }
 
 // Called when the game starts or when spawned

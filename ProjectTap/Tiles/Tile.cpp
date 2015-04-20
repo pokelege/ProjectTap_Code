@@ -2,7 +2,7 @@
 
 #include "ProjectTap.h"
 #include "Tile.h"
-
+#include "EmptyComponent.h"
 // Sets default values
 ATile::ATile() 
 {
@@ -10,10 +10,19 @@ ATile::ATile()
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Tile collision"));
 
-	this->SetRootComponent(BoxCollision);
-	
-	TileMesh->AttachTo(BoxCollision);
+	UEmptyComponent* root = CreateDefaultSubobject<UEmptyComponent>(TEXT("Tile root"));
 
+	this->SetRootComponent(root);
+	
+	BoxCollision->AttachTo(this->GetRootComponent());
+	TileMesh->AttachTo(this->GetRootComponent());
+	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	TileMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	BoxCollision->bGenerateOverlapEvents = false;
+	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	BoxCollision->SetNotifyRigidBodyCollision(true);
 }
 
 void ATile::activate()

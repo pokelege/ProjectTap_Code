@@ -9,53 +9,86 @@
 #include "../Tiles/Ramp.h"
 
 
+
+
 AMouseController::AMouseController(const FObjectInitializer& initializer):Super(initializer)
 {
   UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
   this->bShowMouseCursor = true;
   this->bEnableClickEvents = true;
   this->bEnableTouchEvents = true;
-  this->DefaultMouseCursor = EMouseCursor::Crosshairs;
+  this->DefaultMouseCursor = EMouseCursor::Default;
+
 }
 
-void AMouseController::PlayerTick(float DeltaTime)
-{
-	Super::PlayerTick(DeltaTime);
-
-	if (swipeElapseTimeCounter < swipeElapseTime && bCheckForSwipe)
-	{
-		swipeElapseTimeCounter += DeltaTime;
-		SendGroupedBlockingTile();
-	}
-	
-	if (swipeElapseTimeCounter >= swipeElapseTime)
-	{
-		swipeElapseTimeCounter = 0.0f;
-	}
-
-	btManager.Tick(DeltaTime);
-}
 
 void AMouseController::SetupInputComponent()
 {
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
-
-	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::SendBlockingTile);
-	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::NotifyMouseReleased);
-	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::DisnableSwipeCheck);
-
-	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::ActivateOtherTiles);
-	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::SendStrongBlockingTile);
-	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::EnableSwipeCheck);
-
 	InputComponent->BindAction("Respawn", IE_Pressed, this, &AMouseController::RespawnPressed);
+
+	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::NotifyMousePressed);
+	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::NotifyMouseReleased);
+
+	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::DisnableSwipeCheck);
 }
 
-void AMouseController::ActivateOtherTiles()
+
+void AMouseController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+	FHitResult hit;
+
+	//cast a ray for every 1/10 of a second
+	if (raycastElapseTimeCounter < raycastElapseTime)
+	{
+		raycastElapseTimeCounter += DeltaTime;
+		raycasted = false;
+	}
+	else
+	{
+		raycastElapseTimeCounter = 0.0f;
+		raycasted = true;
+		GetHitResultUnderCursor(ECC_Visibility, false, hit);
+	}
+
+	if (raycasted)
+	{
+		SendGroupedBlockingTile(hit);
+		checkObjectHighlight(hit);
+	}
+
+	btManager.Tick(DeltaTime);
+}
+
+void AMouseController::checkObjectHighlight(const FHitResult& hit)
+{
+	auto tile = Cast<ATile>(hit.Actor.Get());
+	if (tile != nullptr)
+	{
+		tile->Highlight();
+	}
+}
+
+
+
+void AMouseController::NotifyMousePressed()
 {
 	FHitResult hit;
 	GetHitResultUnderCursor(ECC_Visibility, false, hit);
+
+	ActivateOtherTiles(hit);
+	SendStrongBlockingTile(hit);
+	SendBlockingTile(hit);
+	SendGroupedBlockingTile(hit);
+	EnableSwipeCheck(hit);
+	
+}
+
+
+void AMouseController::ActivateOtherTiles(const FHitResult& hit)
+{
 	auto ramp = Cast<ARamp>(hit.Actor.Get());
 	if (ramp != nullptr)
 	{
@@ -66,20 +99,15 @@ void AMouseController::ActivateOtherTiles()
 }
 
 
-void AMouseController::EnableSwipeCheck()
+void AMouseController::EnableSwipeCheck(const FHitResult& hit)
 {
-	FHitResult hit;
-	GetHitResultUnderCursor(ECC_Visibility, false, hit);
+
 	auto gbt = Cast<AGroupedBlockingTile>(hit.Actor.Get());
 	if (gbt != nullptr)
 	{
 		btManager.SetEnableSwipeCheck(true);
 		bCheckForSwipe = true;
 	}
-	//else
-	//{
-	//	DisnableSwipeCheck();
-	//}
 }
 
 void AMouseController::DisnableSwipeCheck()
@@ -89,10 +117,8 @@ void AMouseController::DisnableSwipeCheck()
 }
 
 
-void AMouseController::SendBlockingTile()
+void AMouseController::SendBlockingTile(const FHitResult& hit)
 {
-	FHitResult hit;
-	GetHitResultUnderCursor(ECC_Visibility, false, hit);
 
 	if (hit.bBlockingHit)
 	{
@@ -107,10 +133,8 @@ void AMouseController::SendBlockingTile()
 	}
 }
 
-void AMouseController::SendStrongBlockingTile()
+void AMouseController::SendStrongBlockingTile(const FHitResult& hit)
 {
-	FHitResult hit;
-	GetHitResultUnderCursor(ECC_Visibility, false, hit);
 	auto sbt = Cast<AStrongBlockingTile>(hit.Actor.Get());
 	if (sbt != nullptr)
 	{
@@ -119,10 +143,8 @@ void AMouseController::SendStrongBlockingTile()
 }
 
 
-void AMouseController::SendGroupedBlockingTile()
+void AMouseController::SendGroupedBlockingTile(const FHitResult& hit)
 {
-	FHitResult hit;
-	GetHitResultUnderCursor(ECC_Visibility, false, hit);
 	auto gbt = Cast<AGroupedBlockingTile>(hit.Actor.Get());
 	if (gbt != nullptr)
 	{

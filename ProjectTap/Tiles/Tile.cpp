@@ -51,3 +51,17 @@ void ATile::Tick(float DeltaTime)
 {
   Super::Tick(DeltaTime);
 }
+
+void ATile::Highlight()
+{
+	auto m = TileMesh->GetMaterial(0);
+	m->SetOverrideEmissiveBoost(true);
+	m->SetEmissiveBoost(100.0f);
+	
+}
+
+void ATile::CancelHighlight()
+{
+	auto m = TileMesh->GetMaterial(0);
+	m->SetEmissiveBoost(0.0f);
+}

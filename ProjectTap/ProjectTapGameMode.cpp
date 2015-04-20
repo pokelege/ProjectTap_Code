@@ -38,7 +38,7 @@ void AProjectTapGameMode::BeginPlay()
 			ABallPawn* ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
 		}
 	}
-	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::AProjectTapGameState::GAME_STATE_PLAYING);
+	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::GAME_STATE_PLAYING);
 }
 
 void AProjectTapGameMode::Tick( float DeltaTime )
@@ -72,5 +72,5 @@ void AProjectTapGameMode::Respawn()
 			ABallPawn* ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
 		}
 	}
-	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::AProjectTapGameState::GAME_STATE_PLAYING);
+	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::GAME_STATE_PLAYING);
 }

@@ -12,8 +12,8 @@ UCLASS()
 class PROJECTTAP_API ARamp : public ATile
 {
 	GENERATED_BODY()
-	float time;
-	float duration;
+	float time_counter = 0.0f;
+	float duration = 0.3f;
 	bool reverse;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
@@ -29,7 +29,7 @@ public:
 	FVector moveDirection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	float forceMultiplier;
+	float forceMultiplier = 10000.0f;
 
 	ARamp();
 

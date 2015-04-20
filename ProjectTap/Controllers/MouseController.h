@@ -15,24 +15,32 @@ class PROJECTTAP_API AMouseController : public APlayerController
 {
 	GENERATED_BODY()
 
+	float raycastElapseTime = 0.1f;
+	float raycastElapseTimeCounter = 0.0f;
+	bool raycasted = false;
+
 	UTilesManager btManager;
-	float swipeElapseTime = 0.1f;
-	float swipeElapseTimeCounter = 0.0f;
 	bool bCheckForSwipe = false;
+
+
+	void ActivateOtherTiles(const FHitResult& hit);
+	void SendBlockingTile(const FHitResult& hit);
+	void SendStrongBlockingTile(const FHitResult& hit);
+	void SendGroupedBlockingTile(const FHitResult& hit);
+
+	void checkObjectHighlight(const FHitResult& hit);
+
+	void NotifyMouseReleased();
+	void NotifyMousePressed();
+	void DisnableSwipeCheck();
+	void EnableSwipeCheck(const FHitResult& hit);
+
+	void RespawnPressed();
 public:
   AMouseController(const FObjectInitializer& initializer);
   // Begin PlayerController interface
   virtual void PlayerTick(float DeltaTime) override;
   virtual void SetupInputComponent() override;
 
-  void ActivateOtherTiles();
-  void SendBlockingTile();
-  void SendStrongBlockingTile();
-  void SendGroupedBlockingTile();
-
-  void NotifyMouseReleased();
-  void DisnableSwipeCheck();
-  void EnableSwipeCheck();
-
-  void RespawnPressed();
+  
 };

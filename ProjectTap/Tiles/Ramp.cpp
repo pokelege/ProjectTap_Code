@@ -22,14 +22,16 @@ ARamp::ARamp(): ATile(  )
 		BallTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Ball trigger"));
 		BallTrigger->SetBoxExtent(FVector(1,1,1), false);
 		FTransform transform = BallTrigger->GetRelativeTransform();
-		transform.SetLocation(FVector(0,0,2));
+		transform.SetLocation(FVector(0,0,1.3));
 
 		BallTrigger->SetRelativeTransform(transform);
+		BallTrigger->SetWorldScale3D(FVector(0.4f));
 		BallTrigger->AttachTo(BoxCollision);
 	}
 
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
+
 }
 
 void ARamp::BeginPlay()
@@ -68,6 +70,20 @@ void ARamp::Tick(float DeltaTime)
 // 		* FTranslationMatrix::Make(-pivot)
 // 		* originalMatrix;
 // 	}
+
+	//only activate for a brief moment
+	if (activated) {
+
+		if (time_counter < duration)
+		{
+			time_counter += DeltaTime;
+		}
+		else
+		{
+			deactivate();
+			time_counter = 0.0f;
+		}
+	}
 
 }
 

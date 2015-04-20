@@ -16,9 +16,13 @@ ATile::ATile()
 	
 	BoxCollision->AttachTo(this->GetRootComponent());
 	TileMesh->AttachTo(this->GetRootComponent());
+	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	TileMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	BoxCollision->bGenerateOverlapEvents = false;
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	BoxCollision->SetNotifyRigidBodyCollision(true);
 }
 
 void ATile::activate()

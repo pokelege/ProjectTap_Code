@@ -5,8 +5,6 @@
 
 const FName ARamp::RAMP_MESH_PATH = FName("/Game/Models/Ramp");
 
-const FName ARamp::RAMP_TOP_MESH_PATH = FName("/Game/Models/RampTop");
-
 const FName ARamp::RAMP_CURVE_PATH = FName("/Game/Curves/Ramp");
 
 ARamp::ARamp(): ATile(  )
@@ -14,20 +12,7 @@ ARamp::ARamp(): ATile(  )
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*RAMP_MESH_PATH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	TileMesh->SetRelativeLocation(FVector(0,0,-1), false, nullptr);
-
-	if(TopMesh == nullptr)
-	{
-		TopMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Ramp top mesh" ) );
-	}
-
-	ConstructorHelpers::FObjectFinder<UStaticMesh> topMesh(*RAMP_TOP_MESH_PATH.ToString());
-	TopMesh->SetStaticMesh(topMesh.Object);
-	TopMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
-	TopMesh->AttachTo(this->GetRootComponent());
-	TopMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	TopMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	//TopMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+	TileMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
 
 	if(BoxCollision)
 	{
@@ -38,19 +23,9 @@ ARamp::ARamp(): ATile(  )
 
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(*RAMP_CURVE_PATH.ToString());
 	if(curve.Object != nullptr) rotationSequence = curve.Object;
-// 	if(!BallTrigger)
-// 	{
-// 		BallTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Ball trigger"));
-// 		BallTrigger->SetBoxExtent(FVector(1,1,1), false);
-// 		FTransform transform = BallTrigger->GetRelativeTransform();
-// 		transform.SetLocation(FVector(0,0,1));
-//
-// 		BallTrigger->SetRelativeTransform(transform);
-// 		BallTrigger->AttachTo(this->GetRootComponent());
-// 	}
 
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
-	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
+	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 2.0f));
 }
 
 void ARamp::BeginPlay()
@@ -63,16 +38,6 @@ void ARamp::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if(activated)
 	{
-// 		TArray< AActor * > OverlappingActors;
-// 		BallTrigger->GetOverlappingActors(OverlappingActors, ABallPawn::StaticClass());
-// 		if (OverlappingActors.Num())
-// 		{
-// 			ABallPawn* pawn = Cast<ABallPawn>(OverlappingActors[0]);
-// 			if (pawn != nullptr)
-// 			{
-// 				pawn->AddVelocity(forceMultiplier * GetActorForwardVector());
-// 			}
-// 		}
 		float minTime, maxTime;
 		rotationSequence->GetTimeRange(minTime, maxTime);
 		if((time += DeltaTime) >= maxTime)
@@ -81,7 +46,7 @@ void ARamp::Tick(float DeltaTime)
 			deactivate();
 		}
 		float curveValue = rotationSequence->GetFloatValue(time);
-		TopMesh->SetRelativeRotation(FRotator(curveValue, 0, 0));
+		TileMesh->SetRelativeRotation(FRotator(curveValue, 0, 0));
 	}
 
 }

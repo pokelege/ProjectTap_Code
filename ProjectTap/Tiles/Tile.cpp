@@ -10,8 +10,6 @@ ATile::ATile()
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Tile collision"));
 
-	UEmptyComponent* root = CreateDefaultSubobject<UEmptyComponent>(TEXT("Tile root"));
-
 	this->SetRootComponent(BoxCollision);
 	
 	TileMesh->AttachTo(this->GetRootComponent());
@@ -20,10 +18,8 @@ ATile::ATile()
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	BoxCollision->bGenerateOverlapEvents = false;
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	BoxCollision->SetNotifyRigidBodyCollision(true);
-
-
 }
 
 void ATile::activate()

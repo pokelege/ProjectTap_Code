@@ -26,12 +26,14 @@ ARamp::ARamp(): ATile(  )
 	TopMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
 	TopMesh->AttachTo(this->GetRootComponent());
 	TopMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	TopMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
-	TopMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+	TopMesh->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	//TopMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+
 	if(BoxCollision)
 	{
 		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
-		BoxCollision->SetRelativeLocation(FVector(0,0,-1), false, nullptr);
+		BoxCollision->SetRelativeLocation(FVector(0, 0, -10), false, nullptr);
+		BoxCollision->AddLocalOffset(FVector(0, 0, -10));
 	}
 
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(*RAMP_CURVE_PATH.ToString());

@@ -23,7 +23,6 @@ ATile::ATile()
 	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 	BoxCollision->SetNotifyRigidBodyCollision(true);
 
-
 }
 
 void ATile::activate()
@@ -63,3 +62,4 @@ void ATile::CancelHighlight()
 	auto m = TileMesh->GetMaterial(0);
 	m->SetEmissiveBoost(0.0f);
 }
+

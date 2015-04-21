@@ -15,6 +15,7 @@ class UTilesManager
 	TArray<class ABlockingTile*> activatedBlocks;
 	TArray<class AGroupedBlockingTile*> activatedGroupedBlocks;
 	class AStrongBlockingTile* prevStrongBlockingTile;
+
 	bool isMousePressed = false;
 
 	unsigned char size_limit{ 3 };
@@ -22,7 +23,6 @@ class UTilesManager
 	CurrentTileType currentTileType{ CurrentTileType::NONE };
 
 	void UpdateGroupedBlockingTiles();
-
 	void SetBlockingTileCurrent();
 	void SetStrongBlockingTileCurrent();
 	void SetGroupedBlockingTileCurrent();

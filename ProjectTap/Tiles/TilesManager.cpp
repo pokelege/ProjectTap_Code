@@ -66,7 +66,7 @@ void UTilesManager::AddTile(AGroupedBlockingTile* tile)
 
 void UTilesManager::AddTile(ABlockingTile* tile)
 {
-	if (tile != nullptr)
+	if (tile != nullptr && !activatedBlocks.Contains(tile))
 	{
 		SetBlockingTileCurrent();
 

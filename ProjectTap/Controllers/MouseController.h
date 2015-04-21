@@ -36,6 +36,8 @@ class PROJECTTAP_API AMouseController : public APlayerController
 	void EnableSwipeCheck(const FHitResult& hit);
 
 	void RespawnPressed();
+
+
 public:
   AMouseController(const FObjectInitializer& initializer);
   // Begin PlayerController interface

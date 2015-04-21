@@ -55,5 +55,6 @@ void ABlockingTile::MaterialHighlight()
 	{
 		material->SetVectorParameterValue(TEXT("BaseColor"), FLinearColor(0.2f, 0.2f, .2f));
 		material->SetScalarParameterValue(TEXT("glow"), 100.0f);
+		material->SetVectorParameterValue(TEXT("Color"), FLinearColor(0.2f, 0.2f, 0.2f));
 	}
 }

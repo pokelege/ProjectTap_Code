@@ -51,16 +51,18 @@ void ATurretPawn::Tick( float DeltaTime )
 	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - translate);
 	turretToBallNormal.Normalize();
 
-	float dot = FVector::DotProduct(forward, turretToBallNormal);
-	if(dot > FMath::DegreesToRadians(FOV)) return;
+	float dot = FVector::DotProduct(turretToBallNormal,forward);
+	float radians = FMath::Cos(FMath::DegreesToRadians(FOV));
+	if(dot < radians) return;
 	FHitResult hit;
 	FCollisionQueryParams p;
 	FCollisionResponseParams p2;
-	if(world->LineTraceSingle(hit,translate, player->GetTransform().GetTranslation(),ECollisionChannel::ECC_MAX,p,p2) && hit.GetActor() == player)
-	{
+	//todo if actually found player
+// 	if(world->LineTraceSingle(hit,translate, player->GetTransform().GetTranslation(),ECollisionChannel::ECC_MAX,p,p2) && hit.GetActor() == player)
+// 	{
 		//todo shoot
 		player->Kill();
-	}
+// 	}
 }
 
 // Called to bind functionality to input

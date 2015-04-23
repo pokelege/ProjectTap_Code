@@ -58,6 +58,8 @@ void AMouseController::PlayerTick(float DeltaTime)
 	}
 
 	btManager.Tick(DeltaTime);
+
+	auto s = GetWorld();
 }
 
 void AMouseController::checkObjectHighlight(const FHitResult& hit)

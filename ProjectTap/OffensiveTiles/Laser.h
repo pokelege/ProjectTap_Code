@@ -9,10 +9,17 @@ UCLASS()
 class PROJECTTAP_API ALaser : public AActor
 {
 	GENERATED_BODY()
-	
+		float timer = .0f;
+		float elapseTime = 0.1f;
 public:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
 	UParticleSystemComponent* laserParticle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
+	FVector direction = FVector(1.0f, 0.0f, 0.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
+	float length = 1000.0f;
 
 	// Sets default values for this actor's properties
 	ALaser();

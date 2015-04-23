@@ -16,6 +16,7 @@ class UTilesManager
 	TArray<class AGroupedBlockingTile*> activatedGroupedBlocks;
 	class AStrongBlockingTile* prevStrongBlockingTile;
 
+	class ATile* prevHighlighted = nullptr;
 	bool isMousePressed = false;
 
 	unsigned char size_limit{ 3 };
@@ -36,6 +37,7 @@ public:
 	void AddTile(AGroupedBlockingTile* tile);
 	void DeactivateStrongBlockingTile();
 	void SetEnableSwipeCheck(bool b);
+	void HighLightTile(ATile* tile);
 
 	UTilesManager();
 

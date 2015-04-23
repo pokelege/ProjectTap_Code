@@ -10,8 +10,6 @@ ATile::ATile()
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Tile collision"));
 
-	UEmptyComponent* root = CreateDefaultSubobject<UEmptyComponent>(TEXT("Tile root"));
-
 	this->SetRootComponent(BoxCollision);
 	
 	TileMesh->AttachTo(this->GetRootComponent());
@@ -20,9 +18,9 @@ ATile::ATile()
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	BoxCollision->bGenerateOverlapEvents = false;
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	BoxCollision->SetNotifyRigidBodyCollision(true);
-
+	CancelHighlight();
 }
 
 void ATile::activate()
@@ -52,14 +50,37 @@ void ATile::Tick(float DeltaTime)
   Super::Tick(DeltaTime);
 }
 
-void ATile::MaterialHighlight()
+void ATile::Highlight(bool litTile, bool litEdge)
 {
+	if (!activated)
+	{
+		material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
 
+		if (material != nullptr)
+		{
+			if (litTile)
+			{
+				material->SetVectorParameterValue(TEXT("BaseColor"), baseColorHighlighted);
+			}
+
+			if (litEdge)
+			{
+				material->SetScalarParameterValue(TEXT("glow"), glowPowerHighlighted);
+				material->SetVectorParameterValue(TEXT("Color"), glowColorHighlighted);
+			}
+		}
+	}
 }
 
 void ATile::CancelHighlight()
 {
-	auto m = TileMesh->GetMaterial(0);
-	m->SetEmissiveBoost(0.0f);
+	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
+
+	if (material != nullptr)
+	{
+		material->SetVectorParameterValue(TEXT("BaseColor"), baseColor);
+		material->SetScalarParameterValue(TEXT("glow"), glowPower);
+		material->SetVectorParameterValue(TEXT("Color"), glowColor);
+	}
 }
 

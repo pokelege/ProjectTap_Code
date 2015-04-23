@@ -34,6 +34,7 @@ ARamp::ARamp(): ATile(  )
 	boxTrigger->SetNotifyRigidBodyCollision(false);
 	boxTrigger->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	boxTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Overlap);
+	
 	pawnIn.BindUFunction(this, "OnBeginTriggerOverlap");
 	boxTrigger->OnComponentBeginOverlap.Add(pawnIn);
 	pawnOut.BindUFunction(this, "OnEndTriggerOverlap");
@@ -44,8 +45,17 @@ ARamp::ARamp(): ATile(  )
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 2.0f));
 
-	forceMultiplier = 1000.0f;
+	forceMultiplier = 2000.0f;
+
+
+	baseColorHighlighted = FLinearColor(0.8f, 0.0f, .3f);
+	glowColorHighlighted = FLinearColor(0.0f, 0.4f, .3f);
+	baseColor = FLinearColor(0.2f, 0.5f, .3f);
+	glowColor = FLinearColor(0.2f, 0.4f, .3f);
+	glowPowerHighlighted = 20.0f;
+	CancelHighlight();
 }
+
 
 void ARamp::BeginPlay()
 {
@@ -86,25 +96,6 @@ void ARamp::Tick(float DeltaTime)
 
 }
 
-///<summary>
-///DEPRECATED activate the tile to use ramp
-///will do nothing
-///</summary>
-void ARamp::BoostBall()
-{
-// 	TArray< AActor * > OverlappingActors;
-// 	BallTrigger->GetOverlappingActors(OverlappingActors, ABallPawn::StaticClass());
-// 	if (OverlappingActors.Num())
-// 	{
-// 		ABallPawn* pawn = Cast<ABallPawn>(OverlappingActors[0]);
-// 		if (pawn != nullptr)
-// 		{
-// 			pawn->AddVelocity(forceMultiplier * GetActorForwardVector());
-// 			//deactivate();
-// 		}
-// 	}
-}
-
 void ARamp::activate()
 {
 	if(rotationSequence == nullptr || ball == nullptr || activated) return;
@@ -134,10 +125,12 @@ void ARamp::OnBeginTriggerOverlap(AActor* OtherActor,
 						   const FHitResult & SweepResult)
 {
 	ball = Cast<ABallPawn>(OtherActor);
+	Highlight();
 }
 void ARamp::OnEndTriggerOverlap(AActor* OtherActor,
 						 UPrimitiveComponent* OtherComp,
 						 int32 OtherBodyIndex)
 {
 	if(Cast<ABallPawn>(OtherActor) != nullptr) ball = nullptr;
+	CancelHighlight();
 }

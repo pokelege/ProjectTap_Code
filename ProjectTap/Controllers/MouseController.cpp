@@ -29,7 +29,6 @@ void AMouseController::SetupInputComponent()
 
 	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::NotifyMousePressed);
 	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::NotifyMouseReleased);
-
 	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::DisnableSwipeCheck);
 }
 
@@ -64,10 +63,7 @@ void AMouseController::PlayerTick(float DeltaTime)
 void AMouseController::checkObjectHighlight(const FHitResult& hit)
 {
 	auto tile = Cast<ATile>(hit.Actor.Get());
-	if (tile != nullptr)
-	{
-		tile->MaterialHighlight();
-	}
+	btManager.HighLightTile(tile);
 }
 
 
@@ -91,7 +87,6 @@ void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 	auto ramp = Cast<ARamp>(hit.Actor.Get());
 	if (ramp != nullptr)
 	{
-		ramp->BoostBall();
 		ramp->activate();
 	}
 	

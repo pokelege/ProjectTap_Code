@@ -5,6 +5,7 @@
 #include "BlockingTile.h"
 #include "StrongBlockingTile.h"
 #include "GroupedBlockingTile.h"
+#include "Ramp.h"
 
  //Sets default values
 UTilesManager::UTilesManager()
@@ -12,8 +13,6 @@ UTilesManager::UTilesManager()
  	 //Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
 }
-
-
 
 void UTilesManager::DeactivateBlockingTiles()
 {
@@ -34,6 +33,24 @@ void UTilesManager::DeactivateGroupedBlockingTiles()
 	activatedGroupedBlocks.RemoveAll([](AGroupedBlockingTile* b){return true; });
 }
 
+void UTilesManager::HighLightTile(ATile* tile)
+{
+	if (tile != prevHighlighted && prevHighlighted != nullptr)
+	{
+		prevHighlighted->CancelHighlight();
+	}
+
+	if (tile != nullptr)
+	{
+		prevHighlighted = tile;
+		tile->Highlight(tile->StaticClass() != ARamp::StaticClass());
+	}
+	else if (prevHighlighted != nullptr)
+	{
+		prevHighlighted->CancelHighlight();
+		prevHighlighted = nullptr;
+	}
+}
 
 void UTilesManager::AddTile(AGroupedBlockingTile* tile)
 {
@@ -102,11 +119,7 @@ void UTilesManager::AddTile(AStrongBlockingTile* tile)
 
 void UTilesManager::Tick(float dt)
 {
-	if (isMousePressed)
-	{
-		UpdateGroupedBlockingTiles();
-	}
-
+	UpdateGroupedBlockingTiles();
 }
 
 void UTilesManager::UpdateGroupedBlockingTiles()

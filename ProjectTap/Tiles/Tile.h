@@ -20,10 +20,28 @@ public:
 	UStaticMeshComponent* TileMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		UBoxComponent* BoxCollision = nullptr;
+	UBoxComponent* BoxCollision = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		UMaterialInstanceDynamic* material = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
+	UMaterialInstanceDynamic* material = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
+		FLinearColor baseColor = FLinearColor(1.0f, 0.0f, 0.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
+		FLinearColor glowColor = FLinearColor(0.0f, 1.0f, 0.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
+	float glowPower = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
+		FLinearColor baseColorHighlighted = FLinearColor(1.3f, 1.0f, .0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
+		FLinearColor glowColorHighlighted = FLinearColor(0.2f, 0.2f, .9f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
+		float glowPowerHighlighted = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		float move_speed = 800.0f;
@@ -45,6 +63,6 @@ public:
 	virtual void BeginPlay();
 	virtual void Tick( float DeltaTime );
 
-	virtual void MaterialHighlight();
+	virtual void Highlight(bool litTile = true, bool litEdge = true);
 	virtual void CancelHighlight();
 };

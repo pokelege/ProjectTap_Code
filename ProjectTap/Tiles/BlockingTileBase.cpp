@@ -39,6 +39,10 @@ void ABlockingTileBase::Tick( float DeltaTime )
 	{
 		pos.Z += move_speed * DeltaTime;
 	}
+	else if (activated && !canRise)
+	{
+		pos.Z = original.Z + move_distance_tolerance;
+	}
 	else if (!activated && canDesend)
 	{
 		pos.Z -= move_speed * DeltaTime;

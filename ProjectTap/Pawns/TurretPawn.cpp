@@ -54,7 +54,7 @@ void ATurretPawn::Tick( float DeltaTime )
 
 	float dot = FVector::DotProduct(turretToBallNormal,forward);
 	float radians = FMath::Cos(FMath::DegreesToRadians(FOV));
-	if(dot < radians && distance > maxDistance) return;
+	if(dot < radians || distance > maxDistance) return;
 	FHitResult hit(ForceInit);
 	FCollisionQueryParams p = FCollisionQueryParams(FName(TEXT("Tracing")), true, this);
 	p.bTraceComplex = true;

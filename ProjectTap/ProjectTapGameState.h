@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/GameState.h"
+#include "Pawns/BallPawn.h"
 #include "ProjectTapGameState.generated.h"
 
 
@@ -18,7 +19,9 @@ public:
 	enum GameState {UNKNOWN, GAME_STATE_PLAYING, GAME_STATE_GAME_OVER};
 protected:
 	GameState CurrentState = UNKNOWN;
+
 public:
+	ABallPawn* CurrentPawn;
 	void SetState(GameState NewState);
 	GameState GetState();
 };

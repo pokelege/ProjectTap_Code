@@ -15,7 +15,7 @@ class PROJECTTAP_API AMouseController : public APlayerController
 {
 	GENERATED_BODY()
 
-	float raycastElapseTime = 0.1f;
+	float raycastElapseTime = 0.05f;
 	float raycastElapseTimeCounter = 0.0f;
 	bool raycasted = false;
 
@@ -36,6 +36,8 @@ class PROJECTTAP_API AMouseController : public APlayerController
 	void EnableSwipeCheck(const FHitResult& hit);
 
 	void RespawnPressed();
+
+
 public:
   AMouseController(const FObjectInitializer& initializer);
   // Begin PlayerController interface

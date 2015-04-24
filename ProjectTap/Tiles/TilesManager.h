@@ -15,6 +15,8 @@ class UTilesManager
 	TArray<class ABlockingTile*> activatedBlocks;
 	TArray<class AGroupedBlockingTile*> activatedGroupedBlocks;
 	class AStrongBlockingTile* prevStrongBlockingTile;
+
+	class ATile* prevHighlighted = nullptr;
 	bool isMousePressed = false;
 
 	unsigned char size_limit{ 3 };
@@ -22,7 +24,6 @@ class UTilesManager
 	CurrentTileType currentTileType{ CurrentTileType::NONE };
 
 	void UpdateGroupedBlockingTiles();
-
 	void SetBlockingTileCurrent();
 	void SetStrongBlockingTileCurrent();
 	void SetGroupedBlockingTileCurrent();
@@ -36,6 +37,7 @@ public:
 	void AddTile(AGroupedBlockingTile* tile);
 	void DeactivateStrongBlockingTile();
 	void SetEnableSwipeCheck(bool b);
+	void HighLightTile(ATile* tile);
 
 	UTilesManager();
 

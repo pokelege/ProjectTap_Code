@@ -22,5 +22,4 @@ public:
    virtual void BeginPlay() override;
    virtual void Tick( float DeltaTime ) override;
 
-   void MaterialHighlight() override;
 };

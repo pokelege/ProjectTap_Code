@@ -32,6 +32,7 @@ class PROJECTTAP_API ARamp : public ATile
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	Direction rotationDirection;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UCurveFloat* rotationSequence;
 
@@ -48,7 +49,6 @@ public:
 
 	virtual void activate() override;
 
-	void BoostBall();
 	UFUNCTION()
 	void OnBeginTriggerOverlap(AActor* OtherActor,
 						  UPrimitiveComponent* OtherComp,

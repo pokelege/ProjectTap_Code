@@ -2,6 +2,8 @@
 
 #include "ProjectTap.h"
 #include "Laser.h"
+#include "ParticleEmitterInstances.h"
+#include "../Pawns/BallPawn.h"
 
 // Sets default values
 ALaser::ALaser()
@@ -10,21 +12,23 @@ ALaser::ALaser()
 	PrimaryActorTick.bCanEverTick = true;
 
 	laserParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("LaserParticle"));
-
 	SetRootComponent(laserParticle);
 
 	ConstructorHelpers::FObjectFinder<UParticleSystem> particleAssets(TEXT("/Game/Particles/P_Laser"));
-	laserParticle->SetTemplate(particleAssets.Object);
-		
-	laserParticle->SetWorldLocation(FVector(0.0f));
-	
-	SetActorLocation(FVector(0.0f, 100.0f, 0.0f));
+	particleAsset = particleAssets.Object;
+	laserParticle->SetTemplate(particleAsset);
 }
 
 // Called when the game starts or when spawned
 void ALaser::BeginPlay()
 {
 	Super::BeginPlay();
+	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
+}
+
+void ALaser::SetLaserDepth(unsigned i)
+{
+	currentDepth = i;
 }
 
 // Called every frame
@@ -38,21 +42,75 @@ void ALaser::Tick( float DeltaTime )
 	}
 	else
 	{
-		FHitResult hit;
-		FCollisionQueryParams queryParam;
-		FCollisionObjectQueryParams objectParam ;
-		GetWorld()->LineTraceSingle(hit, GetActorLocation(), GetActorForwardVector() * length, queryParam, objectParam);
+		checkLaserCollisions(DeltaTime);
+	}
+}
 
-		if (hit.Actor.Get() != nullptr)
+
+
+void ALaser::checkLaserCollisions(float dt)
+{
+	FHitResult hit;
+	FCollisionQueryParams queryParam;
+	queryParam.bFindInitialOverlaps = false;
+	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
+	
+	auto pos = GetActorLocation();
+	auto rayStart = pos + GetActorForwardVector() * 10.0f;
+	auto laserVector = GetActorForwardVector() * length;
+	auto laserEmitter = laserParticle->EmitterInstances[0];
+
+	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
+	
+
+	laserEmitter->SetBeamSourcePoint(pos, 0);
+	if (hit.Actor.Get() != nullptr)
+	{
+		auto ball = Cast<ABallPawn>(hit.Actor.Get());
+		
+		if (ball != nullptr)
 		{
-			laserParticle->SetBeamTargetPoint(0, hit.ImpactPoint, 0);
+			ball->Kill();
+		}
+		else
+		{
 
-			auto p = Cast<ALaser>(hit.Actor.Get());
-			auto l = Cast<UParticleSystemComponent>(hit.Actor.Get());
-			int i = 0;
+			laserEmitter->SetBeamTargetPoint(hit.ImpactPoint, 0);
+
+			if (CanSpawnSubLaser())
+			{
+				SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
+			}
 		}
 	}
+	else
+	{
+		laserEmitter->SetBeamTargetPoint(pos + laserVector, 0);
+	}
 
-	laserParticle->SetBeamEndPoint(0, GetActorForwardVector() + direction * length);
+	//if (hit.Actor.Get()->StaticClass() == DeflectiveTile::StaticClass())
+
 }
+
+void ALaser::SpawnSubLaser(const FVector& start, const FVector& normal)
+{
+	auto incomingVector = start - GetActorLocation();
+	auto newDir = reflect(incomingVector, normal);
+	nextLaser = GetWorld()->SpawnActor<ALaser>(start, newDir.Rotation());
+	nextLaser->SetLaserDepth(++currentDepth);
+}
+
+FVector ALaser::reflect(const FVector& v1, const FVector& v2)
+{
+	auto n = -v2;
+	auto dot = FVector::DotProduct(v1, n);
+	auto n2 = n * dot;
+	return (v1 - 2 * n2).GetSafeNormal();
+}
+
+bool ALaser::CanSpawnSubLaser()
+{
+	return currentDepth < MAX_DEPTH && nextLaser == nullptr;
+}
+
 

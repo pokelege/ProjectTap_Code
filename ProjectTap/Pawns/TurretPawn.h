@@ -11,15 +11,21 @@ class PROJECTTAP_API ATurretPawn : public APawn
 	GENERATED_BODY()
 
 	static const FName MESH;
+	FVector nozzleLocal;
+	UStaticMeshComponent* TurretMesh;
+	float currentUpdateCooldown = 0, currentFireCooldown = 0;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	float FOV = 60.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	float maxDistance = 100.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	float interval = 0.5f;
+	float updateInterval = 0.5f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	USceneComponent* nozzle;
+	float fireRate = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
+	float bulletForce = 1000.0f;
 
 	// Sets default values for this pawn's properties
 	ATurretPawn();

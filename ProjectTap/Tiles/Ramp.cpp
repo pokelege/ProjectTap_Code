@@ -104,16 +104,16 @@ void ARamp::activate()
 	switch(rotationDirection)
 	{
 		case Direction::XPlus:
-			ball->AddVelocity(forceMultiplier * FVector(1,0,0));
+			ball->AddVelocity((forceMultiplier * FVector(1,0,0)) + FVector(0,0,additionalZForce));
 			break;
 		case Direction::xMinus:
-			ball->AddVelocity(forceMultiplier * FVector(-1,0,0));
+			ball->AddVelocity((forceMultiplier * FVector(-1,0,0)) + FVector(0,0,additionalZForce));
 			break;
 		case Direction::YPlus:
-			ball->AddVelocity(forceMultiplier * FVector(0,1,0));
+			ball->AddVelocity((forceMultiplier * FVector(0,1,0)) + FVector(0,0,additionalZForce));
 			break;
 		case Direction::yMinus:
-			ball->AddVelocity(forceMultiplier * FVector(0,-1,0));
+			ball->AddVelocity((forceMultiplier * FVector(0,-1,0)) + FVector(0,0,additionalZForce));
 			break;
 	}
 }

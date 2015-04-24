@@ -49,11 +49,12 @@ void ATurretPawn::Tick( float DeltaTime )
 	ABallPawn* player = gameState->CurrentPawn;
 	if(player == nullptr) return;
 	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - translate);
+	float distance = turretToBallNormal.Size();
 	turretToBallNormal.Normalize();
 
 	float dot = FVector::DotProduct(turretToBallNormal,forward);
 	float radians = FMath::Cos(FMath::DegreesToRadians(FOV));
-	if(dot < radians) return;
+	if(dot < radians && distance > maxDistance) return;
 	FHitResult hit(ForceInit);
 	FCollisionQueryParams p = FCollisionQueryParams(FName(TEXT("Tracing")), true, this);
 	p.bTraceComplex = true;
@@ -61,13 +62,14 @@ void ATurretPawn::Tick( float DeltaTime )
 	p.bReturnPhysicalMaterial = false;
 
 	FCollisionResponseParams p2;
-	world->LineTraceSingle(hit,translate, maxDistance * forward,ECollisionChannel::ECC_Pawn,p);
+	player->Kill();
+	//world->LineTraceSingle(hit,translate, maxDistance * forward,ECollisionChannel::ECC_Pawn,p);
 	//todo if actually found player
-	if(hit.GetActor() == player)
- 	{
+	//if(hit.GetActor() == player)
+ 	//{
 		//todo shoot
-		player->Kill();
- 	}
+		//player->Kill();
+ 	//}
 }
 
 // Called to bind functionality to input

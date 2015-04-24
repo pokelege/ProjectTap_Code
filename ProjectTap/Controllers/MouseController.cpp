@@ -7,6 +7,7 @@
 #include "../Tiles/StrongBlockingTile.h"
 #include "../Tiles/GroupedBlockingTile.h"
 #include "../Tiles/Ramp.h"
+#include "../Tiles/DeflectiveTile.h"
 
 
 
@@ -86,10 +87,23 @@ void AMouseController::NotifyMousePressed()
 
 void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 {
+	bool found = false;
+
 	auto ramp = Cast<ARamp>(hit.Actor.Get());
 	if (ramp != nullptr)
 	{
 		ramp->activate();
+		found = true;
+	}
+
+	if (!found)
+	{
+		auto def = Cast<ADeflectiveTile>(hit.Actor.Get());
+		if (def != nullptr)
+		{
+			def->activate();
+			found = true;
+		}
 	}
 	
 }

@@ -18,7 +18,7 @@ ABallPawn::ABallPawn()
 
 	ballCollision->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
-	ballCollision->SetSphereRadius(45.0f);
+	ballCollision->SetSphereRadius(40.0f);
 
 	ballCollision->SetSimulatePhysics(true);
 

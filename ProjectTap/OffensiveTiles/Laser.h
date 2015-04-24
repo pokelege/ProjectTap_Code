@@ -12,7 +12,7 @@ class PROJECTTAP_API ALaser : public AActor
 
 	ALaser* nextLaser = nullptr;
 	float timer = .0f;
-	float elapseTime = 0.1f;
+	float elapseTime = 1/ 30.0f;
 	UParticleSystem* particleAsset;
 	const int MAX_DEPTH = 5;
 	int currentDepth = 0;
@@ -27,13 +27,14 @@ class PROJECTTAP_API ALaser : public AActor
 	
 	bool CanSpawnSubLaser();
 
-	FHitResult Collide();
+	void KillSubLaser();
+
 public:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
-	UParticleSystemComponent* laserParticle;
+		UParticleSystemComponent* laserParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
-	FVector direction = FVector(1.0f, 0.0f, 0.0f);
+		UArrowComponent* debugArrow;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
 	float length = 1000.0f;

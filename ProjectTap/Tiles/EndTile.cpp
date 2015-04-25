@@ -35,3 +35,8 @@ void AEndTile::OnHit(AActor* OtherActor,
 		pc->SetSimulatePhysics(false);
 	}
 }
+
+void AEndTile::Highlight(bool litTile , bool litEdge)
+{
+
+}

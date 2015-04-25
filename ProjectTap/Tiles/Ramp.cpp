@@ -52,7 +52,7 @@ ARamp::ARamp(): ATile(  )
 	glowColorHighlighted = FLinearColor(0.0f, 0.4f, .3f);
 	baseColor = FLinearColor(0.2f, 0.5f, .3f);
 	glowColor = FLinearColor(1.0f, .7f, .0f);
-	glowPowerHighlighted = 20.0f;
+	glowPowerHighlighted = 70.0f;
 	CancelHighlight();
 }
 
@@ -131,7 +131,7 @@ void ARamp::OnBeginTriggerOverlap(AActor* OtherActor,
 						   const FHitResult & SweepResult)
 {
 	ball = Cast<ABallPawn>(OtherActor);
-	Highlight();
+	Super::Highlight(true, false);
 }
 
 void ARamp::OnEndTriggerOverlap(AActor* OtherActor,

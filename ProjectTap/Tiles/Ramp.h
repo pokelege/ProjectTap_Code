@@ -42,6 +42,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float forceMultiplier;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	float additionalZForce = 0.0f;
+
 	ARamp();
 
 	virtual void BeginPlay() override;

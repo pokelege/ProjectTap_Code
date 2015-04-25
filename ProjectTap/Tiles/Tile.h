@@ -35,10 +35,10 @@ public:
 	float glowPower = 10.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
-		FLinearColor baseColorHighlighted = FLinearColor(1.3f, 1.0f, .0f);
+		FLinearColor baseColorHighlighted = FLinearColor(5.f, 0.0f, .0f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
-		FLinearColor glowColorHighlighted = FLinearColor(0.2f, 0.2f, .9f);
+		FLinearColor glowColorHighlighted = FLinearColor(5.0f, 5.0f, 5.0f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
 		float glowPowerHighlighted = 20.0f;

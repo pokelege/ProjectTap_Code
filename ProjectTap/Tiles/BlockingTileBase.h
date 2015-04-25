@@ -9,6 +9,9 @@ UCLASS()
 class PROJECTTAP_API ABlockingTileBase : public ATile
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void lerpMaterialColorForCoolDown(const float& beta);
 	
 public:	
 

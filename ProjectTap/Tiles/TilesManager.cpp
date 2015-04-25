@@ -40,7 +40,7 @@ void UTilesManager::HighLightTile(ATile* tile)
 		prevHighlighted->CancelHighlight();
 	}
 
-	if (tile != nullptr)
+	if (tile != nullptr && !tile->isActivated())
 	{
 		prevHighlighted = tile;
 		tile->Highlight(tile->StaticClass() != ARamp::StaticClass());

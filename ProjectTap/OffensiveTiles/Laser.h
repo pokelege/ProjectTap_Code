@@ -11,11 +11,12 @@ class PROJECTTAP_API ALaser : public AActor
 	GENERATED_BODY()
 
 	ALaser* nextLaser = nullptr;
+	UParticleSystem* particleAsset;
+
 	float timer = .0f;
 	float elapseTime = 1/ 30.0f;
-	UParticleSystem* particleAsset;
-	const int MAX_DEPTH = 5;
 	int currentDepth = 0;
+	const int MAX_DEPTH = 5;
 
 	void checkLaserCollisions(float dt);
 	
@@ -30,6 +31,7 @@ class PROJECTTAP_API ALaser : public AActor
 	void KillSubLaser();
 
 public:	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
 		UParticleSystemComponent* laserParticle;
 

@@ -42,3 +42,8 @@ void AEndTile::OnHit(AActor* OtherActor,
 		if(gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
 	}
 }
+
+void AEndTile::Highlight(bool litTile , bool litEdge)
+{
+
+}

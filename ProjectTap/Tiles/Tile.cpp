@@ -4,14 +4,14 @@
 #include "Tile.h"
 #include "EmptyComponent.h"
 // Sets default values
-ATile::ATile() 
+ATile::ATile()
 {
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Tile mesh" ) );
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Tile collision"));
 
 	this->SetRootComponent(BoxCollision);
-	
+
 	TileMesh->AttachTo(this->GetRootComponent());
 	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	TileMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -21,6 +21,7 @@ ATile::ATile()
 	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	BoxCollision->SetNotifyRigidBodyCollision(true);
 	CancelHighlight();
+
 }
 
 void ATile::activate()
@@ -83,4 +84,5 @@ void ATile::CancelHighlight()
 		material->SetVectorParameterValue(TEXT("Color"), glowColor);
 	}
 }
+
 

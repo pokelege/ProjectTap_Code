@@ -49,10 +49,10 @@ ARamp::ARamp(): ATile(  )
 
 
 	baseColorHighlighted = FLinearColor(0.8f, 0.0f, .3f);
-	glowColorHighlighted = FLinearColor(0.0f, 0.4f, .3f);
+	glowColorHighlighted = FLinearColor(2.0f, 1.7f, .3f);
 	baseColor = FLinearColor(0.2f, 0.5f, .3f);
-	glowColor = FLinearColor(0.2f, 0.4f, .3f);
-	glowPowerHighlighted = 20.0f;
+	glowColor = FLinearColor(1.0f, .7f, .0f);
+	glowPowerHighlighted = 100.0f;
 	CancelHighlight();
 }
 
@@ -101,22 +101,36 @@ void ARamp::activate()
 	if(rotationSequence == nullptr || ball == nullptr || activated) return;
 	Super::activate();
 	time = 0;
+	auto xyPositionAdjustment = GetActorLocation();
+	
 	switch(rotationDirection)
 	{
 		case Direction::XPlus:
 			ball->AddVelocity((forceMultiplier * FVector(1,0,0)) + FVector(0,0,additionalZForce));
+			ball->ResetBallXYPosition(GetActorLocation());
 			break;
 		case Direction::xMinus:
 			ball->AddVelocity((forceMultiplier * FVector(-1,0,0)) + FVector(0,0,additionalZForce));
+			ball->ResetBallXYPosition(GetActorLocation());
 			break;
 		case Direction::YPlus:
 			ball->AddVelocity((forceMultiplier * FVector(0,1,0)) + FVector(0,0,additionalZForce));
+			ball->ResetBallXYPosition(GetActorLocation());
 			break;
 		case Direction::yMinus:
 			ball->AddVelocity((forceMultiplier * FVector(0,-1,0)) + FVector(0,0,additionalZForce));
+			ball->ResetBallXYPosition(GetActorLocation());
 			break;
 	}
 }
+
+
+
+void ARamp::Highlight(bool litTile, bool litEdge) 
+{
+	Super::Highlight(false, true);
+}
+
 
 void ARamp::OnBeginTriggerOverlap(AActor* OtherActor,
 						   UPrimitiveComponent* OtherComp,
@@ -125,8 +139,9 @@ void ARamp::OnBeginTriggerOverlap(AActor* OtherActor,
 						   const FHitResult & SweepResult)
 {
 	ball = Cast<ABallPawn>(OtherActor);
-	Highlight();
+	Super::Highlight(true, false);
 }
+
 void ARamp::OnEndTriggerOverlap(AActor* OtherActor,
 						 UPrimitiveComponent* OtherComp,
 						 int32 OtherBodyIndex)

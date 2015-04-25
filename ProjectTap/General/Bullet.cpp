@@ -17,6 +17,7 @@ ABullet::ABullet()
 	this->SetRootComponent( BulletMesh );
 	BulletMesh->SetNotifyRigidBodyCollision(true);
 	BulletMesh->SetSimulatePhysics(true);
+	BulletMesh->SetEnableGravity(false);
 }
 
 // Called when the game starts or when spawned

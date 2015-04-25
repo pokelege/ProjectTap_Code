@@ -16,7 +16,7 @@ class PROJECTTAP_API AProjectTapGameState : public AGameState
 	GENERATED_BODY()
 
 public:
-	enum GameState {UNKNOWN, GAME_STATE_PLAYING, GAME_STATE_GAME_OVER};
+	enum GameState {UNKNOWN, GAME_STATE_PLAYING, GAME_STATE_GAME_OVER, GAME_STATE_WIN};
 protected:
 	GameState CurrentState = UNKNOWN;
 

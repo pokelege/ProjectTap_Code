@@ -26,7 +26,7 @@ void AMouseController::SetupInputComponent()
 {
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
-	InputComponent->BindAction("Respawn", IE_Pressed, this, &AMouseController::RespawnPressed);
+	//InputComponent->BindAction("Respawn", IE_Pressed, this, &AMouseController::RespawnPressed);
 
 	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::NotifyMousePressed);
 	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::NotifyMouseReleased);

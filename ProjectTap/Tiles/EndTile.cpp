@@ -2,6 +2,8 @@
 
 #include "ProjectTap.h"
 #include "Pawns/BallPawn.h"
+#include "ProjectTapGameState.h"
+#include "Engine/GameInstance.h"
 #include "EndTile.h"
 
 const FName AEndTile::END_MESH = FName("/Game/Models/End");
@@ -33,5 +35,15 @@ void AEndTile::OnHit(AActor* OtherActor,
 	{
 		auto pc = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
 		pc->SetSimulatePhysics(false);
+		UGameInstance* gameInstance = GetGameInstance();
+		FWorldContext* worldContext = gameInstance->GetWorldContext();
+		UWorld* world = worldContext->World();
+		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+		if(gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
 	}
+}
+
+void AEndTile::Highlight(bool litTile , bool litEdge)
+{
+
 }

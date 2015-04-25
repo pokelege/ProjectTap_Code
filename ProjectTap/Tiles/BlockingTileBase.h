@@ -9,6 +9,9 @@ UCLASS()
 class PROJECTTAP_API ABlockingTileBase : public ATile
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void lerpMaterialColorForCoolDown(const float& beta);
 	
 public:	
 
@@ -21,5 +24,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds)override;
 
-	
+	void deactivate() override;
 };

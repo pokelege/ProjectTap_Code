@@ -18,6 +18,9 @@ class PROJECTTAP_API AEndTile : public ATile
 public:
 	
 	AEndTile();
+
+	virtual void Highlight(bool litTile = true, bool litEdge = true) override;
+
 	UFUNCTION()
 	void OnHit(AActor* OtherActor,
 			   UPrimitiveComponent* OtherComp,

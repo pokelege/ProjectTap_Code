@@ -33,6 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ball")
 	void AddVelocity(const FVector& vel, bool clearForce = true);
 
+	//reset ball to the center of the tile when hit
+	void ResetBallXYPosition(const FVector& position);
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 

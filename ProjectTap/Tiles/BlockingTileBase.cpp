@@ -54,6 +54,28 @@ void ABlockingTileBase::Tick( float DeltaTime )
 
 	SetActorLocation(pos);
 
-	TileMesh->SetRenderCustomDepth(true);
 }
 
+void ABlockingTileBase::lerpMaterialColorForCoolDown(const float& beta)
+{
+	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
+
+	if (material != nullptr)
+	{
+		auto lerp_baseColor = FMath::Lerp(baseColorHighlighted, baseColor, beta);
+		material->SetVectorParameterValue(TEXT("BaseColor"), lerp_baseColor);
+
+		auto lerp_glowPower = FMath::Lerp(glowPowerHighlighted, glowPower, beta);
+		material->SetScalarParameterValue(TEXT("glow"), lerp_glowPower);
+
+		auto lerp_glowColor= FMath::Lerp(glowColorHighlighted, glowColor, beta);
+		material->SetVectorParameterValue(TEXT("Color"), lerp_glowColor);
+	}
+}
+
+
+void ABlockingTileBase::deactivate()
+{
+	Super::deactivate();
+	lerpMaterialColorForCoolDown(1.0f);
+}

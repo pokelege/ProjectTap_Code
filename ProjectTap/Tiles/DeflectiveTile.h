@@ -13,13 +13,22 @@ class PROJECTTAP_API ADeflectiveTile : public ATile
 {
 	GENERATED_BODY()
 	float timer = 0.0f;
+	int rotationDegreeLimit = 90;
+	int currentRotation = 45;
+
+	int GetCurrentRotation();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		float activaCoolDown = 0.5f;
+		float duration = 0.5f;
 
 
 	ADeflectiveTile();
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void Highlight(bool litTile = true, bool litEdge = true);
+	virtual void CancelHighlight();
+
+	void Spin(float dt);
 };

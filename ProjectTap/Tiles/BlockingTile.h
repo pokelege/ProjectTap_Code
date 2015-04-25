@@ -13,6 +13,7 @@ class PROJECTTAP_API ABlockingTile : public ABlockingTileBase
 {
 	GENERATED_BODY()
 	float time_counter = 0.0f;
+
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)

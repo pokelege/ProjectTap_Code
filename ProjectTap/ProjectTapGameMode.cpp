@@ -53,6 +53,10 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 		printonscreen( "GameOver" );
 		Respawn();
 	}
+	else if (GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::AProjectTapGameState::GAME_STATE_WIN)
+	{
+		printonscreen( "You win!" );
+	}
 }
 
 void AProjectTapGameMode::Respawn()

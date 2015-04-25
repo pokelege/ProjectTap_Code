@@ -14,7 +14,7 @@ ADeflectiveTile::ADeflectiveTile()
 	TileMesh->SetStaticMesh(mesh.Object);
 
 
-	BoxCollision->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
+	BoxCollision->SetBoxExtent(FVector(1.3f, 1.3f, 1.3f));
 
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
@@ -24,8 +24,13 @@ ADeflectiveTile::ADeflectiveTile()
 	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	BoxCollision->SetWorldScale3D(FVector(2.0f, 40.0f, 80.0f));
 
-	SetActorRotation(FRotator(0.0f, -45.0f, 0.0f));
-	
+	//BoxCollision->SetWorldRotation(FRotator(0, 45, 0));
+}
+
+
+int ADeflectiveTile::GetCurrentRotation()
+{
+	return currentRotation % 360;
 }
 
 
@@ -41,20 +46,36 @@ void ADeflectiveTile::BeginPlay()
 void ADeflectiveTile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	static float degree = 45.0f;
 
-	if (activated && degree < 90.0f)
+	if (activated)
 	{
-		degree += 1.0f;
+		//Spin(DeltaTime);
 	}
-
-	if (degree >= 90)
-	{
-		deactivate();
-		degree = 0.0;
-	}
-
-	SetActorRotation(FRotator(0.0f, degree, 0.0f));
 
 }
 
+void ADeflectiveTile::Spin(float dt)
+{
+	static int accum = 0;
+	if (accum < rotationDegreeLimit)
+	{
+		BoxCollision->SetWorldRotation(FRotator(0, GetCurrentRotation() + accum, 0));
+		accum += 5;
+	}
+	else 
+	{
+		currentRotation = (currentRotation + rotationDegreeLimit) % 360;
+		accum = 0;
+	}
+
+}
+
+void ADeflectiveTile::Highlight(bool litTile, bool litEdge)
+{
+
+}
+
+void ADeflectiveTile::CancelHighlight()
+{
+	
+}

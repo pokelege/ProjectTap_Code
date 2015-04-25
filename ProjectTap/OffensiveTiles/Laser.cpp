@@ -13,14 +13,13 @@ ALaser::ALaser()
 
 	laserParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("LaserParticle"));
 	SetRootComponent(laserParticle);
-
 	debugArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("arrow"));
 	debugArrow->AttachTo(RootComponent);
 
-
-	ConstructorHelpers::FObjectFinder<UParticleSystem> particleAssets(TEXT("/Game/Particles/P_LaserTest"));
+	ConstructorHelpers::FObjectFinder<UParticleSystem> particleAssets(TEXT("/Game/Particles/P_Laser"));
 	particleAsset = particleAssets.Object;
 	laserParticle->SetTemplate(particleAsset);
+
 }
 
 // Called when the game starts or when spawned
@@ -46,9 +45,8 @@ void ALaser::Tick( float DeltaTime )
 	}
 	else
 	{
+		checkLaserCollisions(DeltaTime);
 	}
-
-	checkLaserCollisions(DeltaTime);
 
 }
 
@@ -62,17 +60,19 @@ void ALaser::checkLaserCollisions(float dt)
 	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
 	
 	auto pos = GetActorLocation();
-	auto rayStart = pos + GetActorForwardVector() * 10.0f;
+	auto rayStart = pos + GetActorForwardVector() * 2.0f;
 	auto laserVector = GetActorForwardVector() * length;
 	auto laserEmitter = laserParticle->EmitterInstances[0];
 
-	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
-	
+	//laserEmitter->SetBeamSourcePoint(FVector(100.0f, 100.0f, 100.0f), 0);
 
-	laserEmitter->SetBeamSourcePoint(pos, 0);
+	//ray cast to see if laser hits anything
+	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
 	auto hitActor = hit.Actor.Get();
+	
 	if (hitActor != nullptr)
 	{
+		//kills ball if laser hits it
 		auto ball = Cast<ABallPawn>(hitActor);
 		
 		if (ball != nullptr)
@@ -82,19 +82,24 @@ void ALaser::checkLaserCollisions(float dt)
 		else
 		{
 
+			//if not set laser end point
 			laserEmitter->SetBeamTargetPoint(hit.ImpactPoint, 0);
 
 			//if hits deflective tile then spawn a new laser object
 			auto tile = Cast<ADeflectiveTile>(hitActor);
 			if (CanSpawnSubLaser() && tile != nullptr)
 			{
+				//cut the laser length to make sure new sub laser start doesn't hit the same object
+				auto cutEndPoint = hit.ImpactPoint - GetActorForwardVector();
 				SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
 			}
 
 			//if sub laser already exists then keep updating its rotation
-			if (currentDepth < MAX_DEPTH && nextLaser != nullptr)
+			auto subLaserExists = currentDepth < MAX_DEPTH && nextLaser != nullptr;
+			if (subLaserExists)
 			{
-				nextLaser->SetActorRotation(reflect(hit.ImpactPoint, hit.ImpactNormal).Rotation());
+				auto rotation = reflect(hit.ImpactPoint, hit.ImpactNormal).Rotation();
+				nextLaser->SetActorRotation(rotation);
 			}
 		}
 	}
@@ -104,22 +109,18 @@ void ALaser::checkLaserCollisions(float dt)
 		KillSubLaser();
 	}
 
-		laserEmitter->SetBeamTargetPoint(pos + laserVector, 0);
-
-	static int degree = -45.0f;
-	SetActorRotation(FRotator(0.0f, degree, 0.0f));
-	degree += 1.0f;
-
-	//if (hit.Actor.Get()->StaticClass() == DeflectiveTile::StaticClass())
 
 }
 
 void ALaser::SpawnSubLaser(const FVector& start, const FVector& normal)
 {
 	auto incomingVector = start - GetActorLocation();
-	auto newDir = reflect(incomingVector, normal);
-	nextLaser = GetWorld()->SpawnActor<ALaser>(start, newDir.Rotation());
+	auto newDir = FMath::GetReflectionVector(incomingVector, normal);
+
+	nextLaser = GetWorld()->SpawnActor<ALaser>();
+	nextLaser->SetActorLocation(start);
 	nextLaser->SetLaserDepth(currentDepth + 1);
+	nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length , 0);
 }
 
 FVector ALaser::reflect(const FVector& v1, const FVector& v2)

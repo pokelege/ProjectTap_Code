@@ -72,3 +72,10 @@ void ABlockingTileBase::lerpMaterialColorForCoolDown(const float& beta)
 		material->SetVectorParameterValue(TEXT("Color"), lerp_glowColor);
 	}
 }
+
+
+void ABlockingTileBase::deactivate()
+{
+	Super::deactivate();
+	lerpMaterialColorForCoolDown(1.0f);
+}

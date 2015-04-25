@@ -51,7 +51,7 @@ ARamp::ARamp(): ATile(  )
 	baseColorHighlighted = FLinearColor(0.8f, 0.0f, .3f);
 	glowColorHighlighted = FLinearColor(0.0f, 0.4f, .3f);
 	baseColor = FLinearColor(0.2f, 0.5f, .3f);
-	glowColor = FLinearColor(0.2f, 0.4f, .3f);
+	glowColor = FLinearColor(1.0f, .7f, .0f);
 	glowPowerHighlighted = 20.0f;
 	CancelHighlight();
 }
@@ -118,6 +118,12 @@ void ARamp::activate()
 	}
 }
 
+void ARamp::Highlight(bool litTile, bool litEdge) 
+{
+	Super::Highlight(false, true);
+}
+
+
 void ARamp::OnBeginTriggerOverlap(AActor* OtherActor,
 						   UPrimitiveComponent* OtherComp,
 						   int32 OtherBodyIndex,
@@ -127,6 +133,7 @@ void ARamp::OnBeginTriggerOverlap(AActor* OtherActor,
 	ball = Cast<ABallPawn>(OtherActor);
 	Highlight();
 }
+
 void ARamp::OnEndTriggerOverlap(AActor* OtherActor,
 						 UPrimitiveComponent* OtherComp,
 						 int32 OtherBodyIndex)

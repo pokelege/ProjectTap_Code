@@ -78,11 +78,12 @@ void ABallPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 
 void ABallPawn::AddVelocity(const FVector& vel, bool clearForce)
 {
+	
 	if (clearForce)
 	{
 		ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
-		ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
 	}
+	ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
 
 	ballCollision->AddImpulse(vel);
 }

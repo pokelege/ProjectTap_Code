@@ -52,6 +52,8 @@ public:
 
 	virtual void activate() override;
 
+	virtual void Highlight(bool litTile = true, bool litEdge = true) override;
+
 	UFUNCTION()
 	void OnBeginTriggerOverlap(AActor* OtherActor,
 						  UPrimitiveComponent* OtherComp,

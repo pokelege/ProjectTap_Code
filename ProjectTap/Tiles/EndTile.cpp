@@ -39,7 +39,7 @@ void AEndTile::OnHit(AActor* OtherActor,
 		FWorldContext* worldContext = gameInstance->GetWorldContext();
 		UWorld* world = worldContext->World();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-		if(gameState) gameState->SetState(AProjectTapGameState::AProjectTapGameState::GAME_STATE_WIN);
+		if(gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
 	}
 }
 

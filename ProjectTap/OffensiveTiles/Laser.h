@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "../EmptyComponent.h"
 #include "Laser.generated.h"
 
 UCLASS()
@@ -11,7 +12,6 @@ class PROJECTTAP_API ALaser : public AActor
 	GENERATED_BODY()
 
 	ALaser* nextLaser = nullptr;
-	UParticleSystem* particleAsset;
 
 	float timer = .0f;
 	float elapseTime = 1/ 30.0f;
@@ -31,6 +31,8 @@ class PROJECTTAP_API ALaser : public AActor
 	void KillSubLaser();
 
 public:	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
+		UEmptyComponent* root;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
 		UParticleSystemComponent* laserParticle;
@@ -39,7 +41,10 @@ public:
 		UArrowComponent* debugArrow;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
-	float length = 1000.0f;
+		FVector dir = FVector(1.0f, 0.0f, 0.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
+		float length = 1000000.0f;
 
 	// Sets default values for this actor's properties
 	ALaser();

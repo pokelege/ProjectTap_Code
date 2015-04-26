@@ -49,25 +49,18 @@ void ADeflectiveTile::Tick(float DeltaTime)
 
 	if (activated)
 	{
-		//Spin(DeltaTime);
+		Spin(DeltaTime);
 	}
 
 }
 
 void ADeflectiveTile::Spin(float dt)
 {
-	static int accum = 0;
-	if (accum < rotationDegreeLimit)
-	{
-		BoxCollision->SetWorldRotation(FRotator(0, GetCurrentRotation() + accum, 0));
-		accum += 5;
-	}
-	else 
-	{
-		currentRotation = (currentRotation + rotationDegreeLimit) % 360;
-		accum = 0;
-	}
+	static float accum = 0;
 
+	BoxCollision->SetWorldRotation(FRotator(0, accum, 0));
+
+	accum += 0.2f;
 }
 
 void ADeflectiveTile::Highlight(bool litTile, bool litEdge)

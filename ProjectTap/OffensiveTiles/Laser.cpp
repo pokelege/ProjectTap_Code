@@ -2,23 +2,30 @@
 
 #include "ProjectTap.h"
 #include "Laser.h"
-#include "ParticleEmitterInstances.h"
 #include "../Pawns/BallPawn.h"
 #include "../Tiles/DeflectiveTile.h"
+#include "Classes/Particles/ParticleEmitter.h"
+
 // Sets default values
 ALaser::ALaser()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//SetRootComponent(laserParticle);
+
+	root = CreateDefaultSubobject<UEmptyComponent>(TEXT("RootEmpty"));
+	SetRootComponent(root);
 	laserParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("LaserParticle"));
-	SetRootComponent(laserParticle);
+	laserParticle->AttachTo(RootComponent);
+
+	ConstructorHelpers::FObjectFinder<UParticleSystem> particleAssets(TEXT("/Game/Particles/P_NewLaser"));
+	laserParticle->SetTemplate(particleAssets.Object);
+
 	debugArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("arrow"));
 	debugArrow->AttachTo(RootComponent);
-
-	ConstructorHelpers::FObjectFinder<UParticleSystem> particleAssets(TEXT("/Game/Particles/P_Laser"));
-	particleAsset = particleAssets.Object;
-	laserParticle->SetTemplate(particleAsset);
+	/*laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
+	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);*/
 
 }
 
@@ -27,6 +34,8 @@ void ALaser::BeginPlay()
 {
 	Super::BeginPlay();
 	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
+	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);
+
 }
 
 void ALaser::SetLaserDepth(unsigned i)
@@ -60,11 +69,9 @@ void ALaser::checkLaserCollisions(float dt)
 	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
 	
 	auto pos = GetActorLocation();
-	auto rayStart = pos + GetActorForwardVector() * 2.0f;
-	auto laserVector = GetActorForwardVector() * length;
+	auto rayStart = pos + dir * 2.0f;
+	auto laserVector = dir * length;
 	auto laserEmitter = laserParticle->EmitterInstances[0];
-
-	//laserEmitter->SetBeamSourcePoint(FVector(100.0f, 100.0f, 100.0f), 0);
 
 	//ray cast to see if laser hits anything
 	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
@@ -90,16 +97,21 @@ void ALaser::checkLaserCollisions(float dt)
 			if (CanSpawnSubLaser() && tile != nullptr)
 			{
 				//cut the laser length to make sure new sub laser start doesn't hit the same object
-				auto cutEndPoint = hit.ImpactPoint - GetActorForwardVector();
 				SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
 			}
 
-			//if sub laser already exists then keep updating its rotation
+			//if sub laser already exists then keep updating its rotation and position
 			auto subLaserExists = currentDepth < MAX_DEPTH && nextLaser != nullptr;
 			if (subLaserExists)
 			{
-				auto rotation = reflect(hit.ImpactPoint, hit.ImpactNormal).Rotation();
-				nextLaser->SetActorRotation(rotation);
+				auto incomingVector = hit.ImpactPoint - GetActorLocation();
+				auto newDir = FMath::GetReflectionVector(incomingVector, hit.ImpactNormal);
+
+				auto start = hit.ImpactPoint + newDir * 2.0f;
+				nextLaser->SetActorLocation(hit.ImpactPoint);
+				nextLaser->dir = newDir.IsNormalized() ? newDir : newDir.GetSafeNormal();
+				nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(hit.ImpactPoint, 0);
+				nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length, 0);
 			}
 		}
 	}
@@ -115,11 +127,13 @@ void ALaser::checkLaserCollisions(float dt)
 void ALaser::SpawnSubLaser(const FVector& start, const FVector& normal)
 {
 	auto incomingVector = start - GetActorLocation();
-	auto newDir = FMath::GetReflectionVector(incomingVector, normal);
+	auto newDir = FMath::GetReflectionVector(incomingVector, normal).GetSafeNormal();
 
 	nextLaser = GetWorld()->SpawnActor<ALaser>();
 	nextLaser->SetActorLocation(start);
 	nextLaser->SetLaserDepth(currentDepth + 1);
+	nextLaser->dir = newDir;
+	nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(start, 0);
 	nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length , 0);
 }
 

@@ -39,6 +39,20 @@ bool ATile::isActivated()
 	return activated;
 }
 
+void ATile::Enable()
+{
+	enabled = true;
+}
+
+void ATile::Disable()
+{
+	enabled = false;
+}
+
+bool ATile::IsEnabled()
+{
+	return enabled;
+}
 
 void ATile::BeginPlay()
 {

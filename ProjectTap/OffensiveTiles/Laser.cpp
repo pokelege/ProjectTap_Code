@@ -66,6 +66,7 @@ void ALaser::checkLaserCollisions(float dt)
 	FHitResult hit;
 	FCollisionQueryParams queryParam;
 	queryParam.bFindInitialOverlaps = false;
+	queryParam.bReturnFaceIndex = true;
 	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
 	
 	auto pos = GetActorLocation();
@@ -101,7 +102,7 @@ void ALaser::checkLaserCollisions(float dt)
 			}
 
 			//if sub laser already exists then keep updating its rotation and position
-			auto subLaserExists = currentDepth < MAX_DEPTH && nextLaser != nullptr;
+			auto subLaserExists = currentDepth < MAX_DEPTH && nextLaser != nullptr && tile != nullptr;
 			if (subLaserExists)
 			{
 				auto incomingVector = hit.ImpactPoint - GetActorLocation();

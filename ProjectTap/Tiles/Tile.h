@@ -15,6 +15,7 @@ class PROJECTTAP_API ATile : public AActor
 protected:
   FVector original;
   bool activated = false;
+  bool enabled = true;
 public:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UStaticMeshComponent* TileMesh = nullptr;
@@ -59,6 +60,10 @@ public:
 	virtual void deactivate();
 
 	virtual bool isActivated();
+
+	virtual void Enable();
+	virtual void Disable();
+	virtual bool IsEnabled();
 	
 	virtual void BeginPlay();
 	virtual void Tick( float DeltaTime );

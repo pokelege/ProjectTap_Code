@@ -5,6 +5,14 @@
 #include "Tiles/Tile.h"
 #include "DeflectiveTile.generated.h"
 
+UENUM(BlueprintType)
+enum class DeflectiveTileType : uint8
+{
+	HORIZONTAL,
+	VERTICAL_NORMAL_X,
+	VERTICAL_NORMAL_Y
+};
+
 /**
  * 
  */
@@ -13,22 +21,27 @@ class PROJECTTAP_API ADeflectiveTile : public ATile
 {
 	GENERATED_BODY()
 	float timer = 0.0f;
-	int rotationDegreeLimit = 90;
-	int currentRotation = 45;
+	float rotationDegreeLimit = 90;
+	float currentRotation = 45;
 
-	int GetCurrentRotation();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		float duration = 0.5f;
+		float rotationDuration = 0.5f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+		DeflectiveTileType type;
 
 	ADeflectiveTile();
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Highlight(bool litTile = true, bool litEdge = true);
-	virtual void CancelHighlight();
+    void Highlight(bool litTile = true, bool litEdge = true) override;
+    void CancelHighlight() override;
+
+	void activate() override;
+	void deactivate() override;
+
 
 	void Spin(float dt);
 };

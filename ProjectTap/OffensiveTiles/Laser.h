@@ -16,7 +16,7 @@ class PROJECTTAP_API ALaser : public AActor
 	float timer = .0f;
 	float elapseTime = 1/ 30.0f;
 	int currentDepth = 0;
-	const int MAX_DEPTH = 5;
+	const int MAX_DEPTH = 8;
 
 	void checkLaserCollisions(float dt);
 	

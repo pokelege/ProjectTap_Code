@@ -32,6 +32,7 @@ void ATurretPawn::BeginPlay()
 void ATurretPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+	if(!activated) return;
 	currentFireCooldown += DeltaTime;
 	currentUpdateCooldown += DeltaTime;
 	if(currentUpdateCooldown < updateInterval) return;

@@ -16,6 +16,8 @@ class PROJECTTAP_API ATurretPawn : public APawn
 	float currentUpdateCooldown = 0, currentFireCooldown = 0;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
+	bool activated = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	float FOV = 60.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	float maxDistance = 100.0f;
@@ -40,5 +42,5 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 	
-	
+
 };

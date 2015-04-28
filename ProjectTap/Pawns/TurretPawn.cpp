@@ -39,8 +39,8 @@ void ATurretPawn::BeginPlay()
 void ATurretPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+	if(!activated) return;
 	UpdateLaserTag(DeltaTime);
-
 
 	currentFireCooldown += DeltaTime;
 	currentUpdateCooldown += DeltaTime;

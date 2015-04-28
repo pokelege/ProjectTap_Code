@@ -18,6 +18,9 @@ class PROJECTTAP_API ATurretPawn : public APawn
 	void UpdateLaserTag(float dt);
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
+	bool activated = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	UStaticMeshComponent* TurretMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
@@ -48,5 +51,5 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 	
-	
+
 };

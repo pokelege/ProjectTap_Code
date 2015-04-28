@@ -6,6 +6,7 @@
 #include "ProjectTapGameState.h"
 #include "General/Bullet.h"
 #include "TurretPawn.h"
+#include "ParticleEmitterInstances.h"
 
 const FName ATurretPawn::MESH = FName("/Game/Models/Turret");
 
@@ -18,7 +19,12 @@ ATurretPawn::ATurretPawn()
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Turret mesh" ) );
 	TurretMesh->SetStaticMesh(mesh.Object);
 	this->SetRootComponent(TurretMesh);
-	//nozzle->SetWorldTransform();
+
+	laserTag = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Turret Laser Tag"));
+	ConstructorHelpers::FObjectFinder<UParticleSystem> laserParticle(TEXT("/Game/Particles/P_TurretLaser"));
+	laserTag->SetTemplate(laserParticle.Object);
+	laserTag->AttachTo(RootComponent);
+	
 }
 
 // Called when the game starts or when spawned
@@ -26,12 +32,16 @@ void ATurretPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	nozzleLocal = TurretMesh->GetSocketLocation("Nozzle");
+	laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocal, 0);
 }
 
 // Called every frame
 void ATurretPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+	UpdateLaserTag(DeltaTime);
+
+
 	currentFireCooldown += DeltaTime;
 	currentUpdateCooldown += DeltaTime;
 	if(currentUpdateCooldown < updateInterval) return;
@@ -41,10 +51,7 @@ void ATurretPawn::Tick( float DeltaTime )
 
 	forward = this->GetActorForwardVector();
 
-	UGameInstance* gameInstance = GetGameInstance();
-	FWorldContext* worldContext = gameInstance->GetWorldContext();
-	UWorld* world = worldContext->World();
-	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
 	ABallPawn* player = gameState->CurrentPawn;
 	if(player == nullptr) return;
 	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - nozzleLocal);
@@ -59,21 +66,7 @@ void ATurretPawn::Tick( float DeltaTime )
 
 	UPrimitiveComponent* comp = Cast<UPrimitiveComponent>(bullet->GetRootComponent());
 	comp->AddImpulse(turretToBallNormal * bulletForce);
-// 	FHitResult hit(ForceInit);
-// 	FCollisionQueryParams p = FCollisionQueryParams(FName(TEXT("Tracing")), true, this);
-// 	p.bTraceComplex = true;
-// 	p.bTraceAsyncScene = true;
-// 	p.bReturnPhysicalMaterial = false;
-//
-// 	FCollisionResponseParams p2;
-	//player->Kill();
-	//world->LineTraceSingle(hit,translate, maxDistance * forward,ECollisionChannel::ECC_Pawn,p);
-	//todo if actually found player
-	//if(hit.GetActor() == player)
- 	//{
-		//todo shoot
-		//player->Kill();
- 	//}
+
 	currentFireCooldown = 0;
 }
 
@@ -81,5 +74,16 @@ void ATurretPawn::Tick( float DeltaTime )
 void ATurretPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
+}
+
+
+void ATurretPawn::UpdateLaserTag(float dt)
+{
+	auto state  = GetWorld()->GetGameState<AProjectTapGameState>();
+	auto pawn = state->CurrentPawn;
+	
+	auto l = pawn->GetActorLocation();
+	direction = (pawn->GetActorLocation() - nozzleLocal).GetSafeNormal();
+	laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * maxDistance,0);
 }
 

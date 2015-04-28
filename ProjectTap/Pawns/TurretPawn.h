@@ -12,9 +12,17 @@ class PROJECTTAP_API ATurretPawn : public APawn
 
 	static const FName MESH;
 	FVector nozzleLocal;
-	UStaticMeshComponent* TurretMesh;
+	FVector direction;
 	float currentUpdateCooldown = 0, currentFireCooldown = 0;
+
+	void UpdateLaserTag(float dt);
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
+	UStaticMeshComponent* TurretMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
+	UParticleSystemComponent* laserTag;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	float FOV = 60.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)

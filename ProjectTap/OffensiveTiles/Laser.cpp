@@ -12,8 +12,6 @@ ALaser::ALaser()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	//SetRootComponent(laserParticle);
-
 	root = CreateDefaultSubobject<UEmptyComponent>(TEXT("RootEmpty"));
 	SetRootComponent(root);
 	laserParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("LaserParticle"));
@@ -26,7 +24,6 @@ ALaser::ALaser()
 	debugArrow->AttachTo(RootComponent);
 	/*laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
 	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);*/
-
 }
 
 // Called when the game starts or when spawned
@@ -34,8 +31,6 @@ void ALaser::BeginPlay()
 {
 	Super::BeginPlay();
 	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
-	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);
-
 }
 
 void ALaser::SetLaserDepth(unsigned i)
@@ -89,7 +84,6 @@ void ALaser::checkLaserCollisions(float dt)
 		}
 		else
 		{
-
 			//if not set laser end point
 			laserEmitter->SetBeamTargetPoint(hit.ImpactPoint, 0);
 

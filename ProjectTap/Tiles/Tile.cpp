@@ -26,11 +26,14 @@ ATile::ATile()
 
 void ATile::activate()
 {
-	activated = true;
+	if (IsEnabled())
+	{
+		activated = true;
+	}
 }
 
 void ATile::deactivate()
-{
+{	
 	activated = false;
 }
 
@@ -100,3 +103,15 @@ void ATile::CancelHighlight()
 }
 
 
+void ATile::turnOffHighlight()
+{
+	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
+
+	if (material != nullptr)
+	{
+		FLinearColor noColor{ 0.0f, 0.0f, 0.0f };
+		material->SetVectorParameterValue(TEXT("BaseColor"), noColor);
+		material->SetScalarParameterValue(TEXT("glow"), 0.0f);
+		material->SetVectorParameterValue(TEXT("Color"), noColor);
+	}
+}

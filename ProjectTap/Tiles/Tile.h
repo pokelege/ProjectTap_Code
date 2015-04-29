@@ -70,4 +70,6 @@ public:
 
 	virtual void Highlight(bool litTile = true, bool litEdge = true);
 	virtual void CancelHighlight();
+	virtual void turnOffHighlight();
+
 };

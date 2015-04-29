@@ -38,6 +38,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	float bulletForce = 1000.0f;
 
+
 	// Sets default values for this pawn's properties
 	ATurretPawn();
 
@@ -50,6 +51,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
-	
+	void AttemptToFire(const float& DeltaTime);
 
+	bool FoundPlayerToHit();
+
+	void Fire();
 };

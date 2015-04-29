@@ -35,6 +35,54 @@ void ATurretPawn::BeginPlay()
 	laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocal, 0);
 }
 
+bool ATurretPawn::FoundPlayerToHit()
+{
+	FVector forward;
+
+	forward = this->GetActorForwardVector();
+
+	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
+	ABallPawn* player = gameState->CurrentPawn;
+	if(player == nullptr) return false;
+	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - nozzleLocal);
+	float distance = turretToBallNormal.Size();
+	turretToBallNormal.Normalize();
+
+	float dot = FVector::DotProduct(turretToBallNormal,forward);
+	float radians = FMath::Cos(FMath::DegreesToRadians(FOV));
+	if(dot < radians || distance > maxDistance) return false;
+	return true;
+}
+
+void ATurretPawn::Fire()
+{
+	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
+	ABallPawn* player = gameState->CurrentPawn;
+	if(player == nullptr) return;
+	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - nozzleLocal);
+	float distance = turretToBallNormal.Size();
+	turretToBallNormal.Normalize();
+
+	FRotator rotation;
+	ABullet* bullet = this->GetWorld()->SpawnActor<ABullet>(nozzleLocal, rotation);
+
+	UPrimitiveComponent* comp = Cast<UPrimitiveComponent>(bullet->GetRootComponent());
+	comp->AddImpulse(turretToBallNormal * bulletForce);
+}
+
+
+void ATurretPawn::AttemptToFire(const float& DeltaTime)
+{
+
+	currentUpdateCooldown += DeltaTime;
+
+	if(currentFireCooldown < fireRate ) return;
+
+	if(!FoundPlayerToHit()) return;
+	Fire();
+	currentFireCooldown = 0;
+}
+
 // Called every frame
 void ATurretPawn::Tick( float DeltaTime )
 {
@@ -43,31 +91,9 @@ void ATurretPawn::Tick( float DeltaTime )
 	UpdateLaserTag(DeltaTime);
 
 	currentFireCooldown += DeltaTime;
-	currentUpdateCooldown += DeltaTime;
+	AttemptToFire(DeltaTime);
 	if(currentUpdateCooldown < updateInterval) return;
 	currentUpdateCooldown = 0;
-	if(currentFireCooldown < fireRate ) return;
-	FVector forward;
-
-	forward = this->GetActorForwardVector();
-
-	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	ABallPawn* player = gameState->CurrentPawn;
-	if(player == nullptr) return;
-	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - nozzleLocal);
-	float distance = turretToBallNormal.Size();
-	turretToBallNormal.Normalize();
-
-	float dot = FVector::DotProduct(turretToBallNormal,forward);
-	float radians = FMath::Cos(FMath::DegreesToRadians(FOV));
-	if(dot < radians || distance > maxDistance) return;
-	FRotator rotation;
-	ABullet* bullet = this->GetWorld()->SpawnActor<ABullet>(nozzleLocal, rotation);
-
-	UPrimitiveComponent* comp = Cast<UPrimitiveComponent>(bullet->GetRootComponent());
-	comp->AddImpulse(turretToBallNormal * bulletForce);
-
-	currentFireCooldown = 0;
 }
 
 // Called to bind functionality to input

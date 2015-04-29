@@ -10,7 +10,8 @@ class PROJECTTAP_API ATurretPawn : public APawn
 {
 	GENERATED_BODY()
 
-	static const FName MESH;
+	static const FName BASE_MESH;
+	static const FName GUN_MESH;
 	FVector nozzleLocal;
 	FVector direction;
 	float currentUpdateCooldown = 0, currentFireCooldown = 0;
@@ -21,7 +22,7 @@ public:
 	bool activated = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	UStaticMeshComponent* TurretMesh;
+	UStaticMeshComponent* TurretGunMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	UParticleSystemComponent* laserTag;

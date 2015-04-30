@@ -20,7 +20,7 @@ protected:
 	FScriptDelegate pawnIn;
 	FScriptDelegate pawnOut;
 	float time = 0;
-	ABallPawn* ball;
+	ABallPawn* ball = nullptr;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UCurveFloat* rotationSequence;

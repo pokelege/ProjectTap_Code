@@ -15,7 +15,6 @@ ARamp::ARamp(): ABaseRampTile()
 	forceMultiplier = 2000.0f;
 }
 
-
 void ARamp::BeginPlay()
 {
 	Super::BeginPlay();

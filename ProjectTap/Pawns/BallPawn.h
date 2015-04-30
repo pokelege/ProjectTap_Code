@@ -9,19 +9,16 @@ UCLASS()
 class PROJECTTAP_API ABallPawn : public APawn
 {
 	GENERATED_BODY()
+	
+	class APawnCastingTrigger* trigger = nullptr;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
-	class UEmptyComponent* root;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	UStaticMeshComponent* ballMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	USphereComponent* ballCollision;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
-	UBoxComponent* tileOverlapCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 		FVector initialVelocity = FVector(0.0f, 0.0f, 0.0f);
@@ -46,17 +43,7 @@ public:
 
 	virtual void FellOutOfWorld(const class UDamageType & dmgType) override;
 
-	void Kill();
+	void Kill();	
 
-	UFUNCTION()
-		void OnBeginTriggerOverlap(AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult & SweepResult);
 
-	UFUNCTION()
-		void OnEndTriggerOverlap(AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex);
 };

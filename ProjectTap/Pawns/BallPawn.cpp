@@ -5,7 +5,7 @@
 #include "Engine/GameInstance.h"
 #include "BallPawn.h"
 #include "../Tiles/Tile.h"
-#include "../EmptyComponent.h"
+#include "PawnCastingTrigger.h"
 
 
 // Sets default values
@@ -13,17 +13,13 @@ ABallPawn::ABallPawn()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	root = CreateDefaultSubobject<UEmptyComponent>(TEXT("Empty root"));
-	this->SetRootComponent(root);
 
 	ballCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-	tileOverlapCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("TileOverlap"));
+	this->SetRootComponent(ballCollision);
+
 	ballMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallMesh"));
 
-	ballCollision->AttachTo(root);
-	tileOverlapCollision->AttachTo(root);
 	ballMesh->AttachTo(ballCollision);
-
 
 	ballCollision->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
@@ -43,23 +39,8 @@ ABallPawn::ABallPawn()
 	ballCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	ballCollision->GetBodyInstance()->bOverrideMass = true;
 	ballCollision->GetBodyInstance()->MassInKg = 10.0f;
-	tileOverlapCollision->bGenerateOverlapEvents = true;
 
 	//tileOverlapCollision->AttachTo(RootComponent);
-	tileOverlapCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	tileOverlapCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
-	tileOverlapCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	tileOverlapCollision->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
-	tileOverlapCollision->SetRelativeScale3D(FVector(0.2f, 0.2f, 0.2f));
-
-	FScriptDelegate beginOverLap;
-	beginOverLap.BindUFunction(this, "OnBeginTriggerOverlap");
-	tileOverlapCollision->OnComponentBeginOverlap.Add(beginOverLap);
-
-	FScriptDelegate beginEndLap;
-	beginEndLap.BindUFunction(this, "OnEndTriggerOverlap");
-	tileOverlapCollision->OnComponentEndOverlap.Add(beginEndLap);
-
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Game/Models/Ball"));
 
 	ballMesh->SetWorldScale3D(FVector(0.25f));
@@ -71,6 +52,8 @@ ABallPawn::ABallPawn()
 	ballMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	ballMesh->SetSimulatePhysics(false);
+
+
 }
 
 // Called when the game starts or when spawned
@@ -79,12 +62,20 @@ void ABallPawn::BeginPlay()
 	Super::BeginPlay();
 
 	ballCollision->AddImpulse(initialVelocity);
+	trigger = GetWorld()->SpawnActor<APawnCastingTrigger>();
+	trigger->SetBallPawn(this);
 }
 
 // Called every frame
 void ABallPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+
+	//udpate trigger position
+	if (trigger != nullptr)
+	{
+		trigger->SetActorLocation(GetActorLocation());
+	}
 }
 
 // Called to bind functionality to input
@@ -120,6 +111,7 @@ void ABallPawn::Kill()
 	UWorld* world = worldContext->World();
 	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
 	if(gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
+	if (trigger != nullptr) trigger->Destroy();
 	Destroy();
 }
 
@@ -128,29 +120,3 @@ void ABallPawn::FellOutOfWorld(const class UDamageType & dmgType)
 	Kill();
 }
 
-void ABallPawn::OnBeginTriggerOverlap(AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult & SweepResult)
-{
-	auto tile = Cast<ATile>(OtherActor);
-	if (tile != nullptr)
-	{
-		tile->deactivate();
-		tile->Disable();
-		tile->turnOffHighlight();
-	}
-}
-
-void ABallPawn::OnEndTriggerOverlap(AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex)
-{
-	auto tile = Cast<ATile>(OtherActor);
-	if (tile != nullptr)
-	{
-		tile->Enable();
-		tile->CancelHighlight();
-	}
-}

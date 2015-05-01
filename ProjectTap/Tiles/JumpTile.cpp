@@ -26,19 +26,17 @@ void AJumpTile::activate()
 	calculatePhysics();
 	ball->ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
 	ball->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
-	ball->ballCollision->AddForce(force);
+	ball->ballCollision->AddImpulse(force);
 }
 
 void AJumpTile::calculatePhysics()
 {
-	float Viy = (height - (0.5f * ball->GetWorld()->GetGravityZ() * (duration/2) * (duration / 2))) / (duration / 2);
-	float Ay = Viy/ (duration / 2);
-	float Fy = Ay * ball->ballCollision->GetBodyInstance()->MassInKg;
-	float Fgrav = ball->GetWorld()->GetGravityZ() * ball->ballCollision->GetBodyInstance()->MassInKg;
-
-	FVector xVector = target->GetTransform().GetLocation() - GetTransform().GetLocation();
-	float Vix = (xVector.Size() * 2) /duration;
-	float Ax = -Vix / duration;
-	float Fx = Ax * ball->ballCollision->GetBodyInstance()->MassInKg;
-	force = (Fx * xVector.GetSafeNormal()) + FVector(0,0,Fy - Fgrav);
+	float vz = FMath::Sqrt(2 * -GetWorld()->GetGravityZ() * height);
+	float forceZ = ball->ballCollision->GetMass() * vz / duration;
+	
+	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	auto distance = FVector::Dist(target->GetActorLocation(), GetActorLocation());
+	auto horizontalAcceleration = 2 * distance / FMath::Square(2 * duration);
+	auto forceX = ball->ballCollision->GetMass() * horizontalAcceleration;
+	force = dir * forceX * 2 * duration + FVector(0.0f, 0.0f, forceZ) * duration;
 }

@@ -20,7 +20,7 @@ public:
 	float duration = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
-	float height = 10;
+	float height = 500;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
 	AActor* target = nullptr;

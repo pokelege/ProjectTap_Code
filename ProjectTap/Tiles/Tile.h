@@ -69,6 +69,13 @@ public:
 	virtual void Tick( float DeltaTime );
 
 	virtual void Highlight(bool litTile = true, bool litEdge = true);
+	virtual void HighlightTile();
+	virtual void HighlightEdge();
+	virtual void CancelHighlightTile();
+	virtual void CancelHighlightEdge();
+	virtual void turnOffHighlightEdge();
+	virtual void turnOffHighlightTile();
+
 	virtual void CancelHighlight();
 	virtual void turnOffHighlight();
 

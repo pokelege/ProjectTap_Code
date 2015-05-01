@@ -30,6 +30,7 @@ void UTilesManager::DeactivateGroupedBlockingTiles()
 	{
 		t->deactivate();
 	}
+
 	activatedGroupedBlocks.RemoveAll([](AGroupedBlockingTile* b){return true; });
 }
 
@@ -43,7 +44,17 @@ void UTilesManager::HighLightTile(ATile* tile)
 	if (tile != nullptr && !tile->isActivated())
 	{
 		prevHighlighted = tile;
-		tile->Highlight(tile->StaticClass() != ARamp::StaticClass());
+		if (Cast<ARamp>(tile) == nullptr)
+		{
+			tile->Highlight();
+		}
+		else
+		{
+			if (tile->IsEnabled())
+			{
+				tile->HighlightEdge();
+			}
+		}
 	}
 	else if (prevHighlighted != nullptr)
 	{

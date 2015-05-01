@@ -4,6 +4,7 @@
 
 #include "Tiles/Tile.h"
 #include "Pawns/BallPawn.h"
+#include "Pawns/PawnCastingTrigger.h"
 #include "Ramp.generated.h"
 
 UENUM(BlueprintType)
@@ -28,6 +29,7 @@ class PROJECTTAP_API ARamp : public ATile
 	FScriptDelegate pawnIn;
 	FScriptDelegate pawnOut;
 	float time = 0;
+	friend class APawnCastingTrigger;
 	ABallPawn* ball;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
@@ -35,9 +37,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UCurveFloat* rotationSequence;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UBoxComponent* boxTrigger;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float forceMultiplier;
@@ -54,14 +53,6 @@ public:
 
 	virtual void Highlight(bool litTile = true, bool litEdge = true) override;
 
-	UFUNCTION()
-	void OnBeginTriggerOverlap(AActor* OtherActor,
-						  UPrimitiveComponent* OtherComp,
-					   int32 OtherBodyIndex,
-					   bool bFromSweep,
-					   const FHitResult & SweepResult);
-	UFUNCTION()
-	void OnEndTriggerOverlap(AActor* OtherActor,
-							   UPrimitiveComponent* OtherComp,
-							int32 OtherBodyIndex);
+	virtual void turnOffHighlight() override{}
+
 };

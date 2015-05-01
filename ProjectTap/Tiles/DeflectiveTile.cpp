@@ -98,12 +98,12 @@ void ADeflectiveTile::Spin(float dt)
 
 void ADeflectiveTile::Highlight(bool litTile, bool litEdge)
 {
-
+	Super::Highlight();
 }
 
 void ADeflectiveTile::CancelHighlight()
 {
-	
+	Super::CancelHighlight();
 }
 
 

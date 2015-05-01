@@ -45,6 +45,8 @@ void ABlockingTile::Tick( float DeltaTime )
 			time_counter = 0.0f;
 		}
 	}
+
+	
 }
 
 

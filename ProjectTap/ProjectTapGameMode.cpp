@@ -18,6 +18,12 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void AProjectTapGameMode::LoadNextLevel()
+{
+	//FStreamLevelAction::FindAndCacheLevelStreamingObject(TEXT("TrollLevel"), GetWorld());
+}
+
+
 void AProjectTapGameMode::BeginPlay()
 {
 	if ( UWorld* world = GetWorld() )
@@ -43,6 +49,8 @@ void AProjectTapGameMode::BeginPlay()
 		}
 
 		GetGameState<AProjectTapGameState>()->CurrentPawn = ball;
+
+		//FStreamLevelAction::FindAndCacheLevelStreamingObject(TEXT("TrollLevel"), world);
 	}
 	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::GAME_STATE_PLAYING);
 

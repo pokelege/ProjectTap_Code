@@ -14,7 +14,13 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
     GENERATED_BODY()
 
 	ABallPawn* ball;
+
+	FStreamLevelAction* levelStream;
+
+	void LoadNextLevel();
 public:
+
+
     AProjectTapGameMode ( const FObjectInitializer& initializer );
 
     virtual void BeginPlay() override;

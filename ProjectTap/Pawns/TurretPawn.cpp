@@ -7,6 +7,7 @@
 #include "General/Bullet.h"
 #include "TurretPawn.h"
 #include "ParticleEmitterInstances.h"
+#include "../Tiles/BlockingTile.h"
 
 const FName ATurretPawn::BASE_MESH = FName("/Game/Models/TurretBase");
 const FName ATurretPawn::GUN_MESH = FName("/Game/Models/TurretGun");
@@ -136,15 +137,16 @@ void ATurretPawn::UpdateLaserTag(float dt)
 		FHitResult hit;
 		FCollisionQueryParams queryParam;
 		queryParam.bFindInitialOverlaps = false;
-		queryParam.bReturnFaceIndex = true;
-		FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
-		GetWorld()->LineTraceSingle(hit, pawn->GetActorLocation(), direction, queryParam, objectParam);
+		queryParam.AddIgnoredActor(this);
+		FCollisionObjectQueryParams objectParam;
+		GetWorld()->LineTraceSingle(hit, nozzleLocal, direction, queryParam, objectParam);
 
 		auto laserLength = maxDistance;
 
 		if (hit.bBlockingHit)
 		{
 			laserLength = FVector::Dist(hit.GetActor()->GetActorLocation(), GetActorLocation());
+
 		}
 
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * laserLength, 0);

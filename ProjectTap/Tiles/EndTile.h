@@ -22,8 +22,9 @@ public:
 	virtual void Highlight(bool litTile = true, bool litEdge = true) override;
 
 	UFUNCTION()
-	void OnHit(AActor* OtherActor,
-			   UPrimitiveComponent* OtherComp,
-			FVector NormalImpulse,
-			const FHitResult& Hit);
+	void OnBeginTriggerOverlap(AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult & SweepResult);
 };

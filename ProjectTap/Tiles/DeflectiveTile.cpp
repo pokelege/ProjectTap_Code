@@ -124,4 +124,5 @@ void ADeflectiveTile::deactivate()
 {
 	Super::deactivate();
 	Enable();
+	Super::CancelHighlight();
 }

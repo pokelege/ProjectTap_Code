@@ -22,7 +22,6 @@ class PROJECTTAP_API ADeflectiveTile : public ATile
 	GENERATED_BODY()
 	float timer = 0.0f;
 	float rotationDegreeLimit = 90;
-	float currentRotation = 45;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
@@ -30,6 +29,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		DeflectiveTileType type;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	float currentRotation = 45;
+
 
 	ADeflectiveTile();
 

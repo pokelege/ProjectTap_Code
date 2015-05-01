@@ -24,8 +24,11 @@ ALaser::ALaser()
 	debugArrow->AttachTo(RootComponent);
 	/*laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
 	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);*/
+	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("laser emitter"));
+	mesh->AttachTo(RootComponent);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> laserEmitterMesh(TEXT("/Game/Models/TurretGun"));
+	mesh->SetStaticMesh(laserEmitterMesh.Object);
 
-	
 }
 
 // Called when the game starts or when spawned
@@ -33,14 +36,6 @@ void ALaser::BeginPlay()
 {
 	Super::BeginPlay();
 	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
-	if (currentDepth == 0)
-	{
-		mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("laser emitter"));
-		mesh->AttachTo(RootComponent);
-		ConstructorHelpers::FObjectFinder<UStaticMesh> laserEmitterMesh(TEXT("/Game/Models/TurretGun"));
-		mesh->SetStaticMesh(laserEmitterMesh.Object);
-		mesh->SetWorldScale3D(FVector(20.0f));
-	}
 }
 
 void ALaser::SetLaserDepth(unsigned i)
@@ -118,6 +113,10 @@ void ALaser::checkLaserCollisions(float dt)
 				nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(hit.ImpactPoint, 0);
 				nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length, 0);
 			}
+			else if (tile == nullptr)
+			{
+				KillSubLaser();
+			}
 		}
 	}
 	else
@@ -130,6 +129,7 @@ void ALaser::checkLaserCollisions(float dt)
 	if (currentDepth == 0)
 	{
 		//update laser emitter rotation
+		mesh->SetWorldScale3D(FVector(20.0f));
 		mesh->SetWorldRotation(dir.Rotation());
 	}
 
@@ -143,6 +143,7 @@ void ALaser::SpawnSubLaser(const FVector& start, const FVector& normal)
 	nextLaser = GetWorld()->SpawnActor<ALaser>();
 	nextLaser->SetActorLocation(start);
 	nextLaser->SetLaserDepth(currentDepth + 1);
+	nextLaser->mesh->SetHiddenInGame(true);
 	nextLaser->dir = newDir;
 	nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(start, 0);
 	nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length , 0);

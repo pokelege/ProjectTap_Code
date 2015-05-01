@@ -17,20 +17,26 @@ AEndTile::AEndTile() : ATile()
 
 	if(BoxCollision)
 	{
-		BoxCollision->SetBoxExtent(FVector(0.5f,0.5f,1), false);
+		BoxCollision->SetBoxExtent(FVector(0.1f,0.1f,1), false);
 	}
+	BoxCollision->bGenerateOverlapEvents = true;
+	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
-	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
-	delegate.BindUFunction(this, "OnHit");
-	BoxCollision->OnComponentHit.Add(delegate);
+	pc->SetWorldScale3D(FVector(10.0f, 10.0f, 80.0f));
+	delegate.BindUFunction(this, TEXT("OnBeginTriggerOverlap"));
+	BoxCollision->OnComponentBeginOverlap.Add(delegate);
 }
 
-void AEndTile::OnHit(AActor* OtherActor,
-		   UPrimitiveComponent* OtherComp,
-		   FVector NormalImpulse,
-		   const FHitResult& Hit)
+void AEndTile::OnBeginTriggerOverlap(AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult & SweepResult)
 {
-	if(Cast<ABallPawn>(OtherActor) != nullptr)
+	if (Cast<ABallPawn>(OtherActor) != nullptr)
 	{
 		auto pc = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
 		pc->SetSimulatePhysics(false);
@@ -38,8 +44,10 @@ void AEndTile::OnHit(AActor* OtherActor,
 		FWorldContext* worldContext = gameInstance->GetWorldContext();
 		UWorld* world = worldContext->World();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-		if(gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
+		if (gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
+
 	}
+
 }
 
 void AEndTile::Highlight(bool litTile , bool litEdge)

@@ -17,8 +17,16 @@ class PROJECTTAP_API AJumpTile : public ABaseRampTile
 	FVector force;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
-	AActor* target;
+	float duration = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
+	float height = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
+	AActor* target = nullptr;
 	
+	AJumpTile();
+
 	virtual void BeginPlay() override;
 
 	virtual void activate() override;

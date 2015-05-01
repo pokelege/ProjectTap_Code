@@ -25,7 +25,7 @@ AEndTile::AEndTile() : ATile()
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
-	pc->SetWorldScale3D(FVector(10.0f, 10.0f, 80.0f));
+	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
 	delegate.BindUFunction(this, TEXT("OnBeginTriggerOverlap"));
 	BoxCollision->OnComponentBeginOverlap.Add(delegate);
 }

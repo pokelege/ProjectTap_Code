@@ -2,18 +2,21 @@
 
 #pragma once
 
-#include "Tiles/Tile.h"
+#include "GameFramework/Actor.h"
 #include "BasicTile.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTTAP_API ABasicTile : public ATile
+class PROJECTTAP_API ABasicTile : public AActor
 {
 	GENERATED_BODY()
 	
-	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	UStaticMeshComponent* TileMesh = nullptr;
+
 	ABasicTile();
 	
 };

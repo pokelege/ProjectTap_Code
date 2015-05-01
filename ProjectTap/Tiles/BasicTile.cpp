@@ -6,14 +6,11 @@
 
 
 
-ABasicTile::ABasicTile() :ATile()
+ABasicTile::ABasicTile() 
 {
-	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*FName("/Game/Models/Tile").ToString());
+	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile mesh"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(TEXT("/Game/Models/Tile"));
 	TileMesh->SetStaticMesh(mesh.Object);
-	auto pc = Cast<UPrimitiveComponent>(RootComponent);
-	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
-	if(BoxCollision)
-	{
-		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
-	}
+	TileMesh->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
+	SetRootComponent(TileMesh);
 }

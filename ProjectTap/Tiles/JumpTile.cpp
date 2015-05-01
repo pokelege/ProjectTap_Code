@@ -3,7 +3,7 @@
 #include "ProjectTap.h"
 #include "JumpTile.h"
 
-const FName AJumpTile::JUMP_MESH_PATH = FName("/Game/Models/Ramp");
+const FName AJumpTile::JUMP_MESH_PATH = FName("/Game/Models/Jump");
 
 AJumpTile::AJumpTile() : ABaseRampTile()
 {

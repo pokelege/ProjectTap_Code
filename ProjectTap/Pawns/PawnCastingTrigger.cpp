@@ -3,7 +3,9 @@
 #include "ProjectTap.h"
 #include "PawnCastingTrigger.h"
 #include "BallPawn.h"
-#include "../Tiles/Tile.h"
+#include "../Tiles/BlockingTileBase.h"
+#include "../Tiles/Ramp.h"
+
 
 // Sets default values
 APawnCastingTrigger::APawnCastingTrigger()
@@ -14,11 +16,15 @@ APawnCastingTrigger::APawnCastingTrigger()
 	SetRootComponent(tileOverlapCollision);
 	tileOverlapCollision->bGenerateOverlapEvents = true;
 
-	tileOverlapCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	//tileOverlapCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	tileOverlapCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	tileOverlapCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	tileOverlapCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
 	tileOverlapCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	tileOverlapCollision->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
-	tileOverlapCollision->SetRelativeScale3D(FVector(0.2f, 0.2f, 0.2f));
+	tileOverlapCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	tileOverlapCollision->SetBoxExtent(FVector(1.0f));
+
+	SetActorScale3D(FVector(10.0f, 10.0f, 15.0f));
 
 	FScriptDelegate beginOverLap;
 	beginOverLap.BindUFunction(this, "OnBeginTriggerOverlap");
@@ -51,8 +57,7 @@ void APawnCastingTrigger::Tick( float DeltaTime )
 
 	if (pawn != nullptr)
 	{
-		tileOverlapCollision->SetRelativeLocation(FVector(0.0f, 0.0f, -40.0f));
-		tileOverlapCollision->SetRelativeScale3D(FVector(10.2f, 10.2f, 10.2f));
+		
 	}
 
 }
@@ -63,23 +68,53 @@ void APawnCastingTrigger::OnBeginTriggerOverlap(AActor* OtherActor,
 	bool bFromSweep,
 	const FHitResult & SweepResult)
 {
-	auto tile = Cast<ATile>(OtherActor);
+	bool typeFound = false;
+	auto tile = Cast<ABlockingTileBase>(OtherActor);
 	if (tile != nullptr)
 	{
 		tile->deactivate();
 		tile->Disable();
 		tile->turnOffHighlight();
+		typeFound = true;
 	}
+
+	if (!typeFound)
+	{
+		auto ramp = Cast<ARamp>(OtherActor);
+		if (ramp != nullptr)
+		{
+			ramp->Enable();
+			ramp->HighlightTile();
+			ramp->ball = pawn;
+			typeFound = true;
+		}
+	}
+
 }
 
 void APawnCastingTrigger::OnEndTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	auto tile = Cast<ATile>(OtherActor);
+	bool typeFound = false;
+	auto tile = Cast<ABlockingTileBase>(OtherActor);
 	if (tile != nullptr)
 	{
 		tile->Enable();
 		tile->CancelHighlight();
+		typeFound = true;
+	}
+
+	if (!typeFound)
+	{
+		auto ramp = Cast<ARamp>(OtherActor);
+		if (ramp != nullptr)
+		{
+			ramp->CancelHighlight();
+			ramp->Disable();
+			ramp->ball = nullptr;
+			typeFound = true;
+		}
+
 	}
 }

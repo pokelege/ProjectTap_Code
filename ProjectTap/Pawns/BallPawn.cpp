@@ -38,7 +38,7 @@ ABallPawn::ABallPawn()
 	ballCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ballCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	ballCollision->GetBodyInstance()->bOverrideMass = true;
-	ballCollision->GetBodyInstance()->MassInKg = 10.0f;
+	ballCollision->GetBodyInstance()->MassInKg = 10.0f;	
 
 	//tileOverlapCollision->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Game/Models/Ball"));
@@ -62,7 +62,7 @@ void ABallPawn::BeginPlay()
 	Super::BeginPlay();
 
 	ballCollision->AddImpulse(initialVelocity);
-	trigger = GetWorld()->SpawnActor<APawnCastingTrigger>();
+	trigger = GetWorld()->SpawnActor<APawnCastingTrigger>(GetActorLocation(), FRotator());
 	trigger->SetBallPawn(this);
 }
 
@@ -74,7 +74,9 @@ void ABallPawn::Tick( float DeltaTime )
 	//udpate trigger position
 	if (trigger != nullptr)
 	{
-		trigger->SetActorLocation(GetActorLocation());
+		auto pos = GetActorLocation();
+		pos.Z -= 40.0f;
+		trigger->SetActorLocation(pos);
 	}
 }
 

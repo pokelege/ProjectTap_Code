@@ -9,7 +9,7 @@ ATile::ATile()
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Tile mesh" ) );
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Tile collision"));
-
+	BoxCollision->bGenerateOverlapEvents = true;
 	this->SetRootComponent(BoxCollision);
 
 	TileMesh->AttachTo(this->GetRootComponent());
@@ -21,7 +21,7 @@ ATile::ATile()
 	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	BoxCollision->SetNotifyRigidBodyCollision(true);
 	CancelHighlight();
-
+	
 }
 
 void ATile::activate()
@@ -70,7 +70,7 @@ void ATile::Tick(float DeltaTime)
 
 void ATile::Highlight(bool litTile, bool litEdge)
 {
-	if (!activated)
+	if (!activated && enabled)
 	{
 		material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
 
@@ -94,7 +94,7 @@ void ATile::CancelHighlight()
 {
 	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
 
-	if (material != nullptr)
+	if (material != nullptr && enabled)
 	{
 		material->SetVectorParameterValue(TEXT("BaseColor"), baseColor);
 		material->SetScalarParameterValue(TEXT("glow"), glowPower);
@@ -113,5 +113,63 @@ void ATile::turnOffHighlight()
 		material->SetVectorParameterValue(TEXT("BaseColor"), noColor);
 		material->SetScalarParameterValue(TEXT("glow"), 0.0f);
 		material->SetVectorParameterValue(TEXT("Color"), noColor);
+	}
+}
+
+void ATile::HighlightTile()
+{
+	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
+
+	if (material != nullptr)
+	{
+		FLinearColor noColor{ 0.0f, 0.0f, 0.0f };
+		material->SetVectorParameterValue(TEXT("BaseColor"), baseColorHighlighted);
+	}
+}
+
+void ATile::HighlightEdge()
+{
+	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
+
+	if (material != nullptr)
+	{
+		material->SetVectorParameterValue(TEXT("Color"), glowColorHighlighted);
+	}
+}
+
+void ATile::CancelHighlightTile()
+{
+	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
+
+	if (material != nullptr)
+	{
+		material->SetVectorParameterValue(TEXT("BaseColor"), baseColor);
+	}
+}
+
+void ATile::CancelHighlightEdge()
+{
+	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
+
+	if (material != nullptr)
+	{
+		material->SetVectorParameterValue(TEXT("Color"), glowColor);
+	}
+}
+
+void ATile::turnOffHighlightEdge()
+{
+	if (material != nullptr)
+	{
+		FLinearColor noColor{ 0.0f, 0.0f, 0.0f };
+		material->SetVectorParameterValue(TEXT("Color"), noColor);
+	}
+}
+void ATile::turnOffHighlightTile()
+{
+	if (material != nullptr)
+	{
+		FLinearColor noColor{ 0.0f, 0.0f, 0.0f };
+		material->SetVectorParameterValue(TEXT("BaseColor"), noColor);
 	}
 }

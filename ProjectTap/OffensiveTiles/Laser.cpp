@@ -24,6 +24,8 @@ ALaser::ALaser()
 	debugArrow->AttachTo(RootComponent);
 	/*laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
 	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);*/
+
+	
 }
 
 // Called when the game starts or when spawned
@@ -31,6 +33,14 @@ void ALaser::BeginPlay()
 {
 	Super::BeginPlay();
 	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
+	if (currentDepth == 0)
+	{
+		mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("laser emitter"));
+		mesh->AttachTo(RootComponent);
+		ConstructorHelpers::FObjectFinder<UStaticMesh> laserEmitterMesh(TEXT("/Game/Models/TurretGun"));
+		mesh->SetStaticMesh(laserEmitterMesh.Object);
+		mesh->SetWorldScale3D(FVector(20.0f));
+	}
 }
 
 void ALaser::SetLaserDepth(unsigned i)
@@ -116,6 +126,12 @@ void ALaser::checkLaserCollisions(float dt)
 		KillSubLaser();
 	}
 
+	//only root laser can have an emitter
+	if (currentDepth == 0)
+	{
+		//update laser emitter rotation
+		mesh->SetWorldRotation(dir.Rotation());
+	}
 
 }
 

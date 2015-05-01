@@ -27,6 +27,13 @@ ADeflectiveTile::ADeflectiveTile()
 
 	//BoxCollision->SetWorldRotation(FRotator(0, 45, 0));
 	TileMesh->SetWorldScale3D(FVector(5.0f, 40.0f, 80.0f));
+
+	glowPowerHighlighted = 70.0f;
+	glowColor = FLinearColor(0.03f, 0.07f, 1.0f);
+	baseColor = FLinearColor(0.72f, 3.0f, 0.74, 0.5f);
+
+	glowColorHighlighted *= glowColor;
+	baseColorHighlighted *= glowColor;
 }
 
 

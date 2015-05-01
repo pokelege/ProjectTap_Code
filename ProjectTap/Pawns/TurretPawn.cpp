@@ -62,12 +62,11 @@ bool ATurretPawn::FoundPlayerToHit()
 	ABallPawn* player = gameState->CurrentPawn;
 	if(player == nullptr) return false;
 	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - nozzleLocal);
-	float distance = turretToBallNormal.Size();
-	turretToBallNormal.Normalize();
+	float distance = FVector::DistSquared(player->GetActorLocation(), nozzleLocal);
 
 	float dot = FVector::DotProduct(turretToBallNormal,forward);
 	float radians = FMath::Cos(FMath::DegreesToRadians(FOV));
-	if(dot < radians || distance > maxDistance) return false;
+	if (dot < radians || distance > maxDistance * maxDistance) return false;
 	return true;
 }
 
@@ -121,14 +120,35 @@ void ATurretPawn::SetupPlayerInputComponent(class UInputComponent* InputComponen
 
 void ATurretPawn::UpdateLaserTag(float dt)
 {
-	auto state  = GetWorld()->GetGameState<AProjectTapGameState>();
-	auto pawn = state->CurrentPawn;
-	
-	auto l = pawn->GetActorLocation();
-	direction = (pawn->GetActorLocation() - nozzleLocal).GetSafeNormal();
-	laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * maxDistance,0);
+	if (FoundPlayerToHit())
+	{
 
-	auto gunPrimitive = Cast<UPrimitiveComponent>(TurretGunMesh);
-	gunPrimitive->SetWorldRotation(direction.Rotation());
+		auto state = GetWorld()->GetGameState<AProjectTapGameState>();
+		auto pawn = state->CurrentPawn;
+
+		auto l = pawn->GetActorLocation();
+		direction = (pawn->GetActorLocation() - nozzleLocal).GetSafeNormal();
+
+		auto gunPrimitive = Cast<UPrimitiveComponent>(TurretGunMesh);
+		gunPrimitive->SetWorldRotation(direction.Rotation());
+
+		//change laser length
+		FHitResult hit;
+		FCollisionQueryParams queryParam;
+		queryParam.bFindInitialOverlaps = false;
+		queryParam.bReturnFaceIndex = true;
+		FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
+		GetWorld()->LineTraceSingle(hit, pawn->GetActorLocation(), direction, queryParam, objectParam);
+
+		auto laserLength = maxDistance;
+
+		if (hit.bBlockingHit)
+		{
+			laserLength = FVector::Dist(hit.GetActor()->GetActorLocation(), GetActorLocation());
+		}
+
+		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * laserLength, 0);
+
+	}
 }
 

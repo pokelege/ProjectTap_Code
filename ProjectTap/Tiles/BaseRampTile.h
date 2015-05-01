@@ -20,14 +20,12 @@ protected:
 	FScriptDelegate pawnIn;
 	FScriptDelegate pawnOut;
 	float time = 0;
-	ABallPawn* ball = nullptr;
+
 	friend class APawnCastingTrigger;
+	ABallPawn* ball = nullptr;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UCurveFloat* rotationSequence;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UBoxComponent* boxTrigger;
 
     ABaseRampTile();
 
@@ -38,15 +36,4 @@ public:
 	virtual void turnOffHighlight() override{}
 
 	virtual void activate() override;
-
-	UFUNCTION()
-	void OnBeginTriggerOverlap(AActor* OtherActor,
-							   UPrimitiveComponent* OtherComp,
-							int32 OtherBodyIndex,
-							bool bFromSweep,
-							const FHitResult & SweepResult);
-	UFUNCTION()
-	void OnEndTriggerOverlap(AActor* OtherActor,
-							 UPrimitiveComponent* OtherComp,
-						  int32 OtherBodyIndex);
 };

@@ -35,6 +35,9 @@ public:
 		UEmptyComponent* root;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
+		UStaticMeshComponent* mesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
 		UParticleSystemComponent* laserParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)

@@ -80,7 +80,7 @@ void APawnCastingTrigger::OnBeginTriggerOverlap(AActor* OtherActor,
 
 	if (!typeFound)
 	{
-		auto ramp = Cast<ARamp>(OtherActor);
+		auto ramp = Cast<ABaseRampTile>(OtherActor);
 		if (ramp != nullptr)
 		{
 			ramp->Enable();
@@ -107,7 +107,7 @@ void APawnCastingTrigger::OnEndTriggerOverlap(AActor* OtherActor,
 
 	if (!typeFound)
 	{
-		auto ramp = Cast<ARamp>(OtherActor);
+		auto ramp = Cast<ABaseRampTile>(OtherActor);
 		if (ramp != nullptr)
 		{
 			ramp->CancelHighlight();

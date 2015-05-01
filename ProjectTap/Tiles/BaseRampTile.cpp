@@ -12,26 +12,9 @@ ABaseRampTile::ABaseRampTile() : ATile()
 		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
 		BoxCollision->SetRelativeLocation(FVector(0, 0, -10), false, nullptr);
 		BoxCollision->AddLocalOffset(FVector(0, 0, -10));
+		BoxCollision->bGenerateOverlapEvents = true;
 	}
 
-	if(boxTrigger == nullptr)
-	{
-		boxTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("Ramp box trigger"));
-		boxTrigger->AttachTo(this->GetRootComponent());
-		boxTrigger->SetBoxExtent(FVector(0.5f,0.5f,2.0f), false);
-	}
-
-	boxTrigger->SetCollisionResponseToAllChannels(ECR_Ignore);
-	boxTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	boxTrigger->bGenerateOverlapEvents = true;
-	boxTrigger->SetNotifyRigidBodyCollision(false);
-	boxTrigger->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	boxTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Overlap);
-
-	pawnIn.BindUFunction(this, "OnBeginTriggerOverlap");
-	boxTrigger->OnComponentBeginOverlap.Add(pawnIn);
-	pawnOut.BindUFunction(this, "OnEndTriggerOverlap");
-	boxTrigger->OnComponentEndOverlap.Add(pawnOut);
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(*BASE_RAMP_CURVE_PATH.ToString());
 	if(curve.Object != nullptr) rotationSequence = curve.Object;
 
@@ -44,6 +27,7 @@ ABaseRampTile::ABaseRampTile() : ATile()
 	glowColor = FLinearColor(1.0f, .7f, .0f);
 	glowPowerHighlighted = 100.0f;
 	CancelHighlight();
+	Disable();
 }
 
 void ABaseRampTile::Tick(float DeltaTime)
@@ -78,20 +62,3 @@ void ABaseRampTile::Highlight(bool litTile, bool litEdge)
 	Super::Highlight(false, true);
 }
 
-void ABaseRampTile::OnBeginTriggerOverlap(AActor* OtherActor,
-								  UPrimitiveComponent* OtherComp,
-								  int32 OtherBodyIndex,
-								  bool bFromSweep,
-								  const FHitResult & SweepResult)
-{
-	ball = Cast<ABallPawn>(OtherActor);
-	Super::Highlight(true, false);
-}
-
-void ABaseRampTile::OnEndTriggerOverlap(AActor* OtherActor,
-								UPrimitiveComponent* OtherComp,
-								int32 OtherBodyIndex)
-{
-	if(Cast<ABallPawn>(OtherActor) != nullptr) ball = nullptr;
-	CancelHighlight();
-}

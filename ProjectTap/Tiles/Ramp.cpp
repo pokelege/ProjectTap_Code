@@ -12,6 +12,7 @@ ARamp::ARamp(): ABaseRampTile()
 	TileMesh->SetStaticMesh(mesh.Object);
 	TileMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
 	forceMultiplier = 2000.0f;
+
 }
 
 void ARamp::BeginPlay()

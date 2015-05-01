@@ -24,7 +24,6 @@ void AProjectTapGameMode::BeginPlay()
 	{
 		AActor* playerStart = FindPlayerStart( 0, FString( "Player" ) );
 		FTransform playerTransform = playerStart->GetTransform();
-		ABallPawn* ball;
 		if ( ABallPlayerStart* realPlayerStart = Cast<ABallPlayerStart>( playerStart ) )
 		{
 			FActorSpawnParameters params;
@@ -70,7 +69,6 @@ void AProjectTapGameMode::Respawn()
 	{
 		AActor* playerStart = FindPlayerStart( 0, FString( "Player" ) );
 		FTransform playerTransform = playerStart->GetTransform();
-		ABallPawn* ball;
 		if ( ABallPlayerStart* realPlayerStart = Cast<ABallPlayerStart>( playerStart ) )
 		{
 			FActorSpawnParameters params;
@@ -89,4 +87,9 @@ void AProjectTapGameMode::Respawn()
 		GetGameState<AProjectTapGameState>()->CurrentPawn = ball;
 	}
 	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::GAME_STATE_PLAYING);
+}
+
+ABallPawn* AProjectTapGameMode::getBall()
+{
+	return ball;
 }

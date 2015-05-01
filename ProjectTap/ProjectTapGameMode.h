@@ -2,10 +2,8 @@
 
 #pragma once
 #include "GameFramework/GameMode.h"
-
+#include "Pawns/BallPawn.h"
 #include "ProjectTapGameMode.generated.h"
-
-
 
 /**
  *
@@ -15,6 +13,7 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 {
     GENERATED_BODY()
 
+	ABallPawn* ball;
 public:
     AProjectTapGameMode ( const FObjectInitializer& initializer );
 
@@ -23,4 +22,6 @@ public:
     virtual void Tick ( float DeltaTime ) override;
 
     void Respawn();
+
+	ABallPawn* getBall();
 };

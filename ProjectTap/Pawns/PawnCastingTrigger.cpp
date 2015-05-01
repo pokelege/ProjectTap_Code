@@ -24,7 +24,7 @@ APawnCastingTrigger::APawnCastingTrigger()
 	tileOverlapCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	tileOverlapCollision->SetBoxExtent(FVector(1.0f));
 
-	SetActorScale3D(FVector(10.0f, 10.0f, 15.0f));
+	SetActorScale3D(FVector(20.0f, 20.0f, 15.0f));
 
 	FScriptDelegate beginOverLap;
 	beginOverLap.BindUFunction(this, "OnBeginTriggerOverlap");

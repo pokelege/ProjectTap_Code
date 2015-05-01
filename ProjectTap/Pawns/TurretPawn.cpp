@@ -80,8 +80,7 @@ void ATurretPawn::Fire()
 	float distance = turretToBallNormal.Size();
 	turretToBallNormal.Normalize();
 
-	FRotator rotation;
-	ABullet* bullet = this->GetWorld()->SpawnActor<ABullet>(nozzleLocal, rotation);
+	ABullet* bullet = this->GetWorld()->SpawnActor<ABullet>(nozzleLocal, turretToBallNormal.Rotation());
 
 	UPrimitiveComponent* comp = Cast<UPrimitiveComponent>(bullet->GetRootComponent());
 	comp->AddImpulse(turretToBallNormal * bulletForce);

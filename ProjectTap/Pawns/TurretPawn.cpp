@@ -103,7 +103,10 @@ void ATurretPawn::AttemptToFire(const float& DeltaTime)
 void ATurretPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-	if(!activated) return;
+	if (!activated) {
+		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * 0.0f, 0);
+		return;
+	}
 	UpdateLaserTag(DeltaTime);
 
 	currentFireCooldown += DeltaTime;
@@ -148,9 +151,13 @@ void ATurretPawn::UpdateLaserTag(float dt)
 			laserLength = FVector::Dist(hit.GetActor()->GetActorLocation(), GetActorLocation());
 
 		}
-
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * laserLength, 0);
 
+
 	}
+
+
+
+
 }
 

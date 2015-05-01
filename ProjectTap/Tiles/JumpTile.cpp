@@ -29,7 +29,7 @@ void AJumpTile::activate()
 	ball->ballCollision->AddImpulse(force);
 }
 
-void AJumpTile::calculatePhysics()
+void AJumpTile::calculateImpulse()
 {
 	float vz = FMath::Sqrt(2 * -GetWorld()->GetGravityZ() * height);
 	float forceZ = ball->ballCollision->GetMass() * vz / duration;

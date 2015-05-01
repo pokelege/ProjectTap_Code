@@ -18,6 +18,10 @@ AJumpTile::AJumpTile() : ABaseRampTile()
 void AJumpTile::BeginPlay()
 {
 	Super::BeginPlay();
+	if(target == nullptr) return;
+	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	UPrimitiveComponent* pc = Cast<UPrimitiveComponent>(RootComponent);
+	pc->SetWorldRotation(dir.Rotation());
 }
 
 void AJumpTile::activate()

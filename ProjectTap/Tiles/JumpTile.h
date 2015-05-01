@@ -30,5 +30,5 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void activate() override;
-	void calculatePhysics();
+	void calculateImpulse();
 };

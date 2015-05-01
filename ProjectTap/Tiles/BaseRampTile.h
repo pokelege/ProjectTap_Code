@@ -21,6 +21,7 @@ protected:
 	FScriptDelegate pawnOut;
 	float time = 0;
 	ABallPawn* ball = nullptr;
+	friend class APawnCastingTrigger;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UCurveFloat* rotationSequence;
@@ -33,6 +34,8 @@ public:
 	virtual void Tick( float DeltaTime ) override;
 
 	virtual void Highlight(bool litTile = true, bool litEdge = true) override;
+
+	virtual void turnOffHighlight() override{}
 
 	virtual void activate() override;
 

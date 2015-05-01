@@ -20,7 +20,7 @@ void AJumpTile::BeginPlay()
 
 void AJumpTile::activate()
 {
-	if(rotationSequence == nullptr || target == nullptr || ball == nullptr || activated) return;
+	if(rotationSequence == nullptr || target == nullptr || ball == nullptr || !IsEnabled() || activated) return;
 	Super::activate();
 	//todo check if mass is the same
 	calculateImpulse();

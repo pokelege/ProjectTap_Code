@@ -38,9 +38,9 @@ ABaseRampTile::ABaseRampTile() : ATile()
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 2.0f));
 
-	baseColorHighlighted = FLinearColor(0.8f, 0.0f, .3f);
-	glowColorHighlighted = FLinearColor(2.0f, 1.7f, .3f);
-	baseColor = FLinearColor(0.2f, 0.5f, .3f);
+	baseColorHighlighted = FLinearColor(0.0f, 5.0f, .0f);
+	glowColorHighlighted = FLinearColor(2.0f, 1.7f, .0f);
+	baseColor = FLinearColor(1.0f, 1.0f, 1.0f);
 	glowColor = FLinearColor(1.0f, .7f, .0f);
 	glowPowerHighlighted = 100.0f;
 	CancelHighlight();
@@ -66,7 +66,7 @@ void ABaseRampTile::Tick(float DeltaTime)
 
 void ABaseRampTile::activate()
 {
-	if(rotationSequence == nullptr || ball == nullptr || activated) return;
+	if(rotationSequence == nullptr || ball == nullptr || !IsEnabled() || activated) return;
 	Super::activate();
 	time = 0;
 	auto xyPositionAdjustment = GetActorLocation();

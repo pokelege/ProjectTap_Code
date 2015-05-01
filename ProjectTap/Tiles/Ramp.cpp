@@ -11,31 +11,7 @@ ARamp::ARamp(): ABaseRampTile()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*RAMP_MESH_PATH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
 	TileMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
-
-	if(BoxCollision)
-	{
-		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
-		BoxCollision->SetRelativeLocation(FVector(0, 0, -10), false, nullptr);
-		BoxCollision->AddLocalOffset(FVector(0, 0, -10));
-		BoxCollision->bGenerateOverlapEvents = true;
-	}
-
-	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(*RAMP_CURVE_PATH.ToString());
-	if(curve.Object != nullptr) rotationSequence = curve.Object;
-
-	auto pc = Cast<UPrimitiveComponent>(RootComponent);
-	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 2.0f));
-
 	forceMultiplier = 2000.0f;
-
-
-	baseColorHighlighted = FLinearColor(0.0f, 5.0f, .0f);
-	glowColorHighlighted = FLinearColor(2.0f, 1.7f, .0f);
-	baseColor = FLinearColor(1.0f, 1.0f, 1.0f);
-	glowColor = FLinearColor(1.0f, .7f, .0f);
-	glowPowerHighlighted = 100.0f;
-	CancelHighlight();
-	Disable();
 }
 
 void ARamp::BeginPlay()
@@ -84,12 +60,5 @@ void ARamp::activate()
 			ball->AddVelocity((forceMultiplier * FVector(0,-1,0)) + FVector(0,0,additionalZForce));
 			break;
 	}
-}
-
-
-
-void ARamp::Highlight(bool litTile, bool litEdge) 
-{
-	Super::Highlight(false, true);
 }
 

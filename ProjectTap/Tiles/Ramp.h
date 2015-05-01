@@ -26,18 +26,9 @@ class PROJECTTAP_API ARamp : public ABaseRampTile
 	GENERATED_BODY()
 
 	static const FName RAMP_MESH_PATH;
-	static const FName RAMP_CURVE_PATH;
-	FScriptDelegate pawnIn;
-	FScriptDelegate pawnOut;
-	float time = 0;
-	friend class APawnCastingTrigger;
-	ABallPawn* ball;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	Direction rotationDirection;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UCurveFloat* rotationSequence;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float forceMultiplier;
@@ -51,9 +42,5 @@ public:
 	virtual void Tick( float DeltaTime ) override;
 
 	virtual void activate() override;
-
-	virtual void Highlight(bool litTile = true, bool litEdge = true) override;
-
-	virtual void turnOffHighlight() override{}
 
 };

@@ -23,7 +23,7 @@ void AJumpTile::activate()
 	if(rotationSequence == nullptr || target == nullptr || ball == nullptr || activated) return;
 	Super::activate();
 	//todo check if mass is the same
-	calculatePhysics();
+	calculateImpulse();
 	ball->ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
 	ball->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
 	ball->ballCollision->AddImpulse(force);

@@ -17,8 +17,7 @@ AEndTile::AEndTile() : ATile()
 
 	if(BoxCollision)
 	{
-		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
-		BoxCollision->SetRelativeLocation(FVector(0,0,-1), false, nullptr);
+		BoxCollision->SetBoxExtent(FVector(0.5f,0.5f,1), false);
 	}
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));

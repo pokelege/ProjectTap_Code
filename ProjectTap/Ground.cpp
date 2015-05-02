@@ -16,6 +16,7 @@ AGround::AGround()
 
 	collision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	collision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+	collision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	collision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	collision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 }

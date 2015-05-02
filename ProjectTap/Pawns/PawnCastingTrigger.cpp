@@ -30,9 +30,9 @@ APawnCastingTrigger::APawnCastingTrigger()
 	beginOverLap.BindUFunction(this, "OnBeginTriggerOverlap");
 	tileOverlapCollision->OnComponentBeginOverlap.Add(beginOverLap);
 
-	FScriptDelegate beginEndLap;
-	beginEndLap.BindUFunction(this, "OnEndTriggerOverlap");
-	tileOverlapCollision->OnComponentEndOverlap.Add(beginEndLap);
+	FScriptDelegate endEndLap;
+	endEndLap.BindUFunction(this, "OnEndTriggerOverlap");
+	tileOverlapCollision->OnComponentEndOverlap.Add(endEndLap);
 
 
 }
@@ -94,7 +94,9 @@ void APawnCastingTrigger::OnBeginTriggerOverlap(AActor* OtherActor,
 
 void APawnCastingTrigger::OnEndTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex)
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult & SweepResult)
 {
 	bool typeFound = false;
 	auto tile = Cast<ABlockingTileBase>(OtherActor);

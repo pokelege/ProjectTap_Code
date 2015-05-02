@@ -125,11 +125,11 @@ void ALaser::checkLaserCollisions(float dt)
 		KillSubLaser();
 	}
 
-	//only root laser can have an emitter
+	//only root laser can have an emitter mesh
 	if (currentDepth == 0)
 	{
 		//update laser emitter rotation
-		mesh->SetWorldScale3D(FVector(20.0f));
+		mesh->SetWorldScale3D(FVector(10.0f));
 		mesh->SetWorldRotation(dir.Rotation());
 	}
 

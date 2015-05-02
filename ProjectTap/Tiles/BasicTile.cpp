@@ -9,6 +9,6 @@ ABasicTile::ABasicTile()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(TEXT("/Game/Models/Tile"));
 	TileMesh->SetStaticMesh(mesh.Object);
 	TileMesh->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
-	TileMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetRootComponent(TileMesh);
 }

@@ -59,6 +59,8 @@ void UTilesManager::HighLightTile(ATile* tile)
 	else if (prevHighlighted != nullptr)
 	{
 		prevHighlighted->CancelHighlight();
+		prevHighlighted->CancelHighlightEdge();
+		prevHighlighted->CancelHighlightTile();
 		prevHighlighted = nullptr;
 	}
 }

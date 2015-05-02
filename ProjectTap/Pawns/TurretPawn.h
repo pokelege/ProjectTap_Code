@@ -14,7 +14,7 @@ class PROJECTTAP_API ATurretPawn : public APawn
 	static const FName GUN_MESH;
 	FVector nozzleLocal;
 	FVector direction;
-	float currentUpdateCooldown = 0, currentFireCooldown = 0;
+	float currentFireCooldown = 0;
 
 	void UpdateLaserTag(float dt);
 public:

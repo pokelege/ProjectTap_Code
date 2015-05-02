@@ -90,11 +90,8 @@ void ATurretPawn::Fire()
 void ATurretPawn::AttemptToFire(const float& DeltaTime)
 {
 
-	currentUpdateCooldown += DeltaTime;
-
 	if(currentFireCooldown < fireRate ) return;
 
-	if(!FoundPlayerToHit()) return;
 	Fire();
 	currentFireCooldown = 0;
 }
@@ -107,12 +104,14 @@ void ATurretPawn::Tick( float DeltaTime )
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * 0.0f, 0);
 		return;
 	}
-	UpdateLaserTag(DeltaTime);
-
 	currentFireCooldown += DeltaTime;
-	AttemptToFire(DeltaTime);
-	if(currentUpdateCooldown < updateInterval) return;
-	currentUpdateCooldown = 0;
+	if(FoundPlayerToHit())
+	{
+		nozzleLocal = TurretGunMesh->GetSocketLocation("Nozzle");
+		laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocal, 0);
+		UpdateLaserTag(DeltaTime);
+		AttemptToFire(DeltaTime);
+	}
 }
 
 // Called to bind functionality to input
@@ -124,9 +123,6 @@ void ATurretPawn::SetupPlayerInputComponent(class UInputComponent* InputComponen
 
 void ATurretPawn::UpdateLaserTag(float dt)
 {
-	if (FoundPlayerToHit())
-	{
-
 		auto state = GetWorld()->GetGameState<AProjectTapGameState>();
 		auto pawn = state->CurrentPawn;
 
@@ -152,12 +148,5 @@ void ATurretPawn::UpdateLaserTag(float dt)
 
 		}
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * laserLength, 0);
-
-
-	}
-
-
-
-
 }
 

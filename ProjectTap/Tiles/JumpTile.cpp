@@ -19,7 +19,7 @@ void AJumpTile::BeginPlay()
 {
 	Super::BeginPlay();
 	if(target == nullptr) return;
-	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
 	UPrimitiveComponent* pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldRotation(dir.Rotation());
 }

@@ -115,8 +115,8 @@ void ATurretPawn::Tick( float DeltaTime )
 	else
 	{
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * 0.0f, 0);
-		auto gunPrimitive = Cast<UPrimitiveComponent>(TurretGunMesh);
-		gunPrimitive->SetWorldRotation(FRotator());
+// 		auto gunPrimitive = Cast<UPrimitiveComponent>(TurretGunMesh);
+// 		gunPrimitive->SetWorldRotation(FRotator());
 	}
 }
 

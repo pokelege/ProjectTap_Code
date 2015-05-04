@@ -4,6 +4,7 @@
 #include "Laser.h"
 #include "../Pawns/BallPawn.h"
 #include "../Tiles/DeflectiveTile.h"
+#include "../Tiles/BlockingTile.h"
 #include "Classes/Particles/ParticleEmitter.h"
 
 // Sets default values
@@ -99,6 +100,16 @@ void ALaser::checkLaserCollisions(float dt)
 				//cut the laser length to make sure new sub laser start doesn't hit the same object
 				SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
 			}
+			else if (tile == nullptr)
+			{
+				auto blockingTile = Cast<ABlockingTile>(hitActor);
+				if (blockingTile != nullptr)
+				{
+					blockingTile->ApplyActivationTimeFactor(0.4f);
+				}
+
+				KillSubLaser();
+			}
 
 			//if sub laser already exists then keep updating its rotation and position
 			auto subLaserExists = currentDepth < MAX_DEPTH && nextLaser != nullptr && tile != nullptr;
@@ -112,11 +123,7 @@ void ALaser::checkLaserCollisions(float dt)
 				nextLaser->dir = newDir.IsNormalized() ? newDir : newDir.GetSafeNormal();
 				nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(hit.ImpactPoint, 0);
 				nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length, 0);
-			}
-			else if (tile == nullptr)
-			{
-				KillSubLaser();
-			}
+			}			
 		}
 	}
 	else

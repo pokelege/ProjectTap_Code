@@ -62,7 +62,7 @@ bool ATurretPawn::FoundPlayerToHit()
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
 	ABallPawn* player = gameState->CurrentPawn;
 	if(player == nullptr) return false;
-	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - nozzleLocal);
+	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - nozzleLocal).GetSafeNormal();
 	float distance = FVector::DistSquared(player->GetActorLocation(), nozzleLocal);
 
 	float dot = FVector::DotProduct(turretToBallNormal,forward);
@@ -101,14 +101,13 @@ void ATurretPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 	if (!activated) {
-		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * 0.0f, 0);
+		laserTag->EmitterInstances[0]->SetBeamTargetPoint(TurretGunMesh->GetSocketLocation("Nozzle") + direction * 0.0f, 0);
 		return;
 	}
 	currentFireCooldown += DeltaTime;
 	if(FoundPlayerToHit())
 	{
-		nozzleLocal = TurretGunMesh->GetSocketLocation("Nozzle");
-		laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocal, 0);
+		laserTag->EmitterInstances[0]->SetBeamSourcePoint(TurretGunMesh->GetSocketLocation("Nozzle"), 0);
 		UpdateLaserTag(DeltaTime);
 		AttemptToFire(DeltaTime);
 	}

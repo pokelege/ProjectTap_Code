@@ -162,6 +162,6 @@ void ATurretPawn::TakeDamage(float deathDuration)
 
 	if (current_hp < 0.0f)
 	{
-		kill();
+		//kill();
 	}
 }

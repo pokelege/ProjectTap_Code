@@ -60,7 +60,7 @@ public:
 
 	void Fire();	
 
-	void TakeDamage(float deathDuration);
+	void TakeDamage(float deathDuration) override;
 
 	void kill();
 };

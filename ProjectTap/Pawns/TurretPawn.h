@@ -13,6 +13,7 @@ class PROJECTTAP_API ATurretPawn : public APawn
 	static const FName BASE_MESH;
 	static const FName GUN_MESH;
 	FVector nozzleLocal;
+	FVector nozzleLocalUpdatable;
 	FVector direction;
 	float currentFireCooldown = 0;
 	const float MAX_HEALTH = 10.0f;
@@ -60,7 +61,7 @@ public:
 
 	void Fire();	
 
-	void TakeDamage(float deathDuration);
+	void Damage(float deathDuration);
 
-	void kill();
+	void Kill();
 };

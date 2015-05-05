@@ -22,7 +22,11 @@ ATurretPawn::ATurretPawn()
 
 	UBoxComponent* collisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Turret Collision"));
 	this->SetRootComponent(collisionBox);
-
+	collisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	collisionBox->bGenerateOverlapEvents = false;
+	collisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	collisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	collisionBox->SetNotifyRigidBodyCollision(true);
 	UStaticMeshComponent* baseMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Turret base mesh" ) );
 	baseMesh->SetStaticMesh(baseMeshSource.Object);
 	baseMesh->AttachTo(collisionBox);

@@ -5,6 +5,7 @@
 #include "../Pawns/BallPawn.h"
 #include "../Tiles/DeflectiveTile.h"
 #include "../Tiles/BlockingTile.h"
+#include "../Pawns/TurretPawn.h"
 #include "Classes/Particles/ParticleEmitter.h"
 
 // Sets default values
@@ -93,22 +94,40 @@ void ALaser::checkLaserCollisions(float dt)
 			//if not set laser end point
 			laserEmitter->SetBeamTargetPoint(hit.ImpactPoint, 0);
 
+			bool typeFound = false;
 			//if hits deflective tile then spawn a new laser object
 			auto tile = Cast<ADeflectiveTile>(hitActor);
 			if (CanSpawnSubLaser() && tile != nullptr)
 			{
+				typeFound = true;
 				//cut the laser length to make sure new sub laser start doesn't hit the same object
 				SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
 			}
-			else if (tile == nullptr)
+			else
+			{
+				KillSubLaser();
+			}
+
+			if (!typeFound)
 			{
 				auto blockingTile = Cast<ABlockingTile>(hitActor);
 				if (blockingTile != nullptr)
 				{
+					typeFound = true;
 					blockingTile->ApplyActivationTimeFactor(0.4f);
 				}
 
-				KillSubLaser();
+			} 
+
+			if (!typeFound)
+			{
+				auto turret = Cast<ATurretPawn>(hitActor);
+				if (turret != nullptr)
+				{
+					typeFound = true;
+					//turret->A
+				}
+
 			}
 
 			//if sub laser already exists then keep updating its rotation and position

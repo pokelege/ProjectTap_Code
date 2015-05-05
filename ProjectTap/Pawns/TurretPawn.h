@@ -15,6 +15,8 @@ class PROJECTTAP_API ATurretPawn : public APawn
 	FVector nozzleLocal;
 	FVector direction;
 	float currentFireCooldown = 0;
+	const float MAX_HEALTH = 10.0f;
+	float current_hp = MAX_HEALTH;
 
 	void UpdateLaserTag(float dt);
 public:
@@ -56,5 +58,9 @@ public:
 
 	bool FoundPlayerToHit();
 
-	void Fire();
+	void Fire();	
+
+	void TakeDamage(float deathDuration);
+
+	void kill();
 };

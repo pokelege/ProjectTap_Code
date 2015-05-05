@@ -125,7 +125,6 @@ void ATurretPawn::SetupPlayerInputComponent(class UInputComponent* InputComponen
 	Super::SetupPlayerInputComponent(InputComponent);
 }
 
-
 void ATurretPawn::UpdateLaserTag(float dt)
 {
 		auto state = GetWorld()->GetGameState<AProjectTapGameState>();
@@ -155,3 +154,13 @@ void ATurretPawn::UpdateLaserTag(float dt)
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * laserLength, 0);
 }
 
+void ATurretPawn::TakeDamage(float deathDuration)
+{	
+	auto damage = MAX_HEALTH / deathDuration;
+	current_hp -= damage;
+
+	if (current_hp < 0.0f)
+	{
+		kill();
+	}
+}

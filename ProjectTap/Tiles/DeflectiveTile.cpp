@@ -11,13 +11,17 @@ ADeflectiveTile::ADeflectiveTile()
 	TileMesh->DetachFromParent();
 
 	FName path("/Game/Models/DeflectingTile");
+	FName framePath("/Game/Models/DeflectingTileFrame");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
+	ConstructorHelpers::FObjectFinder<UStaticMesh> frameMesh(*framePath.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
 	RootComponent = nullptr;
 	SetRootComponent(TileMesh);
 	BoxCollision->DetachFromParent();
 	BoxCollision->SetBoxExtent(FVector(0.0f));
-
+	UStaticMeshComponent* frameMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Frame mesh" ) );
+	frameMeshComponent->SetStaticMesh(frameMesh.Object);
+	frameMeshComponent->AttachTo(TileMesh);
 	TileMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	TileMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	TileMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);

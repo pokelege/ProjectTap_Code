@@ -9,14 +9,42 @@ UCLASS()
 class PROJECTTAP_API AMovingTile : public ATile
 {
 	GENERATED_BODY()
-	
+
+	unsigned int currNode = 0;
+
+	float pauseTimeCounter = 0.0f;
+
+	float beta = 0.0f;
+
+	FVector currDir;
+
+	bool pathReversed = false;
+
+	void UpdateMovement(float dt);
+
+	unsigned NextIndex();
+
+	FVector NextDirection();
+
+	unsigned IncrementIndex();
+
+	void reset();
 public:	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
 	TArray<FVector> path;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
-	float speed = 100.0f;
+	AActor* carryOn = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
+	float speed = 50.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
+	float pauseBetweenNodes = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
+	bool enabled = true;
 
 	// Sets default values for this actor's properties
 	AMovingTile();

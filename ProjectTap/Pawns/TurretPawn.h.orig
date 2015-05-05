@@ -61,6 +61,11 @@ public:
 
 	void Fire();	
 
+<<<<<<< HEAD
+	void TakeDamage(float deathDuration);
+=======
 	void Damage(float deathDuration);
+>>>>>>> ab18fa08cacb74536c56e4578536b231cce9f3a4
+
 	void Kill();
 };

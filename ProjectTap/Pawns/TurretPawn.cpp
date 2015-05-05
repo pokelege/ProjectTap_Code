@@ -20,9 +20,16 @@ ATurretPawn::ATurretPawn()
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> baseMeshSource(*BASE_MESH.ToString());
 
+	UBoxComponent* collisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Turret Collision"));
+	this->SetRootComponent(collisionBox);
+	collisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	collisionBox->bGenerateOverlapEvents = false;
+	collisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	collisionBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	collisionBox->SetNotifyRigidBodyCollision(true);
 	UStaticMeshComponent* baseMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Turret base mesh" ) );
 	baseMesh->SetStaticMesh(baseMeshSource.Object);
-	this->SetRootComponent(baseMesh);
+	baseMesh->AttachTo(collisionBox);
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> gunMesh(*GUN_MESH.ToString());
 	TurretGunMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Turret gun mesh" ) );
@@ -50,7 +57,9 @@ void ATurretPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	nozzleLocal = TurretGunMesh->GetSocketLocation("Nozzle");
+	nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
 	laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocal, 0);
+	direction = this->GetActorForwardVector();
 }
 
 bool ATurretPawn::FoundPlayerToHit()
@@ -100,20 +109,23 @@ void ATurretPawn::AttemptToFire(const float& DeltaTime)
 void ATurretPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+	nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
 	if (!activated) {
-		laserTag->EmitterInstances[0]->SetBeamTargetPoint(TurretGunMesh->GetSocketLocation("Nozzle") + direction * 0.0f, 0);
+		laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocalUpdatable, 0);
+		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable, 0);
 		return;
 	}
 	currentFireCooldown += DeltaTime;
+	laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocalUpdatable, 0);
 	if(FoundPlayerToHit())
 	{
-		laserTag->EmitterInstances[0]->SetBeamSourcePoint(TurretGunMesh->GetSocketLocation("Nozzle"), 0);
+
 		UpdateLaserTag(DeltaTime);
 		AttemptToFire(DeltaTime);
 	}
 	else
 	{
-		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * 0.0f, 0);
+		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable + direction * maxDistance, 0);
 // 		auto gunPrimitive = Cast<UPrimitiveComponent>(TurretGunMesh);
 // 		gunPrimitive->SetWorldRotation(FRotator());
 	}
@@ -131,7 +143,7 @@ void ATurretPawn::UpdateLaserTag(float dt)
 		auto pawn = state->CurrentPawn;
 
 		auto l = pawn->GetActorLocation();
-		direction = (pawn->GetActorLocation() - nozzleLocal).GetSafeNormal();
+		direction = (pawn->GetActorLocation() - nozzleLocalUpdatable).GetSafeNormal();
 
 		auto gunPrimitive = Cast<UPrimitiveComponent>(TurretGunMesh);
 		gunPrimitive->SetWorldRotation(direction.Rotation());
@@ -142,25 +154,37 @@ void ATurretPawn::UpdateLaserTag(float dt)
 		queryParam.bFindInitialOverlaps = false;
 		queryParam.AddIgnoredActor(this);
 		FCollisionObjectQueryParams objectParam;
-		GetWorld()->LineTraceSingle(hit, nozzleLocal, direction, queryParam, objectParam);
+		GetWorld()->LineTraceSingle(hit, nozzleLocalUpdatable, direction, queryParam, objectParam);
 
 		auto laserLength = maxDistance;
 
 		if (hit.bBlockingHit)
 		{
-			laserLength = FVector::Dist(hit.GetActor()->GetActorLocation(), GetActorLocation());
-
+			laserLength = (pawn->GetActorLocation() - nozzleLocalUpdatable).Size();
 		}
-		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocal + direction * laserLength, 0);
+		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable + direction * laserLength, 0);
 }
 
-void ATurretPawn::TakeDamage(float deathDuration)
+void ATurretPawn::Damage(float deathDuration)
 {	
-	auto damage = MAX_HEALTH / deathDuration;
-	current_hp -= damage;
-
-	if (current_hp < 0.0f)
+	if(deathDuration == 0.0f)
 	{
-		//kill();
+		Kill();
 	}
+	else
+	{
+		auto damage = MAX_HEALTH / deathDuration;
+		current_hp -= damage;
+
+		if (current_hp < 0.0f)
+		{
+			Kill();
+		}
+	}
+
+}
+
+void ATurretPawn::Kill()
+{
+
 }

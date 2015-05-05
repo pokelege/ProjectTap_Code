@@ -103,7 +103,7 @@ void ALaser::checkLaserCollisions(float dt)
 				//cut the laser length to make sure new sub laser start doesn't hit the same object
 				SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
 			}
-			else
+			else if (tile == nullptr)
 			{
 				KillSubLaser();
 			}
@@ -125,7 +125,6 @@ void ALaser::checkLaserCollisions(float dt)
 				if (turret != nullptr)
 				{
 					typeFound = true;
-					//turret->A
 				}
 
 			}

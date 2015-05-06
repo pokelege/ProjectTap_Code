@@ -10,7 +10,6 @@ class PROJECTTAP_API AMovingTile : public ATile
 {
 	GENERATED_BODY()
 
-	unsigned int currNode = 0;
 
 	float pauseTimeCounter = 0.0f;
 
@@ -20,16 +19,21 @@ class PROJECTTAP_API AMovingTile : public ATile
 
 	bool pathReversed = false;
 
+	int32 currNode = 0;
+
 	void UpdateMovement(float dt);
 
-	unsigned NextIndex();
+	int32 NextIndex();
 
 	FVector NextDirection();
 
-	unsigned IncrementIndex();
+	int32 IncrementIndex();
 
 	void reset();
 public:	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
+	UCurveFloat* moveCurve;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
 	TArray<FVector> path;

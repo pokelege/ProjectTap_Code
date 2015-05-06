@@ -15,6 +15,10 @@ AMovingTile::AMovingTile()
 	TileMesh->SetStaticMesh(mesh.Object);
 	TileMesh->SetWorldScale3D(FVector(40.0f, 40.0f, 10.0f));
 	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("/Game/Curves/MovementLinear"));
+	if (curve.Object != nullptr) moveCurve = curve.Object;
+	
 }
 
 // Called when the game starts or when spawned
@@ -22,9 +26,15 @@ void AMovingTile::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (path.Num() > 0)
+	if (path.Num() > 1)
 	{
+		currDir = (path[NextIndex()] - path[currNode]).GetSafeNormal();
 		SetActorLocation(path[currNode]);
+	}
+
+	if (carryOn != nullptr)
+	{
+		Children.Add(carryOn);
 	}
 }
 
@@ -43,75 +53,61 @@ void AMovingTile::Tick( float DeltaTime )
 	UpdateMovement(DeltaTime);
 }
 
-
 void AMovingTile::UpdateMovement(float dt)
 {
 	auto next = NextIndex();
 	auto nextPos = path[next];
-	bool reachedNext = FVector::Dist(GetActorLocation(), nextPos) < 1.0f;
+	auto remainingDistSq = FVector::DistSquared(GetActorLocation(), nextPos);
+	auto checkDirection = nextPos - GetActorLocation();
+	bool reachedNext = FVector::DotProduct(checkDirection, currDir) < 0.0f;
+
+	auto distanceBetweenCurrentNodes = FVector::DistSquared(nextPos, path[currNode]);
+	float min, max;
+
+	moveCurve->GetTimeRange(min, max);
 
 	if (!reachedNext)
 	{
-		auto newCurr = GetActorLocation() + currDir * speed * dt;
+		auto speedFactor = moveCurve->GetFloatValue(1.0f - remainingDistSq / distanceBetweenCurrentNodes);
+		auto newCurr = GetActorLocation() + currDir * speed * speedFactor * dt;
 		SetActorLocation(newCurr);
-
-		if (carryOn != nullptr)
-		{
-			carryOn->SetActorLocation(newCurr);
-		}
+		
 	}
 	else if (pauseTimeCounter < pauseBetweenNodes)
 	{
-		SetActorLocation(nextPos);
+		if (pauseTimeCounter == 0.0f)
+		{
+			SetActorLocation(nextPos);
+		}
 		pauseTimeCounter += dt;
 	}
 	else
 	{
 		IncrementIndex();
 		reset();
-
-	}
-
+	}	
 }
 
-unsigned AMovingTile::NextIndex()
+int32 AMovingTile::NextIndex()
 {
-	bool isBegining = currNode == 0 && pathReversed;
-	bool isEnd = currNode == path.Num() - 1 && !pathReversed;
+	int dir = pathReversed ? -1 : 1;
 
-	if (isBegining || isEnd)
+	return currNode + dir;
+}
+
+int32 AMovingTile::IncrementIndex()
+{
+	bool exceedEnd = NextIndex() >= path.Num() - 1;
+	bool exceedBegining = NextIndex() == 0;
+
+	currNode = NextIndex();
+
+	if (exceedEnd || exceedBegining)
 	{
 		pathReversed = !pathReversed;
 	}
 
-	if (pathReversed)
-	{
-		return currNode - 1;
-	}
-	else
-	{
-		return  currNode + 1;
-	}
-}
-
-unsigned AMovingTile::IncrementIndex()
-{
-	bool isBegining = currNode == 0;
-	bool isEnd = currNode == path.Num() - 1;
-
-	if (isBegining || isEnd)
-	{
-		pathReversed = !pathReversed;
-	}
-
-	if (pathReversed)
-	{
-		return --currNode;
-	}
-	else
-	{
-		return  ++currNode;
-	}
+	return currNode;
 }
 
 

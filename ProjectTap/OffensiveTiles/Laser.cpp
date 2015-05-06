@@ -199,3 +199,8 @@ void ALaser::KillSubLaser()
 }
 
 
+void ALaser::SetLocationWhenCarried(FVector& location)
+{
+	
+}
+

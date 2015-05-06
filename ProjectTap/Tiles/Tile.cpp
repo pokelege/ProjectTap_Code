@@ -173,3 +173,8 @@ void ATile::turnOffHighlightTile()
 		material->SetVectorParameterValue(TEXT("BaseColor"), noColor);
 	}
 }
+
+void ATile::SetLocationWhenCarried(FVector& location)
+{
+	SetActorLocation(location);
+}

@@ -33,10 +33,10 @@ void ABlockingTile::Tick( float DeltaTime )
 	//count time
 	if (activated) {
 
-		if (time_counter < activation_time)
+		if (time_counter < activation_time * activation_time_factor)
 		{
 			time_counter += DeltaTime;
-			auto beta = time_counter / activation_time ;
+			auto beta = time_counter / activation_time / activation_time_factor;
 			lerpMaterialColorForCoolDown(beta);
 		}
 		else
@@ -46,7 +46,7 @@ void ABlockingTile::Tick( float DeltaTime )
 		}
 	}
 
-	
+	activation_time_factor = 1.0f;
 }
 
 

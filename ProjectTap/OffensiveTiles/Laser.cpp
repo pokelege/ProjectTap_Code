@@ -97,13 +97,13 @@ void ALaser::checkLaserCollisions(float dt)
 			bool typeFound = false;
 			//if hits deflective tile then spawn a new laser object
 			auto tile = Cast<ADeflectiveTile>(hitActor);
-			if (CanSpawnSubLaser() && tile != nullptr)
+			if (CanSpawnSubLaser() && tile != nullptr && hit.Component != tile->frameMeshComponent)
 			{
 				typeFound = true;
 				//cut the laser length to make sure new sub laser start doesn't hit the same object
 				SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
 			}
-			else if (tile == nullptr)
+			else if(tile == nullptr || hit.Component == tile->frameMeshComponent)
 			{
 				KillSubLaser();
 			}

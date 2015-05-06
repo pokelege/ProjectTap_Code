@@ -8,31 +8,27 @@
 ADeflectiveTile::ADeflectiveTile()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	TileMesh->DetachFromParent();
 
 	FName path("/Game/Models/DeflectingTile");
 	FName framePath("/Game/Models/DeflectingTileFrame");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	ConstructorHelpers::FObjectFinder<UStaticMesh> frameMesh(*framePath.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	RootComponent = nullptr;
-	SetRootComponent(TileMesh);
-	BoxCollision->DetachFromParent();
-	BoxCollision->SetBoxExtent(FVector(0.0f));
+	BoxCollision->SetBoxExtent(FVector(0.9f));
 	frameMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Frame mesh" ) );
 
 	frameMeshComponent->SetStaticMesh(frameMesh.Object);
 	frameMeshComponent->AttachTo(TileMesh);
 
-	TileMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	TileMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	TileMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	TileMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
-	TileMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	//TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	//BoxCollision->SetWorldRotation(FRotator(0, 45, 0));
-	TileMesh->SetWorldScale3D(FVector(5.0f, 40.0f, 80.0f));
+	BoxCollision->SetWorldScale3D(FVector(5.0f, 40.0f, 80.0f));
 
 	glowPowerHighlighted = 70.0f;
 	glowColor = FLinearColor(0.03f, 0.07f, 1.0f);

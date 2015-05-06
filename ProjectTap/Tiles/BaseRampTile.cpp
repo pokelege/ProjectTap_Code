@@ -52,7 +52,8 @@ void ABaseRampTile::activate()
 {
 	if(rotationSequence == nullptr || ball == nullptr || !IsEnabled() || activated) return;
 	Super::activate();
-	time = 0;
+	time = 0.0f;
+
 	auto xyPositionAdjustment = GetActorLocation();
 	ball->ResetBallXYPosition(GetActorLocation());
 }

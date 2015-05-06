@@ -101,7 +101,13 @@ void ABallPawn::AddVelocity(const FVector& vel, bool clearForce)
 void ABallPawn::ResetBallXYPosition(const FVector& position)
 {
 	FVector newPosition(position.X, position.Y, GetActorLocation().Z);
-	SetActorLocation(newPosition);
+
+	auto newDir = newPosition - GetActorLocation();
+	if (FVector::DotProduct(newDir, ballCollision->GetPhysicsLinearVelocity()) > 0.0f)
+	{
+		SetActorLocation(newPosition);
+	}
+
 }
 
 

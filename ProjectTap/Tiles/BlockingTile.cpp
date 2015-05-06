@@ -46,7 +46,17 @@ void ABlockingTile::Tick( float DeltaTime )
 		}
 	}
 
+	resetActivationTimeFactor();
+}
+
+void ABlockingTile::resetActivationTimeFactor()
+{
 	activation_time_factor = 1.0f;
 }
 
+
+void ABlockingTile::ApplyActivationTimeFactor(float factor)
+{
+	activation_time_factor = factor;
+}
 

@@ -79,4 +79,7 @@ public:
 	virtual void CancelHighlight();
 	virtual void turnOffHighlight();
 
+	//called when the tile is on the moving tile
+	virtual void SetLocationWhenCarried(FVector& location);
+
 };

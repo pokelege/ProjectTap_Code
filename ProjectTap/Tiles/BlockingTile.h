@@ -13,19 +13,19 @@ class PROJECTTAP_API ABlockingTile : public ABlockingTileBase
 {
 	GENERATED_BODY()
 	float time_counter = 0.0f;
-
-	friend class ALaser;
 	float activation_time_factor = 1.0f;
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		float activation_time = 3.0f;
-	
-
-
   ABlockingTile( );
   
    virtual void BeginPlay() override;
    virtual void Tick( float DeltaTime ) override;
+
+   void ApplyActivationTimeFactor(float factor);
+
+private:
+	void resetActivationTimeFactor();
 
 };

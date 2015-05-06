@@ -5,6 +5,7 @@
 #include "../Pawns/BallPawn.h"
 #include "../Tiles/DeflectiveTile.h"
 #include "../Tiles/BlockingTile.h"
+#include "../Pawns/TurretPawn.h"
 #include "Classes/Particles/ParticleEmitter.h"
 
 // Sets default values
@@ -93,29 +94,43 @@ void ALaser::checkLaserCollisions(float dt)
 			//if not set laser end point
 			laserEmitter->SetBeamTargetPoint(hit.ImpactPoint, 0);
 
+			bool typeFound = false;
 			//if hits deflective tile then spawn a new laser object
 			auto tile = Cast<ADeflectiveTile>(hitActor);
-			if (CanSpawnSubLaser() && tile != nullptr)
+			if (CanSpawnSubLaser() && tile != nullptr && hit.Component != tile->frameMeshComponent)
 			{
+				typeFound = true;
 				//cut the laser length to make sure new sub laser start doesn't hit the same object
 				SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
 			}
-			else if (tile == nullptr)
+			else if(tile == nullptr || hit.Component == tile->frameMeshComponent)
 			{
 				KillSubLaser();
+			}
 
+			if (!typeFound)
+			{
 				auto blockingTile = Cast<ABlockingTile>(hitActor);
 				if (blockingTile != nullptr)
 				{
-					blockingTile->activation_time_factor = 0.5f;
+					typeFound = true;
+					blockingTile->ApplyActivationTimeFactor(0.4f);
 				}
+
+			} 
+
+			if (!typeFound)
+			{
+				auto turret = Cast<ATurretPawn>(hitActor);
+				if (turret != nullptr)
+				{
+					typeFound = true;
+				}
+
 			}
-
-
 
 			//if sub laser already exists then keep updating its rotation and position
 			auto subLaserExists = currentDepth < MAX_DEPTH && nextLaser != nullptr && tile != nullptr;
-		
 			if (subLaserExists)
 			{
 				auto incomingVector = hit.ImpactPoint - GetActorLocation();
@@ -126,8 +141,7 @@ void ALaser::checkLaserCollisions(float dt)
 				nextLaser->dir = newDir.IsNormalized() ? newDir : newDir.GetSafeNormal();
 				nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(hit.ImpactPoint, 0);
 				nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length, 0);
-			}
-
+			}			
 		}
 	}
 	else
@@ -184,4 +198,9 @@ void ALaser::KillSubLaser()
 	}
 }
 
+
+void ALaser::SetLocationWhenCarried(FVector& location)
+{
+	
+}
 

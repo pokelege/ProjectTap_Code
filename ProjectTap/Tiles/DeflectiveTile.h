@@ -33,7 +33,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float currentRotation = 45;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	UStaticMeshComponent* frameMeshComponent;
 	ADeflectiveTile();
 
 	virtual void BeginPlay() override;

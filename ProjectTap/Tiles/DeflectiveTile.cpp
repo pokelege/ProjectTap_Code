@@ -19,9 +19,11 @@ ADeflectiveTile::ADeflectiveTile()
 	SetRootComponent(TileMesh);
 	BoxCollision->DetachFromParent();
 	BoxCollision->SetBoxExtent(FVector(0.0f));
-	UStaticMeshComponent* frameMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Frame mesh" ) );
+	frameMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Frame mesh" ) );
+
 	frameMeshComponent->SetStaticMesh(frameMesh.Object);
 	frameMeshComponent->AttachTo(TileMesh);
+
 	TileMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	TileMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	TileMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);

@@ -171,7 +171,7 @@ void ALaser::SpawnSubLaser(const FVector& start, const FVector& normal)
 	nextLaser->mesh->SetHiddenInGame(true);
 	nextLaser->dir = newDir;
 	nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(start, 0);
-	nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length , 0);
+	nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length, 0);
 }
 
 FVector ALaser::reflect(const FVector& v1, const FVector& v2)
@@ -196,5 +196,15 @@ void ALaser::KillSubLaser()
 		nextLaser->Destroy();
 		nextLaser = nullptr;
 	}
+}
+
+
+void ALaser::SetLaserLocation(const FVector& location)
+{
+	auto pos = location;
+	pos.Z += 20.0f;
+	SetActorLocation(pos);
+	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(pos, 0);
+	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(pos + dir * length, 0);
 }
 

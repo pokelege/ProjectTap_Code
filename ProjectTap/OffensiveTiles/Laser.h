@@ -58,5 +58,5 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	
+	void SetLaserLocation(const FVector& location);
 };

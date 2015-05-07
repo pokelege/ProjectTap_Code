@@ -2,6 +2,7 @@
 
 #include "ProjectTap.h"
 #include "MovingTile.h"
+#include "../OffensiveTiles/Laser.h"
 
 
 // Sets default values
@@ -11,10 +12,14 @@ AMovingTile::AMovingTile()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile mesh"));
-	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(TEXT("/Game/Models/Tile"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(TEXT("/Game/Models/MoveTile"));
 	TileMesh->SetStaticMesh(mesh.Object);
-	TileMesh->SetWorldScale3D(FVector(40.0f, 40.0f, 10.0f));
 	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	TileMesh->SetWorldScale3D(FVector(1.0f));
+
+	
+	BoxCollision->SetBoxExtent(FVector(1.0f));
+	BoxCollision->SetWorldScale3D(FVector(40.0f, 40.0f, 10.0f));
 
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("/Game/Curves/MovementLinear"));
 	if (curve.Object != nullptr) moveCurve = curve.Object;
@@ -55,37 +60,40 @@ void AMovingTile::Tick( float DeltaTime )
 
 void AMovingTile::UpdateMovement(float dt)
 {
-	auto next = NextIndex();
-	auto nextPos = path[next];
-	auto remainingDistSq = FVector::DistSquared(GetActorLocation(), nextPos);
-	auto checkDirection = nextPos - GetActorLocation();
-	bool reachedNext = FVector::DotProduct(checkDirection, currDir) < 0.0f;
-
-	auto distanceBetweenCurrentNodes = FVector::DistSquared(nextPos, path[currNode]);
-	float min, max;
-
-	moveCurve->GetTimeRange(min, max);
-
-	if (!reachedNext)
+	if (enabled)
 	{
-		auto speedFactor = moveCurve->GetFloatValue(1.0f - remainingDistSq / distanceBetweenCurrentNodes);
-		auto newCurr = GetActorLocation() + currDir * speed * speedFactor * dt;
-		SetActorLocation(newCurr);
-		
-	}
-	else if (pauseTimeCounter < pauseBetweenNodes)
-	{
-		if (pauseTimeCounter == 0.0f)
+		auto next = NextIndex();
+		auto nextPos = path[next];
+		auto remainingDistSq = FVector::DistSquared(GetActorLocation(), nextPos);
+		auto checkDirection = nextPos - GetActorLocation();
+		bool reachedNext = FVector::DotProduct(checkDirection, currDir) < 0.0f;
+
+		auto distanceBetweenCurrentNodes = FVector::DistSquared(nextPos, path[currNode]);
+		float min, max;
+
+		moveCurve->GetTimeRange(min, max);
+
+		if (!reachedNext)
 		{
-			SetActorLocation(nextPos);
+			auto speedFactor = moveCurve->GetFloatValue(1.0f - remainingDistSq / distanceBetweenCurrentNodes);
+			auto newCurr = GetActorLocation() + currDir * speed * speedFactor * dt;
+			SetActorLocation(newCurr);
+			UpdateCarryOn(dt);
 		}
-		pauseTimeCounter += dt;
+		else if (pauseTimeCounter < pauseBetweenNodes)
+		{
+			if (pauseTimeCounter == 0.0f)
+			{
+				SetActorLocation(nextPos);
+			}
+			pauseTimeCounter += dt;
+		}
+		else
+		{
+			IncrementIndex();
+			reset();
+		}
 	}
-	else
-	{
-		IncrementIndex();
-		reset();
-	}	
 }
 
 int32 AMovingTile::NextIndex()
@@ -118,3 +126,16 @@ FVector AMovingTile::NextDirection()
 
 	return (nextPos - currPos).GetSafeNormal();
 }
+
+void AMovingTile::UpdateCarryOn(float dt)
+{
+	if (auto tile = Cast<ATile>(carryOn))
+	{
+		tile->SetActorLocation(GetActorLocation());
+	}
+	else if (auto laser = Cast<ALaser>(carryOn))
+	{
+		laser->SetLaserLocation(GetActorLocation());
+	}
+}
+

@@ -21,6 +21,7 @@ ATurretPawn::ATurretPawn()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> baseMeshSource(*BASE_MESH.ToString());
 
 	UBoxComponent* collisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Turret Collision"));
+	collisionBox->SetBoxExtent(FVector(1,1,3));
 	this->SetRootComponent(collisionBox);
 	collisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	collisionBox->bGenerateOverlapEvents = false;
@@ -44,12 +45,21 @@ ATurretPawn::ATurretPawn()
 	laserTag->SetTemplate(laserParticle.Object);
 	laserTag->AttachTo(baseMesh);
 
+	explosionParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Turret Explosion Tag"));
+	ConstructorHelpers::FObjectFinder<UParticleSystem> explosionParticleTemplate(TEXT("/Game/StarterContent/Particles/P_Explosion"));
+	explosionParticle->SetTemplate(explosionParticleTemplate.Object);
+	explosionParticle->AttachTo(TurretGunMesh);
+
 	auto laserPrimitive = Cast<UPrimitiveComponent>(laserTag);
 	FTransform laserWorldTransform = laserPrimitive->GetComponentTransform();
+
+	auto explosionPrimitive = Cast<UPrimitiveComponent>(explosionParticle);
+	FTransform explosionWorldTransform = explosionPrimitive->GetComponentTransform();
 
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
 	laserPrimitive->SetWorldScale3D(laserWorldTransform.GetScale3D());
+	explosionPrimitive->SetWorldScale3D(explosionWorldTransform.GetScale3D());
 }
 
 // Called when the game starts or when spawned
@@ -60,6 +70,7 @@ void ATurretPawn::BeginPlay()
 	nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
 	laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocal, 0);
 	direction = this->GetActorForwardVector();
+	explosionParticle->Deactivate();
 }
 
 bool ATurretPawn::FoundPlayerToHit()
@@ -110,7 +121,7 @@ void ATurretPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 	nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
-	if (!activated) {
+	if (!activated || died) {
 		laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocalUpdatable, 0);
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable, 0);
 		return;
@@ -126,8 +137,6 @@ void ATurretPawn::Tick( float DeltaTime )
 	else
 	{
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable + direction * maxDistance, 0);
-// 		auto gunPrimitive = Cast<UPrimitiveComponent>(TurretGunMesh);
-// 		gunPrimitive->SetWorldRotation(FRotator());
 	}
 }
 
@@ -186,5 +195,8 @@ void ATurretPawn::Damage(float deathDuration)
 
 void ATurretPawn::Kill()
 {
-
+	if(died)return;
+	died = true;
+	explosionParticle->Activate(true);
+	TurretGunMesh->SetStaticMesh(nullptr);
 }

@@ -17,6 +17,7 @@ class PROJECTTAP_API ATurretPawn : public APawn
 	FVector direction;
 	float currentFireCooldown = 0;
 	const float MAX_HEALTH = 10.0f;
+	bool died = false;
 	float current_hp = MAX_HEALTH;
 
 	void UpdateLaserTag(float dt);
@@ -29,6 +30,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	UParticleSystemComponent* laserTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
+	UParticleSystemComponent* explosionParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	float FOV = 60.0f;
@@ -62,5 +66,6 @@ public:
 	void Fire();	
 
 	void Damage(float deathDuration);
+	UFUNCTION(BlueprintCallable, Category="Turret")
 	void Kill();
 };

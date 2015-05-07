@@ -58,6 +58,5 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	virtual void SetLocationWhenCarried(FVector& location) override;
 	
 };

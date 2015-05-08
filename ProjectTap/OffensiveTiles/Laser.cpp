@@ -82,6 +82,8 @@ void ALaser::checkLaserCollisions(float dt)
 	
 	if (hitActor != nullptr)
 	{
+		currHitPoint = hit.ImpactPoint;
+
 		//kills ball if laser hits it
 		auto ball = Cast<ABallPawn>(hitActor);
 		
@@ -146,7 +148,9 @@ void ALaser::checkLaserCollisions(float dt)
 	}
 	else
 	{
-		laserEmitter->SetBeamTargetPoint(pos + laserVector, 0);
+		currHitPoint = laserVector;
+
+		laserEmitter->SetBeamTargetPoint(pos + currHitPoint, 0);
 		KillSubLaser();
 	}
 
@@ -205,6 +209,6 @@ void ALaser::SetLaserLocation(const FVector& location)
 	pos.Z += 20.0f;
 	SetActorLocation(pos);
 	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(pos, 0);
-	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(pos + dir * length, 0);
+	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(currHitPoint, 0);
 }
 

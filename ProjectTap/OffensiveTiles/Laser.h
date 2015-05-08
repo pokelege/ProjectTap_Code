@@ -12,7 +12,7 @@ class PROJECTTAP_API ALaser : public AActor
 	GENERATED_BODY()
 
 	ALaser* nextLaser = nullptr;
-
+	FVector currHitPoint;
 	float timer = .0f;
 	float elapseTime = 1/ 30.0f;
 	int currentDepth = 0;

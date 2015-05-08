@@ -75,6 +75,7 @@ private:
 	void TransportBallToOrange(ABallPawn* pawn);
 	void TransportBallToBlue(ABallPawn* pawn);
 
-	void TransportLaserToOrange(class ALaser* laser);
-	void TransportLaserToBlue(class ALaser* laser);
+	friend class ALaser;
+	void TransportLaserToOrange(ALaser* laser);
+	void TransportLaserToBlue(ALaser* laser);
 };

@@ -10,8 +10,7 @@ APortalTile::APortalTile()
 	TileMesh->SetStaticMesh(mesh.Object);
 
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);	
 	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	BoxCollision->SetBoxExtent(FVector(1.0f));

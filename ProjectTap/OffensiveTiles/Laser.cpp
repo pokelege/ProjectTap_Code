@@ -3,10 +3,12 @@
 #include "ProjectTap.h"
 #include "Laser.h"
 #include "../Pawns/BallPawn.h"
+#include "../Pawns/TurretPawn.h"
 #include "../Tiles/DeflectiveTile.h"
 #include "../Tiles/BlockingTile.h"
-#include "../Pawns/TurretPawn.h"
+#include "../Tiles/PortalTile.h"
 #include "Classes/Particles/ParticleEmitter.h"
+
 
 // Sets default values
 ALaser::ALaser()
@@ -127,13 +129,26 @@ void ALaser::checkLaserCollisions(float dt)
 				if (turret != nullptr)
 				{
 					typeFound = true;
+					turret->Damage(2.0f);
 				}
+			}
 
+			APortalTile* portal = nullptr;
+			if (!typeFound)
+			{
+				portal = Cast<APortalTile>(hitActor);
+				if (portal != nullptr)
+				{
+					typeFound = true;
+					auto relativePos = hit.ImpactPoint - hit.GetComponent()->GetComponentLocation();
+					currHitPoint = relativePos + portal->GetActorLocation();
+					SpawnSubLaser(currHitPoint, hit.ImpactNormal);
+				}
 			}
 
 			//if sub laser already exists then keep updating its rotation and position
-			auto subLaserExists = currentDepth < MAX_DEPTH && nextLaser != nullptr && tile != nullptr;
-			if (subLaserExists)
+			auto subLaserExistsHitDeflectiveTile = currentDepth < MAX_DEPTH && nextLaser != nullptr && tile != nullptr;
+			if (subLaserExistsHitDeflectiveTile)
 			{
 				auto incomingVector = hit.ImpactPoint - GetActorLocation();
 				auto newDir = FMath::GetReflectionVector(incomingVector, hit.ImpactNormal);
@@ -143,7 +158,8 @@ void ALaser::checkLaserCollisions(float dt)
 				nextLaser->dir = newDir.IsNormalized() ? newDir : newDir.GetSafeNormal();
 				nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(hit.ImpactPoint, 0);
 				nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length, 0);
-			}			
+			}		
+
 		}
 	}
 	else
@@ -190,7 +206,6 @@ bool ALaser::CanSpawnSubLaser()
 {
 	return currentDepth < MAX_DEPTH && nextLaser == nullptr;
 }
-
 
 void ALaser::KillSubLaser()
 {

@@ -86,8 +86,10 @@ void ABallPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 	Super::SetupPlayerInputComponent(InputComponent);
 }
 
-void ABallPawn::AddVelocity(const FVector& vel, bool clearForce)
+void ABallPawn::AddVelocity(const FVector& vel, const FVector& resetPos, bool clearForce)
 {
+	ResetBallXYPosition(resetPos, vel);
+
 	if (clearForce)
 	{
 		ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
@@ -95,15 +97,17 @@ void ABallPawn::AddVelocity(const FVector& vel, bool clearForce)
 	}
 
 	ballCollision->AddImpulse(vel);
+
 }
 
 
-void ABallPawn::ResetBallXYPosition(const FVector& position)
+void ABallPawn::ResetBallXYPosition(const FVector& position, const FVector& newVel)
 {
 	FVector newPosition(position.X, position.Y, GetActorLocation().Z);
-
-	auto newDir = newPosition - GetActorLocation();
-	if (FVector::DotProduct(newDir, ballCollision->GetPhysicsLinearVelocity()) > 0.0f)
+	
+	auto vel = ballCollision->GetPhysicsLinearVelocity();
+	auto dp = FMath::Abs(FVector::DotProduct(vel, newVel.GetSafeNormal()));
+	if (FMath::Acos(dp) * 180.0 / PI > 10.0f)
 	{
 		SetActorLocation(newPosition);
 	}

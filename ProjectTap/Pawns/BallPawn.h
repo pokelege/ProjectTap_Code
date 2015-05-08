@@ -33,10 +33,10 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Ball")
-	void AddVelocity(const FVector& vel, bool clearForce = true);
+	void AddVelocity(const FVector& vel, const FVector& resetPos, bool clearForce = true);
 
 	//reset ball to the center of the tile when hit
-	void ResetBallXYPosition(const FVector& position);
+	void ResetBallXYPosition(const FVector& resetPosition, const FVector& newVel);
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;

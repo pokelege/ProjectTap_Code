@@ -17,6 +17,8 @@ class PROJECTTAP_API AMagnetTile : public ATile
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float length = 99999.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
+	float force = 99999.0f;
 
 	AMagnetTile();
 	virtual void Tick( float DeltaTime ) override;

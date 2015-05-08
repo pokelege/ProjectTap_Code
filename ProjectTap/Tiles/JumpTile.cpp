@@ -33,6 +33,7 @@ void AJumpTile::activate()
 	ball->ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
 	ball->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
 	ball->ballCollision->AddImpulse(force);
+
 }
 
 void AJumpTile::calculateImpulse()

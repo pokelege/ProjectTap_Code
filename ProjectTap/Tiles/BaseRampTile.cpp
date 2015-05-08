@@ -54,8 +54,6 @@ void ABaseRampTile::activate()
 	Super::activate();
 	time = 0.0f;
 
-	auto xyPositionAdjustment = GetActorLocation();
-	ball->ResetBallXYPosition(GetActorLocation());
 }
 
 void ABaseRampTile::Highlight(bool litTile, bool litEdge)

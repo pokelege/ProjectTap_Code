@@ -38,7 +38,7 @@ void AProjectTapGameMode::BeginPlay()
 			
 			if (ball != nullptr)
 			{
-				ball->AddVelocity(realPlayerStart->initialVelocity);
+				ball->AddVelocity(realPlayerStart->initialVelocity, realPlayerStart->GetActorLocation());
 			}
 		}
 		else
@@ -83,7 +83,7 @@ void AProjectTapGameMode::Respawn()
 			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
 			if (ball != nullptr)
 			{
-				ball->AddVelocity(realPlayerStart->initialVelocity);
+				ball->AddVelocity(realPlayerStart->initialVelocity, realPlayerStart->GetActorLocation());
 			}
 		}
 		else

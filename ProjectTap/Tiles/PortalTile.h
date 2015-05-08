@@ -68,7 +68,6 @@ public:
 private:
 	bool enteredFromBluePortal = false;
 	bool enteredPortal = false;
-	bool occupied = false;
 
 	void TransportBallToOrange(ABallPawn* pawn);
 	void TransportBallToBlue(ABallPawn* pawn);

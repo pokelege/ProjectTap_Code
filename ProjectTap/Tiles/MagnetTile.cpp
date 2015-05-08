@@ -35,6 +35,6 @@ void AMagnetTile::Tick( float DeltaTime )
 	ABallPawn* pawn;
 	if((pawn = Cast<ABallPawn>(hitActor)) != nullptr)
 	{
-		pawn->AddVelocity(-GetActorForwardVector() * force, false);
+		//pawn->AddVelocity(-GetActorForwardVector() * force, false);
 	}
 }

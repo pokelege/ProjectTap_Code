@@ -23,6 +23,8 @@ ABallPawn::ABallPawn()
 
 	ballCollision->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
+	//ballCollision->SetWorldScale3D(FVector(0.5f));
+
 	ballCollision->SetSphereRadius(32.0f);
 
 	ballCollision->SetSimulatePhysics(true);

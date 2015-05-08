@@ -38,3 +38,22 @@ void AMagnetTile::Tick( float DeltaTime )
 		pawn->AddVelocity(-GetActorForwardVector() * force, false);
 	}
 }
+
+void AMagnetTile::ReceiveHit
+(
+	class UPrimitiveComponent * MyComp,
+	AActor * Other,
+	class UPrimitiveComponent * OtherComp,
+	bool bSelfMoved,
+	FVector HitLocation,
+	FVector HitNormal,
+	FVector NormalImpulse,
+	const FHitResult & Hit
+)
+{
+	ABallPawn* ball = nullptr;
+	if ( ( ball = Cast<ABallPawn>( Other ) ) != nullptr )
+	{
+		ball->Kill();
+	}
+}

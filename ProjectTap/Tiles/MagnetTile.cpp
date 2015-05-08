@@ -15,6 +15,11 @@ AMagnetTile::AMagnetTile() : ATile()
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
 }
 
+void AMagnetTile::BeginPlay()
+{
+	GetWorld()->GetFirstPlayerController();
+}
+
 void AMagnetTile::Tick( float DeltaTime )
 {
 	Super::Tick(DeltaTime);

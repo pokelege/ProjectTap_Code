@@ -21,6 +21,7 @@ public:
 	float force = 99999.0f;
 
 	AMagnetTile();
+	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
 
 	virtual void ReceiveHit

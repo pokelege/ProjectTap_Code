@@ -65,8 +65,11 @@ public:
 		bool bFromSweep,
 		const FHitResult & SweepResult);
 
+	void Enable() override;
+
 private:
-	bool enteredFromBluePortal = false;
+	bool leftBluePortal = false;
+	bool leftOrangePortal = false;
 	bool enteredPortal = false;
 
 	void TransportBallToOrange(ABallPawn* pawn);

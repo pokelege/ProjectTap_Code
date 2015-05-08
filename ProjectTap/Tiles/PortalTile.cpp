@@ -27,10 +27,10 @@ APortalTile::APortalTile()
 	orangePortalTrigger->bGenerateOverlapEvents = true;
 
 	bluePortalTrigger->SetBoxExtent(FVector(1.0f));
-	bluePortalTrigger->SetRelativeScale3D(FVector(.5f, 1.0f, .5f));
+	bluePortalTrigger->SetRelativeScale3D(FVector(.2f, 1.0f, .5f));
 
 	orangePortalTrigger->SetBoxExtent(FVector(1.0f));
-	orangePortalTrigger->SetRelativeScale3D(FVector(.5f, 1.0f, .5f));
+	orangePortalTrigger->SetRelativeScale3D(FVector(.2f, 1.0f, .5f));
 
 	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
 	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
@@ -50,28 +50,30 @@ APortalTile::APortalTile()
 	endEndLap.BindUFunction(this, "OnOrangeEndTriggerOverlap_Implementation");
 	orangePortalTrigger->OnComponentEndOverlap.Add(endEndLap);
 
+	SetActorRotation(FRotator(0, 0, 0));
+
 	AdjustOrientation();
 	GeneratePortalCollision();
 }
 
 void APortalTile::AdjustOrientation()
 {
-	bluePortalTrigger->AddLocalOffset(FVector(-.5f, 0.0f, 0.5f));
-	orangePortalTrigger->AddLocalOffset(FVector(.5f, 0.0f, 0.5f));
+	bluePortalTrigger->AddLocalOffset(FVector(-.2f, 0.0f, 0.5f));
+	orangePortalTrigger->AddLocalOffset(FVector(.2f, 0.0f, 0.5f));
 
 	switch (direction)
 	{
 	case Direction::XPlus:
-		RootComponent->SetWorldRotation(FRotator(0, 0, 0));
+		SetActorRotation(FRotator(0, 0, 0));
 		break;
 	case Direction::xMinus:
-		RootComponent->SetWorldRotation(FRotator(0, 180, 0));
+		SetActorRotation(FRotator(0, 180, 0));
 		break;
 	case Direction::YPlus:
-		RootComponent->SetWorldRotation(FRotator(0, 90, 0));
+		SetActorRotation(FRotator(0, 90, 0));
 		break;
 	case Direction::yMinus:
-		RootComponent->SetWorldRotation(FRotator(0, 270, 0));
+		SetActorRotation(FRotator(0, 270, 0));
 		break;
 	}
 
@@ -134,21 +136,50 @@ void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
 	bool bFromSweep,
 	const FHitResult & SweepResult)
 {
-
-	if (enteredPortal)
+	if (enabled)
 	{
-		if (auto a = Cast<ABallPawn>(OtherActor))
+		if (enteredPortal)
 		{
-			TransportBallToOrange(a);
+			if (auto a = Cast<ABallPawn>(OtherActor))
+			{
+				TransportBallToOrange(a);
+			}
+			else if (auto a = Cast<ALaser>(OtherActor))
+			{
+				TransportLaserToOrange(a);
+			}
 		}
-		else if (auto a = Cast<ALaser>(OtherActor))
+		else
 		{
-			TransportLaserToOrange(a);
+			enteredPortal = true;
 		}
 	}
-	else
+}
+
+
+void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult & SweepResult)
+{
+	if (enabled)
 	{
-		enteredPortal = true;
+		if (enteredPortal)
+		{
+			if (auto a = Cast<ABallPawn>(OtherActor))
+			{
+				TransportBallToBlue(a);
+			}
+			else if (auto a = Cast<ALaser>(OtherActor))
+			{
+				TransportLaserToBlue(a);
+			}
+		}
+		else
+		{
+			enteredPortal = true;
+		}
 	}
 }
 
@@ -159,30 +190,10 @@ void APortalTile::OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
 	const FHitResult & SweepResult)
 {
 	enteredPortal = false;
+	leftBluePortal = true;
+	Enable();
 }
 
-void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult & SweepResult)
-{
-	if (enteredPortal)
-	{
-		if (auto a = Cast<ABallPawn>(OtherActor))
-		{
-			TransportBallToBlue(a);
-		}
-		else if (auto a = Cast<ALaser>(OtherActor))
-		{
-			TransportLaserToBlue(a);
-		}
-	}
-	else
-	{
-		enteredPortal = true;
-	}
-}
 
 void APortalTile::OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -191,20 +202,32 @@ void APortalTile::OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
 	const FHitResult & SweepResult)
 {
 	enteredPortal = false;
+	leftOrangePortal = true;
+	Enable();
+}
+
+void APortalTile::Enable()
+{
+	if (leftOrangePortal || leftBluePortal)
+	{
+		enabled = true;
+		leftOrangePortal = false;
+		leftBluePortal = false;
+	}
 }
 
 void APortalTile::TransportBallToOrange(ABallPawn* pawn)
 {	
 	if (otherPortal != nullptr)
 	{
+		otherPortal->enabled = false;
 		auto transportLocation = otherPortal->GetActorLocation();
 		transportLocation.Z += 40.0f;
 		pawn->SetActorLocation(transportLocation);
 		auto newVelMag = pawn->ballCollision->GetPhysicsLinearVelocity().Size();
-		auto newVel = newVelMag * -otherPortal->GetActorForwardVector() * 10.0f;
+		auto newVel = newVelMag * otherPortal->GetActorForwardVector();
 		pawn->ballCollision->SetPhysicsLinearVelocity(newVel);
 		pawn->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f));
-
 	}
 }
 
@@ -212,14 +235,14 @@ void APortalTile::TransportBallToBlue(ABallPawn* pawn)
 {
 	if (otherPortal != nullptr)
 	{
+		otherPortal->enabled = false;
 		auto transportLocation = otherPortal->GetActorLocation();
 		transportLocation.Z += 40.0f;
 		pawn->SetActorLocation(transportLocation);
 		auto newVelMag = pawn->ballCollision->GetPhysicsLinearVelocity().Size();
-		auto newVel = newVelMag * otherPortal->GetActorForwardVector()* 10.0f;
+		auto newVel = newVelMag * -otherPortal->GetActorForwardVector();
 		pawn->ballCollision->SetPhysicsLinearVelocity(newVel);
 		pawn->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f));
-
 	}
 }
 
@@ -227,6 +250,7 @@ void APortalTile::TransportLaserToOrange(class ALaser* laser)
 {
 	if (otherPortal != nullptr)
 	{
+
 	}
 }
 

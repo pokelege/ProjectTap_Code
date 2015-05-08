@@ -56,6 +56,8 @@ void AMovingTile::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 	UpdateMovement(DeltaTime);
+	UpdateCarryOn(DeltaTime);
+
 }
 
 void AMovingTile::UpdateMovement(float dt)
@@ -78,8 +80,7 @@ void AMovingTile::UpdateMovement(float dt)
 			auto speedFactor = moveCurve->GetFloatValue(1.0f - remainingDistSq / distanceBetweenCurrentNodes);
 			auto newCurr = GetActorLocation() + currDir * speed * speedFactor * dt;
 			SetActorLocation(newCurr);
-			UpdateCarryOn(dt);
-		}
+		}                     
 		else if (pauseTimeCounter < pauseBetweenNodes)
 		{
 			if (pauseTimeCounter == 0.0f)

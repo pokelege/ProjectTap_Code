@@ -30,7 +30,6 @@ APortalTile::APortalTile()
 	orangePortalTrigger->SetBoxExtent(FVector(1.0f));
 	orangePortalTrigger->SetWorldScale3D(FVector(10.0f, 10.0f, 40.0f));
 
-
 	FScriptDelegate beginOverLap;
 	beginOverLap.BindUFunction(this, "OnBlueBeginTriggerOverlap_Implementation");
 	bluePortalTrigger->OnComponentBeginOverlap.Add(beginOverLap);

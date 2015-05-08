@@ -15,6 +15,11 @@ AMagnetTile::AMagnetTile() : ATile()
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
 }
 
+void AMagnetTile::BeginPlay()
+{
+	GetWorld()->GetFirstPlayerController();
+}
+
 void AMagnetTile::Tick( float DeltaTime )
 {
 	Super::Tick(DeltaTime);
@@ -36,5 +41,24 @@ void AMagnetTile::Tick( float DeltaTime )
 	if((pawn = Cast<ABallPawn>(hitActor)) != nullptr)
 	{
 		//pawn->AddVelocity(-GetActorForwardVector() * force, false);
+	}
+}
+
+void AMagnetTile::ReceiveHit
+(
+	class UPrimitiveComponent * MyComp,
+	AActor * Other,
+	class UPrimitiveComponent * OtherComp,
+	bool bSelfMoved,
+	FVector HitLocation,
+	FVector HitNormal,
+	FVector NormalImpulse,
+	const FHitResult & Hit
+)
+{
+	ABallPawn* ball = nullptr;
+	if ( ( ball = Cast<ABallPawn>( Other ) ) != nullptr )
+	{
+		ball->Kill();
 	}
 }

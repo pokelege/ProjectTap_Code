@@ -134,25 +134,21 @@ void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
 	bool bFromSweep,
 	const FHitResult & SweepResult)
 {
-	if (!occupied)
-	{
-		occupied = true;
 
-		if (enteredPortal)
+	if (enteredPortal)
+	{
+		if (auto a = Cast<ABallPawn>(OtherActor))
 		{
-			if (auto a = Cast<ABallPawn>(OtherActor))
-			{
-				TransportBallToOrange(a);
-			}
-			else if (auto a = Cast<ALaser>(OtherActor))
-			{
-				TransportLaserToOrange(a);
-			}
+			TransportBallToOrange(a);
 		}
-		else
+		else if (auto a = Cast<ALaser>(OtherActor))
 		{
-			enteredPortal = true;
+			TransportLaserToOrange(a);
 		}
+	}
+	else
+	{
+		enteredPortal = true;
 	}
 }
 
@@ -171,24 +167,20 @@ void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
 	bool bFromSweep,
 	const FHitResult & SweepResult)
 {
-	if (!occupied)
+	if (enteredPortal)
 	{
-		occupied = true;
-		if (enteredPortal)
+		if (auto a = Cast<ABallPawn>(OtherActor))
 		{
-			if (auto a = Cast<ABallPawn>(OtherActor))
-			{
-				TransportBallToBlue(a);
-			}
-			else if (auto a = Cast<ALaser>(OtherActor))
-			{
-				TransportLaserToBlue(a);
-			}
+			TransportBallToBlue(a);
 		}
-		else
+		else if (auto a = Cast<ALaser>(OtherActor))
 		{
-			enteredPortal = true;
+			TransportLaserToBlue(a);
 		}
+	}
+	else
+	{
+		enteredPortal = true;
 	}
 }
 
@@ -202,7 +194,7 @@ void APortalTile::OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
 }
 
 void APortalTile::TransportBallToOrange(ABallPawn* pawn)
-{
+{	
 	if (otherPortal != nullptr)
 	{
 		auto transportLocation = otherPortal->GetActorLocation();
@@ -213,7 +205,6 @@ void APortalTile::TransportBallToOrange(ABallPawn* pawn)
 		pawn->ballCollision->SetPhysicsLinearVelocity(newVel);
 		pawn->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f));
 
-		occupied = false;
 	}
 }
 
@@ -228,7 +219,6 @@ void APortalTile::TransportBallToBlue(ABallPawn* pawn)
 		auto newVel = newVelMag * otherPortal->GetActorForwardVector()* 10.0f;
 		pawn->ballCollision->SetPhysicsLinearVelocity(newVel);
 		pawn->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f));
-		occupied = false;
 
 	}
 }

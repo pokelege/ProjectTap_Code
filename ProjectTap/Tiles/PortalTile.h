@@ -13,11 +13,15 @@ class PROJECTTAP_API APortalTile : public ATile
 {
 	GENERATED_BODY()
 
-		void AdjustOrientation();
+	void AdjustOrientation();
+
+	void SetMeshCollisionProperty(UBoxComponent* box);
+	void GeneratePortalCollision();
+
 public:
 	/*blue portal faces positive X axis*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
-		Direction direction = Direction::XPlus;
+	Direction direction = Direction::XPlus;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
 	APortalTile* otherPortal;
@@ -61,7 +65,17 @@ public:
 		bool bFromSweep,
 		const FHitResult & SweepResult);
 
-private:
-	bool enteredFromBluePortal = false;
+	void Enable() override;
 
+private:
+	bool leftBluePortal = false;
+	bool leftOrangePortal = false;
+	bool enteredPortal = false;
+
+	void TransportBallToOrange(ABallPawn* pawn);
+	void TransportBallToBlue(ABallPawn* pawn);
+
+	friend class ALaser;
+	void TransportLaserToOrange(ALaser* laser);
+	void TransportLaserToBlue(ALaser* laser);
 };

@@ -11,6 +11,7 @@ AMagnetTile::AMagnetTile() : ATile()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*FName("/Game/Models/Magnet").ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
 	BoxCollision->SetBoxExtent(FVector(1.0f));
+
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
 }

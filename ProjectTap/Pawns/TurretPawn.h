@@ -37,14 +37,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	float FOV = 60.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	float maxDistance = 100.0f;
+	float maxDistance = 300.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	float updateInterval = 0.5f;
+	float updateInterval = 0.2f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	float fireRate = 1.0f;
+	float fireRate = 2.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	float bulletForce = 1000.0f;
+	float bulletForce = 2000.0f;
 
 
 	// Sets default values for this pawn's properties

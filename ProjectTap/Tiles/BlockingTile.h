@@ -12,12 +12,11 @@ UCLASS()
 class PROJECTTAP_API ABlockingTile : public ABlockingTileBase
 {
 	GENERATED_BODY()
-	float time_counter = 0.0f;
 	float activation_time_factor = 1.0f;
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		float activation_time = 3.0f;
+		float activation_time = 1.0f;
   ABlockingTile( );
   
    virtual void BeginPlay() override;

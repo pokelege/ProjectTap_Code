@@ -17,12 +17,13 @@ AMagnetTile::AMagnetTile() : ATile()
 
 void AMagnetTile::BeginPlay()
 {
-	GetWorld()->GetFirstPlayerController();
+	GetWorld()->GetFirstPlayerController()->InputComponent->BindAction("ActivateCube", IE_Released, this, &AMagnetTile::deactivate);
 }
 
 void AMagnetTile::Tick( float DeltaTime )
 {
 	Super::Tick(DeltaTime);
+	if(!activated) return;
 	FHitResult hit;
 	FCollisionQueryParams queryParam;
 	queryParam.bFindInitialOverlaps = false;
@@ -40,7 +41,7 @@ void AMagnetTile::Tick( float DeltaTime )
 	ABallPawn* pawn;
 	if((pawn = Cast<ABallPawn>(hitActor)) != nullptr)
 	{
-		pawn->AddVelocity(-GetActorForwardVector() * force, false);
+		pawn->AddVelocity(-GetActorForwardVector() * force, pawn->GetActorLocation(), false);
 	}
 }
 

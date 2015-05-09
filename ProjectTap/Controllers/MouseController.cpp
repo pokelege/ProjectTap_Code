@@ -8,6 +8,7 @@
 #include "../Tiles/GroupedBlockingTile.h"
 #include "../Tiles/BaseRampTile.h"
 #include "../Tiles/DeflectiveTile.h"
+#include "Tiles/MagnetTile.h"
 
 
 
@@ -81,7 +82,7 @@ void AMouseController::NotifyMousePressed()
 	SendBlockingTile(hit);
 	SendGroupedBlockingTile(hit);
 	EnableSwipeCheck(hit);
-	
+
 }
 
 
@@ -98,6 +99,16 @@ void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 
 	if (!found)
 	{
+		auto mag = Cast<AMagnetTile>(hit.Actor.Get());
+		if (mag != nullptr)
+		{
+			mag->activate();
+			found = true;
+		}
+	}
+
+	if (!found)
+	{
 		auto def = Cast<ADeflectiveTile>(hit.Actor.Get());
 		if (def != nullptr)
 		{
@@ -105,7 +116,7 @@ void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 			found = true;
 		}
 	}
-	
+
 }
 
 

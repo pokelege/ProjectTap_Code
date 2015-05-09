@@ -31,7 +31,7 @@ void AMovingTile::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (path.Num() > 1)
+	if (path.Num() > 1 && enabled)
 	{
 		currDir = (path[NextIndex()] - path[currNode]).GetSafeNormal();
 		SetActorLocation(path[currNode]);

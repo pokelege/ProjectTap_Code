@@ -11,6 +11,8 @@ class PROJECTTAP_API ABlockingTileBase : public ATile
 	GENERATED_BODY()
 
 protected:
+	float time_counter = 0.0f;
+
 	virtual void lerpMaterialColorForCoolDown(const float& beta);
 	
 public:	

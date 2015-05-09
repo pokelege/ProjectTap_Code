@@ -30,7 +30,7 @@ public:
 		FLinearColor baseColor = FLinearColor(1.0f, 0.0f, 0.0f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
-		FLinearColor glowColor = FLinearColor(0.0f, 1.0f, 0.0f);
+		FLinearColor glowColor = FLinearColor(1.0, 0.537034, 0.077178);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
 	float glowPower = 10.0f;

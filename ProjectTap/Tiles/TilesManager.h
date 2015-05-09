@@ -19,7 +19,7 @@ class UTilesManager
 	class ATile* prevHighlighted = nullptr;
 	bool isMousePressed = false;
 
-	unsigned char size_limit{ 3 };
+	unsigned char size_limit{ 1 };
 	unsigned char grouped_size_limit{ 6 };
 	CurrentTileType currentTileType{ CurrentTileType::NONE };
 

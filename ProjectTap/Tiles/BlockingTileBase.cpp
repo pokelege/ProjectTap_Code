@@ -77,5 +77,6 @@ void ABlockingTileBase::lerpMaterialColorForCoolDown(const float& beta)
 void ABlockingTileBase::deactivate()
 {
 	Super::deactivate();
+	time_counter = 0.0f;
 	lerpMaterialColorForCoolDown(1.0f);
 }

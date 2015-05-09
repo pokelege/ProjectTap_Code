@@ -163,6 +163,7 @@ void ATurretPawn::UpdateLaserTag(float dt)
 		queryParam.bFindInitialOverlaps = false;
 		queryParam.AddIgnoredActor(this);
 		FCollisionObjectQueryParams objectParam;
+		objectParam.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic);
 		GetWorld()->LineTraceSingle(hit, nozzleLocalUpdatable, direction, queryParam, objectParam);
 
 		auto laserLength = maxDistance;

@@ -107,11 +107,23 @@ void ALaser::checkLaserCollisions(float dt)
 				//cut the laser length to make sure new sub laser start doesn't hit the same object
 				SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
 			}
-			else if(tile == nullptr || hit.Component == tile->frameMeshComponent)
+			
+
+			//if sub laser already exists then keep updating its rotation and position
+			auto subLaserExistsHitDeflectiveTile = currentDepth < MAX_DEPTH && nextLaser != nullptr && tile != nullptr;
+			if (subLaserExistsHitDeflectiveTile)
 			{
-				KillSubLaser();
+				auto incomingVector = hit.ImpactPoint - GetActorLocation();
+				auto newDir = FMath::GetReflectionVector(incomingVector, hit.ImpactNormal);
+
+				auto start = hit.ImpactPoint + newDir * 2.0f;
+				nextLaser->SetActorLocation(hit.ImpactPoint);
+				nextLaser->dir = newDir.IsNormalized() ? newDir : newDir.GetSafeNormal();
+				nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(hit.ImpactPoint, 0);
+				nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length, 0);
 			}
 
+			//if the laser hits blocking tile then make it go down faster
 			if (!typeFound)
 			{
 				auto blockingTile = Cast<ABlockingTile>(hitActor);
@@ -123,6 +135,7 @@ void ALaser::checkLaserCollisions(float dt)
 
 			} 
 
+			//if the laser hits turret then kills it
 			if (!typeFound)
 			{
 				auto turret = Cast<ATurretPawn>(hitActor);
@@ -137,7 +150,7 @@ void ALaser::checkLaserCollisions(float dt)
 			if (!typeFound)
 			{
 				portal = Cast<APortalTile>(hitActor);
-				if (portal != nullptr)
+				if (CanSpawnSubLaser() && portal != nullptr)
 				{
 					typeFound = true;
 					auto relativePos = hit.ImpactPoint - hit.GetComponent()->GetComponentLocation();
@@ -146,20 +159,22 @@ void ALaser::checkLaserCollisions(float dt)
 				}
 			}
 
-			//if sub laser already exists then keep updating its rotation and position
-			auto subLaserExistsHitDeflectiveTile = currentDepth < MAX_DEPTH && nextLaser != nullptr && tile != nullptr;
-			if (subLaserExistsHitDeflectiveTile)
+			auto subLaserExistsHitPortalTile = currentDepth < MAX_DEPTH && nextLaser != nullptr && portal != nullptr;
+			if (subLaserExistsHitPortalTile)
 			{
-				auto incomingVector = hit.ImpactPoint - GetActorLocation();
-				auto newDir = FMath::GetReflectionVector(incomingVector, hit.ImpactNormal);
+				FVector newSourcePos;
+ 				portal->GetLaserPortalTransportedLocation(hit.GetComponent(), nextLaser->dir, newSourcePos);
+				nextLaser->SetActorLocation(newSourcePos);
+				nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(newSourcePos, 0);
+				nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(newSourcePos + nextLaser->dir * length, 0);
+			}
 
-				auto start = hit.ImpactPoint + newDir * 2.0f;
-				nextLaser->SetActorLocation(hit.ImpactPoint);
-				nextLaser->dir = newDir.IsNormalized() ? newDir : newDir.GetSafeNormal();
-				nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(hit.ImpactPoint, 0);
-				nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length, 0);
-			}		
-
+			bool notHitDeflectiveTile = tile == nullptr || hit.Component == tile->frameMeshComponent;
+			bool notHitPortal = portal == nullptr;
+			if (notHitDeflectiveTile && notHitPortal)
+			{
+				KillSubLaser();
+			}
 		}
 	}
 	else
@@ -218,12 +233,18 @@ void ALaser::KillSubLaser()
 }
 
 
-void ALaser::SetLaserLocation(const FVector& location)
+void ALaser::SetLaserLocationWithDefaultHitLocation(const FVector& location)
 {
-	auto pos = location;
-	pos.Z += 20.0f;
-	SetActorLocation(pos);
-	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(pos, 0);
+
+	SetActorLocation(location);
+	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(location, 0);
 	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(currHitPoint, 0);
+}
+
+
+void ALaser::SetLaserLocationWithDefaultDirection(const FVector& location)
+{
+	SetActorLocation(location);
+	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(location, 0);
 }
 

@@ -76,6 +76,5 @@ private:
 	void TransportBallToBlue(ABallPawn* pawn);
 
 	friend class ALaser;
-	void TransportLaserToOrange(ALaser* laser);
-	void TransportLaserToBlue(ALaser* laser);
+	void GetLaserPortalTransportedLocation(UPrimitiveComponent* hit4PportalTrigger, FVector& newDir, FVector& newPos);
 };

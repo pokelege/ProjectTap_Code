@@ -58,5 +58,10 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	void SetLaserLocation(const FVector& location);
+	//this method will use the ray traced hit point as laser end point
+	void SetLaserLocationWithDefaultHitLocation(const FVector& location);
+
+	//this method will set the ray to a location with infinite length and given direction
+	void SetLaserLocationWithDefaultDirection(const FVector& location);
+
 };

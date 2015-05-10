@@ -23,8 +23,6 @@ ABallPawn::ABallPawn()
 
 	ballCollision->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
-	//ballCollision->SetWorldScale3D(FVector(0.5f));
-
 	ballCollision->SetSphereRadius(32.0f);
 
 	ballCollision->SetSimulatePhysics(true);
@@ -45,7 +43,7 @@ ABallPawn::ABallPawn()
 	//tileOverlapCollision->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Game/Models/Ball"));
 
-	ballMesh->SetWorldScale3D(FVector(0.25f));
+	ballMesh->SetWorldScale3D(FVector(0.23f));
 
 	//ballMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
@@ -115,7 +113,6 @@ void ABallPawn::ResetBallXYPosition(const FVector& position, const FVector& newV
 	}
 
 }
-
 
 void ABallPawn::Kill()
 {

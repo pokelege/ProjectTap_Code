@@ -14,7 +14,7 @@ APortalTile::APortalTile()
 	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	BoxCollision->SetBoxExtent(FVector(1.0f));
-	BoxCollision->SetWorldScale3D(FVector(40.0f, 40.0f, 90.0f));
+	BoxCollision->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
 
 	bluePortalTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("BlueTrigger"));
 	orangePortalTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("OrangeTrigger"));
@@ -25,14 +25,8 @@ APortalTile::APortalTile()
 	orangePortalTrigger->AttachTo(RootComponent);
 	orangePortalTrigger->bGenerateOverlapEvents = true;
 
-	bluePortalTrigger->SetBoxExtent(FVector(1.0f));
-	bluePortalTrigger->SetRelativeScale3D(FVector(.2f, 1.0f, .5f));
-
-	orangePortalTrigger->SetBoxExtent(FVector(1.0f));
-	orangePortalTrigger->SetRelativeScale3D(FVector(.2f, 1.0f, .5f));
-
-	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
-	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
+	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 
 
 	FScriptDelegate beginOverLap;
@@ -51,29 +45,33 @@ APortalTile::APortalTile()
 
 	SetActorRotation(FRotator(0, 0, 0));
 
-	AdjustOrientation();
 	GeneratePortalCollision();
 }
 
 void APortalTile::AdjustOrientation()
 {
-	bluePortalTrigger->AddLocalOffset(FVector(-.2f, 0.0f, 0.5f));
-	orangePortalTrigger->AddLocalOffset(FVector(.2f, 0.0f, 0.5f));
+	bluePortalTrigger->AddLocalOffset(FVector(-.2f, 0.0f, 0.0f));
+	orangePortalTrigger->AddLocalOffset(FVector(.2f, 0.0f, 0.0f));
+	bluePortalTrigger->SetBoxExtent(FVector(1.0f));
+	bluePortalTrigger->SetRelativeScale3D(FVector(.2f, 1.0f, 1.0f));
+
+	orangePortalTrigger->SetBoxExtent(FVector(1.0f));
+	orangePortalTrigger->SetRelativeScale3D(FVector(.2f, 1.0f, 1.0f));
 
 	switch (direction)
 	{
-	case Direction::XPlus:
-		SetActorRotation(FRotator(0, 0, 0));
-		break;
-	case Direction::xMinus:
-		SetActorRotation(FRotator(0, 180, 0));
-		break;
-	case Direction::YPlus:
-		SetActorRotation(FRotator(0, 90, 0));
-		break;
-	case Direction::yMinus:
-		SetActorRotation(FRotator(0, 270, 0));
-		break;
+		case Direction::XPlus:
+			SetActorRotation(FRotator(0, 0, 0));
+			break;
+		case Direction::xMinus:
+			SetActorRotation(FRotator(0, 180, 0));
+			break;
+		case Direction::YPlus:
+			SetActorRotation(FRotator(0, 90, 0));
+			break;
+		case Direction::yMinus:
+			SetActorRotation(FRotator(0, 270, 0));
+			break;
 	}
 
 
@@ -82,30 +80,30 @@ void APortalTile::AdjustOrientation()
 void APortalTile::GeneratePortalCollision()
 {
 	auto left = CreateDefaultSubobject<UBoxComponent>(TEXT("left"));
-	left->AddLocalOffset(FVector(0.0f, 1.0f, 0.476f));
-	left->SetRelativeScale3D(FVector(1.0f, 0.1f, 0.5f));
+	left->AddLocalOffset(FVector(0.0f, 1.0f, 0.0f));
+	left->SetRelativeScale3D(FVector(1.0f, 0.1f, 1.0f));
 
 	auto right = CreateDefaultSubobject<UBoxComponent>(TEXT("right"));
-	right->AddLocalOffset(FVector(0.0f, -1.0f, 0.476f));
-	right->SetRelativeScale3D(FVector(1.0f, 0.1f, 0.5f));
+	right->AddLocalOffset(FVector(0.0f, -1.0f, 0.0f));
+	right->SetRelativeScale3D(FVector(1.0f, 0.1f, 1.0f));
 
 	auto top = CreateDefaultSubobject<UBoxComponent>(TEXT("top"));
 	top->AddLocalOffset(FVector(0.0f, 0.0f, 1.f));
 	top->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.02f));
 
-	auto bottom = CreateDefaultSubobject<UBoxComponent>(TEXT("bottom"));
-	bottom->AddLocalOffset(FVector(0.0f, 0.005f, -0.02));
-	bottom->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.02f));
+	//auto bottom = CreateDefaultSubobject<UBoxComponent>(TEXT("bottom"));
+	//bottom->AddLocalOffset(FVector(0.0f, 0.005f, -1.0f));
+	//bottom->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.02f));
 
 	SetMeshCollisionProperty(left);
 	SetMeshCollisionProperty(right);
 	SetMeshCollisionProperty(top);
-	SetMeshCollisionProperty(bottom);
+	//SetMeshCollisionProperty(bottom);
 
 	left->AttachTo(RootComponent);
 	right->AttachTo(RootComponent);
 	top->AttachTo(RootComponent);
-	bottom->AttachTo(RootComponent);
+	//bottom->AttachTo(RootComponent);
 }
 
 void APortalTile::SetMeshCollisionProperty(UBoxComponent* box)
@@ -143,10 +141,6 @@ void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
 			{
 				TransportBallToOrange(a);
 			}
-			else if (auto a = Cast<ALaser>(OtherActor))
-			{
-				TransportLaserToOrange(a);
-			}
 		}
 		else
 		{
@@ -169,10 +163,6 @@ void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
 			if (auto a = Cast<ABallPawn>(OtherActor))
 			{
 				TransportBallToBlue(a);
-			}
-			else if (auto a = Cast<ALaser>(OtherActor))
-			{
-				TransportLaserToBlue(a);
 			}
 		}
 		else
@@ -221,7 +211,7 @@ void APortalTile::TransportBallToOrange(ABallPawn* pawn)
 	{
 		otherPortal->enabled = false;
 		auto transportLocation = otherPortal->GetActorLocation();
-		transportLocation.Z += 40.0f;
+		transportLocation.Z += 10.0f;
 		pawn->SetActorLocation(transportLocation);
 		auto newVelMag = pawn->ballCollision->GetPhysicsLinearVelocity().Size();
 		auto newVel = newVelMag * otherPortal->GetActorForwardVector();
@@ -236,7 +226,7 @@ void APortalTile::TransportBallToBlue(ABallPawn* pawn)
 	{
 		otherPortal->enabled = false;
 		auto transportLocation = otherPortal->GetActorLocation();
-		transportLocation.Z += 40.0f;
+		transportLocation.Z += 10.0f;
 		pawn->SetActorLocation(transportLocation);
 		auto newVelMag = pawn->ballCollision->GetPhysicsLinearVelocity().Size();
 		auto newVel = newVelMag * -otherPortal->GetActorForwardVector();
@@ -245,18 +235,22 @@ void APortalTile::TransportBallToBlue(ABallPawn* pawn)
 	}
 }
 
-void APortalTile::TransportLaserToOrange(class ALaser* laser)
+void APortalTile::GetLaserPortalTransportedLocation(UPrimitiveComponent* hit4PportalTrigger, FVector& newDir, FVector& newPos)
 {
-	if (otherPortal != nullptr)
+	if (otherPortal != nullptr && hit4PportalTrigger != nullptr)
 	{
+		bool isPortalTrigger = hit4PportalTrigger == orangePortalTrigger || hit4PportalTrigger == bluePortalTrigger;
+		
+		if (isPortalTrigger)
+		{
+			bool isOrangePortal = hit4PportalTrigger == orangePortalTrigger;
+			auto newLaserPos = isOrangePortal ? 
+				otherPortal->orangePortalTrigger->GetComponentLocation() : 
+				otherPortal->bluePortalTrigger->GetComponentLocation();
 
+			newDir = isOrangePortal ? otherPortal->GetActorRotation().Vector() : -otherPortal->GetActorRotation().Vector();
+			newPos = newLaserPos + newDir * 10.0f;
+		}
 	}
 }
 
-void APortalTile::TransportLaserToBlue(class ALaser* laser)
-{
-	if (otherPortal != nullptr)
-	{
-
-	}
-}

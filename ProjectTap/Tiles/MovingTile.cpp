@@ -130,13 +130,16 @@ FVector AMovingTile::NextDirection()
 
 void AMovingTile::UpdateCarryOn(float dt)
 {
+	auto pos = GetActorLocation();
+	pos.Z += 20.0f;
+
 	if (auto tile = Cast<ATile>(carryOn))
 	{
-		tile->SetActorLocation(GetActorLocation());
+		//tile->SetLaser
 	}
 	else if (auto laser = Cast<ALaser>(carryOn))
 	{
-		laser->SetLaserLocation(GetActorLocation());
+		//laser->SetLaserLocation(pos);
 	}
 }
 

@@ -139,6 +139,7 @@ void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
 		{
 			if (auto a = Cast<ABallPawn>(OtherActor))
 			{
+				a->setInvincibility(true);
 				TransportBallToOrange(a);
 			}
 		}
@@ -148,7 +149,6 @@ void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
 		}
 	}
 }
-
 
 void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
@@ -162,6 +162,7 @@ void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
 		{
 			if (auto a = Cast<ABallPawn>(OtherActor))
 			{
+				a->setInvincibility(true);
 				TransportBallToBlue(a);
 			}
 		}
@@ -180,6 +181,7 @@ void APortalTile::OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
 {
 	enteredPortal = false;
 	leftBluePortal = true;
+	ProcessBallEndfOverlap(OtherActor);
 	Enable();
 }
 
@@ -192,12 +194,15 @@ void APortalTile::OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
 {
 	enteredPortal = false;
 	leftOrangePortal = true;
+
+	ProcessBallEndfOverlap(OtherActor);
+
 	Enable();
 }
 
 void APortalTile::Enable()
 {
-	if (leftOrangePortal || leftBluePortal)
+	if (leftOrangePortal && leftBluePortal)
 	{
 		enabled = true;
 		leftOrangePortal = false;
@@ -205,13 +210,32 @@ void APortalTile::Enable()
 	}
 }
 
+void APortalTile::ProcessBallEndfOverlap(AActor* actor)
+{
+	if ((leftOrangePortal || leftBluePortal) && !enabled)
+	{
+		auto ball = Cast<ABallPawn>(actor);
+		auto trigger = Cast<APawnCastingTrigger>(actor);
+		if (ball != nullptr)
+		{
+			ball->setInvincibility(false);
+		}
+		else if (trigger != nullptr)
+		{
+			trigger->pawn->setInvincibility(false);
+		}
+
+	}
+}
+
+
 void APortalTile::TransportBallToOrange(ABallPawn* pawn)
 {	
 	if (otherPortal != nullptr)
 	{
 		otherPortal->enabled = false;
 		auto transportLocation = otherPortal->GetActorLocation();
-		transportLocation.Z += 10.0f;
+		transportLocation.Z += 3.0f;
 		pawn->SetActorLocation(transportLocation);
 		auto newVelMag = pawn->ballCollision->GetPhysicsLinearVelocity().Size();
 		auto newVel = newVelMag * otherPortal->GetActorForwardVector();
@@ -226,7 +250,7 @@ void APortalTile::TransportBallToBlue(ABallPawn* pawn)
 	{
 		otherPortal->enabled = false;
 		auto transportLocation = otherPortal->GetActorLocation();
-		transportLocation.Z += 10.0f;
+		transportLocation.Z += 3.0f;
 		pawn->SetActorLocation(transportLocation);
 		auto newVelMag = pawn->ballCollision->GetPhysicsLinearVelocity().Size();
 		auto newVel = newVelMag * -otherPortal->GetActorForwardVector();

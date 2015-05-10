@@ -12,6 +12,8 @@ class PROJECTTAP_API ABallPawn : public APawn
 	
 	class APawnCastingTrigger* trigger = nullptr;
 
+	bool bInvincible = false;
+
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
@@ -45,5 +47,5 @@ public:
 
 	void Kill();	
 
-
+	void setInvincibility(bool invincible);
 };

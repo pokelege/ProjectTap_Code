@@ -10,6 +10,7 @@ class PROJECTTAP_API APawnCastingTrigger : public AActor
 {
 	GENERATED_BODY()
 
+	friend class APortalTile;
 	class ABallPawn* pawn = nullptr;
 
 private:

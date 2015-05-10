@@ -116,17 +116,22 @@ void ABallPawn::ResetBallXYPosition(const FVector& position, const FVector& newV
 
 void ABallPawn::Kill()
 {
-	UGameInstance* gameInstance = GetGameInstance();
-	FWorldContext* worldContext = gameInstance->GetWorldContext();
-	UWorld* world = worldContext->World();
-	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-	if(gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
-	if (trigger != nullptr) trigger->Destroy();
-	Destroy();
+	if (!bInvincible)
+	{
+		AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
+		if (gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
+		if (trigger != nullptr) trigger->Destroy();
+		Destroy();
+	}
 }
 
 void ABallPawn::FellOutOfWorld(const class UDamageType & dmgType)
 {
+	bInvincible = false;
 	Kill();
 }
 
+void ABallPawn::setInvincibility(bool invincible)
+{
+	bInvincible = invincible;
+}

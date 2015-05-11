@@ -77,4 +77,6 @@ private:
 
 	friend class ALaser;
 	void GetLaserPortalTransportedLocation(UPrimitiveComponent* hit4PportalTrigger, FVector& newDir, FVector& newPos);
+
+	void ProcessBallEndfOverlap(AActor* actor);
 };

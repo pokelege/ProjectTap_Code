@@ -62,7 +62,7 @@ void AMovingTile::Tick( float DeltaTime )
 
 void AMovingTile::UpdateMovement(float dt)
 {
-	if (enabled)
+	if (enabled && path.Num() > 0)
 	{
 		auto next = NextIndex();
 		auto nextPos = path[next];
@@ -99,9 +99,15 @@ void AMovingTile::UpdateMovement(float dt)
 
 int32 AMovingTile::NextIndex()
 {
-	int dir = pathReversed ? -1 : 1;
-
-	return currNode + dir;
+	if (reverseRouteWhenDone)
+	{
+		int dir = pathReversed ? -1 : 1;
+		return currNode + dir;
+	}
+	else
+	{
+		return (currNode + 1) % path.Num();
+	}
 }
 
 int32 AMovingTile::IncrementIndex()
@@ -111,7 +117,7 @@ int32 AMovingTile::IncrementIndex()
 
 	currNode = NextIndex();
 
-	if (exceedEnd || exceedBegining)
+	if ((exceedEnd || exceedBegining) && reverseRouteWhenDone)
 	{
 		pathReversed = !pathReversed;
 	}
@@ -131,15 +137,16 @@ FVector AMovingTile::NextDirection()
 void AMovingTile::UpdateCarryOn(float dt)
 {
 	auto pos = GetActorLocation();
-	pos.Z += 20.0f;
 
-	if (auto tile = Cast<ATile>(carryOn))
+	if (auto laser = Cast<ALaser>(carryOn))
 	{
-		//tile->SetLaser
+		pos.Z += 20.0f;
+		laser->SetLaserLocationWithDefaultHitLocation(pos);
 	}
-	else if (auto laser = Cast<ALaser>(carryOn))
+	else if (carryOn != nullptr)
 	{
-		//laser->SetLaserLocation(pos);
+		pos.Z += 80.0f;
+		carryOn->SetActorLocation(pos);
 	}
 }
 

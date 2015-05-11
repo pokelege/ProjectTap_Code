@@ -130,7 +130,7 @@ void ALaser::checkLaserCollisions(float dt)
 				if (blockingTile != nullptr)
 				{
 					typeFound = true;
-					blockingTile->ApplyActivationTimeFactor(0.4f);
+					blockingTile->ApplyActivationTimeFactor(0.5f);
 				}
 
 			} 

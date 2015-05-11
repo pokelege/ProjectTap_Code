@@ -21,6 +21,7 @@ class PROJECTTAP_API ATurretPawn : public APawn
 	float current_hp = MAX_HEALTH;
 
 	void UpdateLaserTag(float dt);
+	void UpdateTurretDamage(float dt);
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	bool activated = false;
@@ -66,6 +67,7 @@ public:
 	void Fire();	
 
 	void Damage(float deathDuration);
+
 	UFUNCTION(BlueprintCallable, Category="Turret")
 	void Kill();
 };

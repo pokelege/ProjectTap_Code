@@ -164,6 +164,7 @@ void ATurretPawn::UpdateLaserTag(float dt)
 		queryParam.AddIgnoredActor(this);
 		FCollisionObjectQueryParams objectParam;
 		objectParam.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic);
+		objectParam.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
 		GetWorld()->LineTraceSingle(hit, nozzleLocalUpdatable, direction, queryParam, objectParam);
 
 		auto laserLength = maxDistance;

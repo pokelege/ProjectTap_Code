@@ -25,24 +25,11 @@ void AMagnetTile::Tick( float DeltaTime )
 {
 	Super::Tick(DeltaTime);
 	if(!activated) return;
-	FHitResult hit;
-	FCollisionQueryParams queryParam;
-	queryParam.bFindInitialOverlaps = false;
-	queryParam.bReturnFaceIndex = true;
-	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
 
-	//todo use socket instead
-	auto pos = TileMesh->GetSocketLocation("Socket");
-	auto rayStart = pos + GetActorForwardVector() * 2.0f;
-	auto laserVector = GetActorForwardVector() * length;
-	//auto laserEmitter = laserParticle->EmitterInstances[0];
-
-	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
-	auto hitActor = hit.Actor.Get();
-	ABallPawn* pawn;
-	if((pawn = Cast<ABallPawn>(hitActor)) != nullptr)
+	ABallPawn* pawn = FindBallPawn();
+	if((pawn != nullptr))
 	{
-		pawn->AddVelocity(-GetActorForwardVector() * force, pawn->GetActorLocation(), false);
+
 	}
 }
 
@@ -63,4 +50,31 @@ void AMagnetTile::ReceiveHit
 	{
 		ball->Kill();
 	}
+}
+
+class ABallPawn* AMagnetTile::FindBallPawn()
+{
+	FHitResult hit;
+	FCollisionQueryParams queryParam;
+	queryParam.bFindInitialOverlaps = false;
+	queryParam.bReturnFaceIndex = true;
+	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
+
+	auto pos = TileMesh->GetSocketLocation("Socket");
+	auto rayStart = pos + GetActorForwardVector() * 2.0f;
+	auto laserVector = GetActorForwardVector() * length;
+
+	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
+	auto hitActor = hit.Actor.Get();
+	return Cast<ABallPawn>(hitActor);
+}
+
+void AMagnetTile::PullBall(class ABallPawn* ball)
+{
+//	auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
+//	FVector physicsLinearVelocity = prim->GetPhysicsLinearVelocity();
+//	FVector actorForwardVectorNegative = -GetActorForwardVector();
+//	float localDotProduct = FVector::DotProduct(physicsLinearVelocity, actorForwardVectorNegative);
+
+	ball->AddVelocity(-GetActorForwardVector() * force, ball->GetActorLocation(), false);
 }

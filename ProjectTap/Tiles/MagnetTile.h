@@ -13,7 +13,8 @@ class PROJECTTAP_API AMagnetTile : public ATile
 {
 	GENERATED_BODY()
 
-
+	class ABallPawn* FindBallPawn();
+	void PullBall(class ABallPawn* ball);
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float length = 99999.0f;
@@ -23,6 +24,7 @@ public:
 	AMagnetTile();
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
+
 
 	virtual void ReceiveHit
 	(

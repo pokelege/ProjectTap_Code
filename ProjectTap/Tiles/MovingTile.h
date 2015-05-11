@@ -50,6 +50,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
 	bool enabled = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
+	bool reverseRouteWhenDone = true;
+
 	// Sets default values for this actor's properties
 	AMovingTile();
 

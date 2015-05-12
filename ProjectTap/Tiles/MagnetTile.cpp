@@ -58,7 +58,8 @@ class ABallPawn* AMagnetTile::FindBallPawn()
 	FCollisionQueryParams queryParam;
 	queryParam.bFindInitialOverlaps = false;
 	queryParam.bReturnFaceIndex = true;
-	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
+	FCollisionObjectQueryParams objectParam;
+	objectParam.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
 
 	auto pos = TileMesh->GetSocketLocation("Socket");
 	auto rayStart = pos + GetActorForwardVector() * 2.0f;
@@ -84,6 +85,7 @@ void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 
  void AMagnetTile::deactivate()
  {
+	 if(!activated) return;
 	 Super::deactivate();
 	 ABallPawn* ball = FindBallPawn();
 	 if(ball != nullptr)

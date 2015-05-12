@@ -21,7 +21,7 @@ ATile::ATile()
 	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	BoxCollision->SetNotifyRigidBodyCollision(true);
 	CancelHighlight();
-	
+
 }
 
 void ATile::activate()
@@ -33,7 +33,7 @@ void ATile::activate()
 }
 
 void ATile::deactivate()
-{	
+{
 	activated = false;
 }
 
@@ -61,6 +61,7 @@ void ATile::BeginPlay()
 {
   Super::BeginPlay();
   original = GetActorLocation();
+  CancelHighlight();
 }
 
 void ATile::Tick(float DeltaTime)

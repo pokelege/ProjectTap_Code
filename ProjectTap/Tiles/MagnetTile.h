@@ -14,12 +14,12 @@ class PROJECTTAP_API AMagnetTile : public ATile
 	GENERATED_BODY()
 
 	class ABallPawn* FindBallPawn();
-	void PullBall(class ABallPawn* ball);
+	void PullBall(class ABallPawn* ball, float DeltaTime);
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float length = 99999.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
-	float force = 99999.0f;
+	float targetVelocity = 1000.0f;
 
 	AMagnetTile();
 	virtual void BeginPlay() override;
@@ -37,4 +37,6 @@ public:
 		FVector NormalImpulse,
 		const FHitResult & Hit
 	);
+
+	virtual void deactivate() override;
 };

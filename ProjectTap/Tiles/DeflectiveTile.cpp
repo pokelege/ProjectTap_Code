@@ -73,7 +73,6 @@ void ADeflectiveTile::Tick(float DeltaTime)
 
 void ADeflectiveTile::Spin(float dt)
 {
-	static float accum = 0;
 
 	if (activated && accum < rotationDegreeLimit)
 	{

@@ -2,7 +2,7 @@
 
 #include "ProjectTap.h"
 #include "DeflectiveTile.h"
-
+#include "../Pawns/BallPawn.h"
 
 
 ADeflectiveTile::ADeflectiveTile()
@@ -26,6 +26,9 @@ ADeflectiveTile::ADeflectiveTile()
 	TileMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+
+	BoxCollision->OnComponentHit.AddDynamic(this, &ADeflectiveTile::OnHit);
 
 	//BoxCollision->SetWorldRotation(FRotator(0, 45, 0));
 	BoxCollision->SetWorldScale3D(FVector(5.0f, 40.0f, 80.0f));
@@ -127,4 +130,18 @@ void ADeflectiveTile::deactivate()
 	Super::deactivate();
 	Enable();
 	Super::CancelHighlight();
+}
+
+void ADeflectiveTile::OnHit(class AActor* OtherActor, 
+							class UPrimitiveComponent* OtherComp,
+							FVector NormalImpulse, 
+							const FHitResult& Hit)
+{
+
+	if (auto ball = Cast<ABallPawn>(OtherActor))
+	{
+		//	auto newDir = FMath::GetReflectionVector(ball->ballCollision->GetPhysicsLinearVelocity(), Hit.ImpactNormal);
+		//	ball->ballCollision->SetPhysicsLinearVelocity(2000 * newDir.GetSafeNormal());
+	}
+
 }

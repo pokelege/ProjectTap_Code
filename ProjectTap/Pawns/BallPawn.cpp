@@ -64,6 +64,7 @@ void ABallPawn::BeginPlay()
 	ballCollision->AddImpulse(initialVelocity);
 	trigger = GetWorld()->SpawnActor<APawnCastingTrigger>(GetActorLocation(), FRotator());
 	trigger->SetBallPawn(this);
+	bInvincible = false;
 }
 
 // Called every frame

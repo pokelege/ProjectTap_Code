@@ -29,7 +29,7 @@ void AMagnetTile::Tick( float DeltaTime )
 	ABallPawn* pawn = FindBallPawn();
 	if((pawn != nullptr))
 	{
-
+		PullBall(pawn, DeltaTime);
 	}
 }
 
@@ -69,12 +69,30 @@ class ABallPawn* AMagnetTile::FindBallPawn()
 	return Cast<ABallPawn>(hitActor);
 }
 
-void AMagnetTile::PullBall(class ABallPawn* ball)
+void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 {
-//	auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
-//	FVector physicsLinearVelocity = prim->GetPhysicsLinearVelocity();
-//	FVector actorForwardVectorNegative = -GetActorForwardVector();
-//	float localDotProduct = FVector::DotProduct(physicsLinearVelocity, actorForwardVectorNegative);
+	auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
+	FVector physicsLinearVelocity = prim->GetPhysicsLinearVelocity();
+	FVector actorForwardVectorNegative = -GetActorForwardVector();
+	float localDotProduct = FVector::DotProduct(physicsLinearVelocity, actorForwardVectorNegative);
+	physicsLinearVelocity += (targetVelocity - localDotProduct) * actorForwardVectorNegative;
+	prim->SetPhysicsLinearVelocity(physicsLinearVelocity);
+	//ball->SetActorLocation(ball->GetActorLocation() - (GetActorForwardVector() * force * DeltaTime),true);
 
-	ball->AddVelocity(-GetActorForwardVector() * force, ball->GetActorLocation(), false);
+	//ball->AddVelocity(-GetActorForwardVector() * force, ball->GetActorLocation(), false);
 }
+
+ void AMagnetTile::deactivate()
+ {
+	 Super::deactivate();
+	 ABallPawn* ball = FindBallPawn();
+	 if(ball != nullptr)
+	 {
+		 auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
+		 FVector physicsLinearVelocity = prim->GetPhysicsLinearVelocity();
+		 FVector actorForwardVectorNegative = -GetActorForwardVector();
+		 float localDotProduct = FVector::DotProduct(physicsLinearVelocity, actorForwardVectorNegative);
+		 physicsLinearVelocity += (-localDotProduct) * actorForwardVectorNegative;
+		 prim->SetPhysicsLinearVelocity(physicsLinearVelocity);
+	 }
+ }

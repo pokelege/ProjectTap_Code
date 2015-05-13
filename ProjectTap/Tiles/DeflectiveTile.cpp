@@ -139,8 +139,8 @@ void ADeflectiveTile::OnHit(class AActor* OtherActor,
 
 	if (auto ball = Cast<ABallPawn>(OtherActor))
 	{
-		//	auto newDir = FMath::GetReflectionVector(ball->ballCollision->GetPhysicsLinearVelocity(), Hit.ImpactNormal);
-		//	ball->ballCollision->SetPhysicsLinearVelocity(2000 * newDir.GetSafeNormal());
+			auto newDir = FMath::GetReflectionVector(ball->ballCollision->GetPhysicsLinearVelocity(), Hit.ImpactNormal);
+			ball->ballCollision->SetPhysicsLinearVelocity(2000 * newDir.GetSafeNormal());
 	}
 
 }

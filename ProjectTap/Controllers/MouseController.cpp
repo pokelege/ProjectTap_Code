@@ -9,6 +9,7 @@
 #include "../Tiles/BaseRampTile.h"
 #include "../Tiles/DeflectiveTile.h"
 #include "Tiles/MagnetTile.h"
+#include "Tiles/DraggableMoveTile.h"
 
 
 
@@ -28,7 +29,6 @@ void AMouseController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 	InputComponent->BindAction("Respawn", IE_Pressed, this, &AMouseController::RespawnPressed);
-
 	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::NotifyMousePressed);
 	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::NotifyMouseReleased);
 	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::DisnableSwipeCheck);
@@ -60,8 +60,6 @@ void AMouseController::PlayerTick(float DeltaTime)
 	}
 
 	btManager.Tick(DeltaTime);
-
-	auto s = GetWorld();
 }
 
 void AMouseController::checkObjectHighlight(const FHitResult& hit)
@@ -76,13 +74,12 @@ void AMouseController::NotifyMousePressed()
 {
 	FHitResult hit;
 	GetHitResultUnderCursor(ECC_Visibility, false, hit);
-
 	ActivateOtherTiles(hit);
 	SendStrongBlockingTile(hit);
 	SendBlockingTile(hit);
 	SendGroupedBlockingTile(hit);
 	EnableSwipeCheck(hit);
-
+	
 }
 
 
@@ -117,17 +114,22 @@ void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 		}
 	}
 
+	
+
 }
 
 
 void AMouseController::EnableSwipeCheck(const FHitResult& hit)
 {
-
 	auto gbt = Cast<AGroupedBlockingTile>(hit.Actor.Get());
 	if (gbt != nullptr)
 	{
 		btManager.SetEnableSwipeCheck(true);
 		bCheckForSwipe = true;
+	}
+	else if (auto draggableTile = Cast<ADraggableMoveTile>(hit.Actor.Get()))
+	{
+		draggableTile->activate();
 	}
 }
 

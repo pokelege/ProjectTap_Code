@@ -10,6 +10,10 @@ ASmokePawn::ASmokePawn()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	AIControllerClass = ASmokeAIController::StaticClass();
+	UStaticMeshComponent* mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SmokeMesh"));
+	SetRootComponent(mesh);
+	movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("SmokeMovement"));
+	movement->UpdatedComponent = GetRootComponent();
 }
 
 // Called when the game starts or when spawned
@@ -31,5 +35,10 @@ void ASmokePawn::SetupPlayerInputComponent(class UInputComponent* InputComponent
 {
 	Super::SetupPlayerInputComponent(InputComponent);
 
+}
+
+UPawnMovementComponent *ASmokePawn::GetMovementComponent() const
+{
+	return movement;
 }
 

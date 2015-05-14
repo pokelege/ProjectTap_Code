@@ -11,9 +11,10 @@ class PROJECTTAP_API ASmokePawn : public APawn
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Smoke)
 	class UBehaviorTree* behavior;
-
+UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Smoke)
+UFloatingPawnMovement* movement;
 	// Sets default values for this pawn's properties
 	ASmokePawn();
 
@@ -25,7 +26,5 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
-
-
-
+	virtual UPawnMovementComponent* GetMovementComponent() const override;
 };

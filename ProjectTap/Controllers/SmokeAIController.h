@@ -12,8 +12,6 @@ UCLASS()
 class PROJECTTAP_API ASmokeAIController : public AAIController
 {
 	GENERATED_BODY()
-
-	class APawn* enemy;
 public:
 
 	ASmokeAIController(const FObjectInitializer& ObjectInitializer);
@@ -26,6 +24,6 @@ public:
 
 	virtual void Possess(class APawn* pawn) override;
 
-	void SetEnemy(class APawn* pawn);
+	void SetEnemy();
 
 };

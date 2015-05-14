@@ -11,10 +11,18 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 	GENERATED_BODY()
 
 	FVector anchorHitPoint;
+	FVector newGoalPos;
 	float cameraRayLength;
-	bool isSelected = false;
 		
+	void UpdateDragMove(float dt);
+
 public:	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	float dragTolerance = 5.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	float dragMoveSpeed = 5.0f;
+
 	// Sets default values for this actor's properties
 	ADraggableMoveTile();
 
@@ -24,6 +32,15 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	void DragTo(const FHitResult& hit, const FVector cameraLocation);
+	//if camera ray hits this actor then give a new camera ray projected from mouse position for new position
+	void DragTo(const FHitResult& hit, 
+				const FVector& cameraLocation, 
+				const FVector& camRayDirection);
+
+
+
+	void RemoveFocus();
 	
+private:
+	bool isSelected = false;
 };

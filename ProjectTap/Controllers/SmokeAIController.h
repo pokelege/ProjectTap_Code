@@ -26,4 +26,5 @@ public:
 
 	void SetEnemy();
 
+	void KillEnemy();
 };

@@ -34,6 +34,16 @@ void ASmokeAIController::SetEnemy()
 		if(gamestate != nullptr)
 		{
 			BlackboardComponent->SetValueAsObject(FName("Enemy"), gamestate->CurrentPawn);
+			BlackboardComponent->SetValueAsVector(FName("Destination"), gamestate->CurrentPawn->GetActorLocation());
 		}
+	}
+}
+
+void ASmokeAIController::KillEnemy()
+{
+	AProjectTapGameState* gamestate = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
+	if(gamestate != nullptr)
+	{
+		gamestate->CurrentPawn->Kill();
 	}
 }

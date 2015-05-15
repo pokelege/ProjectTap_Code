@@ -121,8 +121,6 @@ void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
 {
 	if (enabled)
 	{
-		auto n = name.ToString();
-
 		if (enteredPortal)
 		{
 			if (auto a = Cast<ABallPawn>(OtherActor))
@@ -133,7 +131,6 @@ void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
 		}
 		else
 		{
-			auto n = name.ToString();
 			enteredPortal = true;
 		}
 	}
@@ -147,7 +144,6 @@ void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
 {
 	if (enabled)
 	{	
-		auto n = name.ToString();
 		if (enteredPortal)
 		{
 			if (auto a = Cast<ABallPawn>(OtherActor))
@@ -158,7 +154,6 @@ void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
 		}
 		else
 		{
-			auto n = name.ToString();
 			enteredPortal = true;
 		}
 	}

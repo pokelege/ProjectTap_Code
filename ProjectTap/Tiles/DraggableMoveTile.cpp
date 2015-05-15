@@ -19,7 +19,6 @@ void ADraggableMoveTile::BeginPlay()
 
 void ADraggableMoveTile::Tick( float DeltaTime )
 {
-	Super::Tick( DeltaTime );
 	UpdateDragMove(DeltaTime);
 }
 
@@ -36,18 +35,28 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 		if (deltaLength > dragTolerance * dragTolerance)
 		{
 			auto moveDelta = moveRay.ProjectOnTo(FVector(0.0f, 1.0f, 0.0f));
-			newGoalPos = moveDelta + anchorHitPoint;
 
-			if (moveDelta.Size() > 300)
+			if (moveDelta.Size() > dragTolerance * dragTolerance)
 			{
-				int i = 0;
+				newGoalPos = moveDelta + anchorHitPoint;
 			}
+			else
+			{
+				isSelected = false;
+				newGoalPos = GetActorLocation();
+			}
+		}
+		else
+		{
+			isSelected = false;
+			newGoalPos = GetActorLocation();
 		}
 	}
 	else
 	{
 		anchorHitPoint = GetActorLocation();
 		cameraRayLength = (anchorHitPoint - cameraLocation).Size();
+		newGoalPos = GetActorLocation();
 		isSelected = true;
 	}
 }
@@ -56,17 +65,25 @@ void ADraggableMoveTile::UpdateDragMove(float dt)
 {
 	if (isSelected)
 	{		
-		auto moveDir = newGoalPos - GetActorLocation();
+		auto moveDir = (newGoalPos - GetActorLocation()).GetSafeNormal();
 		auto reachedPos = FVector::DistSquared(newGoalPos, GetActorLocation()) < 1.0f;
+	
 		if (reachedPos)
 		{
-			SetActorLocation( newGoalPos);
+			SetActorLocation(newGoalPos);
 		}
-		else
+		else if (moveDir.SizeSquared() > 0.1f)
 		{
-			SetActorLocation(GetActorLocation() + FVector(0.0f, 1.0f, 0.0f) * dragMoveSpeed * dt);
+			SetActorLocation(GetActorLocation() + moveDir * dragMoveSpeed * dt);
 		}
 	}
+}
+
+FVector ADraggableMoveTile::calculateCurrentDir()
+{
+	auto startNode = path[currNode];
+	//auto endNode = path[];
+	return FVector();
 }
 
 

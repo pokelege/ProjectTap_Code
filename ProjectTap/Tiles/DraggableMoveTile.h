@@ -16,6 +16,7 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 		
 	void UpdateDragMove(float dt);
 
+	FVector calculateCurrentDir();
 public:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float dragTolerance = 5.0f;

@@ -2,26 +2,25 @@
 
 #pragma once
 
-#include "Tiles/Ramp.h"
+#include "Tile.h"
 #include "PortalTile.generated.h"
 
 /**
- * 
+ * blue portal faces positive X axis
  */
 UCLASS()
 class PROJECTTAP_API APortalTile : public ATile
 {
 	GENERATED_BODY()
 
-	void AdjustOrientation();
+	void AdjustOrientationAndTriggerBoxes();
 
 	void SetMeshCollisionProperty(UBoxComponent* box);
 	void GeneratePortalCollision();
 
 public:
-	/*blue portal faces positive X axis*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
-	Direction direction = Direction::XPlus;
+	float velocityMultiplier = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
 	APortalTile* otherPortal;
@@ -72,7 +71,7 @@ private:
 	bool leftOrangePortal = false;
 	bool enteredPortal = false;
 
-	void TransportBallToOrange(ABallPawn* pawn);
+	void TransportBallToOrange(class ABallPawn* pawn);
 	void TransportBallToBlue(ABallPawn* pawn);
 
 	friend class ALaser;

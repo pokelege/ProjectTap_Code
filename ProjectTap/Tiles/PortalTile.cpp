@@ -3,6 +3,8 @@
 #include "ProjectTap.h"
 #include "PortalTile.h"
 #include "../OffensiveTiles/Laser.h"
+#include "../Pawns/BallPawn.h"
+#include "../Pawns/PawnCastingTrigger.h"
 
 APortalTile::APortalTile()
 {
@@ -46,7 +48,7 @@ APortalTile::APortalTile()
 	GeneratePortalCollision();
 }
 
-void APortalTile::AdjustOrientation()
+void APortalTile::AdjustOrientationAndTriggerBoxes()
 {
 	bluePortalTrigger->AddLocalOffset(FVector(-.2f, 0.0f, 0.0f));
 	orangePortalTrigger->AddLocalOffset(FVector(.2f, 0.0f, 0.0f));
@@ -56,22 +58,8 @@ void APortalTile::AdjustOrientation()
 	orangePortalTrigger->SetBoxExtent(FVector(1.0f));
 	orangePortalTrigger->SetRelativeScale3D(FVector(.2f, 1.0f, 1.0f));
 
-	switch (direction)
-	{
-		case Direction::XPlus:
-			SetActorRotation(FRotator(0, 0, 0));
-			break;
-		case Direction::xMinus:
-			SetActorRotation(FRotator(0, 180, 0));
-			break;
-		case Direction::YPlus:
-			SetActorRotation(FRotator(0, 90, 0));
-			break;
-		case Direction::yMinus:
-			SetActorRotation(FRotator(0, 270, 0));
-			break;
-	}
-
+	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
+	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
 
 }
 
@@ -89,19 +77,19 @@ void APortalTile::GeneratePortalCollision()
 	top->AddLocalOffset(FVector(0.0f, 0.0f, 1.f));
 	top->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.02f));
 
-	//auto bottom = CreateDefaultSubobject<UBoxComponent>(TEXT("bottom"));
-	//bottom->AddLocalOffset(FVector(0.0f, 0.005f, -1.0f));
-	//bottom->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.02f));
+	auto bottom = CreateDefaultSubobject<UBoxComponent>(TEXT("bottom"));
+	bottom->AddLocalOffset(FVector(0.0f, 0.005f, -1.0f));
+	bottom->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.02f));
 
 	SetMeshCollisionProperty(left);
 	SetMeshCollisionProperty(right);
 	SetMeshCollisionProperty(top);
-	//SetMeshCollisionProperty(bottom);
+	SetMeshCollisionProperty(bottom);
 
 	left->AttachTo(RootComponent);
 	right->AttachTo(RootComponent);
 	top->AttachTo(RootComponent);
-	//bottom->AttachTo(RootComponent);
+	bottom->AttachTo(RootComponent);
 }
 
 void APortalTile::SetMeshCollisionProperty(UBoxComponent* box)
@@ -117,7 +105,7 @@ void APortalTile::SetMeshCollisionProperty(UBoxComponent* box)
 void APortalTile::BeginPlay()
 {
 	Super::BeginPlay();
-	AdjustOrientation();
+	AdjustOrientationAndTriggerBoxes();
 }
 
 void APortalTile::Tick(float DeltaTime)
@@ -133,6 +121,8 @@ void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
 {
 	if (enabled)
 	{
+		auto n = name.ToString();
+
 		if (enteredPortal)
 		{
 			if (auto a = Cast<ABallPawn>(OtherActor))
@@ -143,6 +133,7 @@ void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
 		}
 		else
 		{
+			auto n = name.ToString();
 			enteredPortal = true;
 		}
 	}
@@ -155,7 +146,8 @@ void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
 	const FHitResult & SweepResult)
 {
 	if (enabled)
-	{
+	{	
+		auto n = name.ToString();
 		if (enteredPortal)
 		{
 			if (auto a = Cast<ABallPawn>(OtherActor))
@@ -166,6 +158,7 @@ void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
 		}
 		else
 		{
+			auto n = name.ToString();
 			enteredPortal = true;
 		}
 	}
@@ -236,7 +229,7 @@ void APortalTile::TransportBallToOrange(ABallPawn* pawn)
 		transportLocation.Z += 3.0f;
 		pawn->SetActorLocation(transportLocation);
 		auto newVelMag = pawn->ballCollision->GetPhysicsLinearVelocity().Size();
-		auto newVel = newVelMag * otherPortal->GetActorForwardVector();
+		auto newVel = newVelMag * velocityMultiplier * otherPortal->GetActorForwardVector();
 		pawn->ballCollision->SetPhysicsLinearVelocity(newVel);
 		pawn->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f));
 	}
@@ -251,7 +244,7 @@ void APortalTile::TransportBallToBlue(ABallPawn* pawn)
 		transportLocation.Z += 3.0f;
 		pawn->SetActorLocation(transportLocation);
 		auto newVelMag = pawn->ballCollision->GetPhysicsLinearVelocity().Size();
-		auto newVel = newVelMag * -otherPortal->GetActorForwardVector();
+		auto newVel = newVelMag * velocityMultiplier * -otherPortal->GetActorForwardVector();
 		pawn->ballCollision->SetPhysicsLinearVelocity(newVel);
 		pawn->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f));
 	}

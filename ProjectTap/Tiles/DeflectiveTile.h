@@ -23,6 +23,11 @@ class PROJECTTAP_API ADeflectiveTile : public ATile
 	float timer = 0.0f;
 	float rotationDegreeLimit = 90;
 	float accum = 0;
+	float edgeHighlightTimer = 0.0f;
+	float edgeHighlightDuration = 0.0f;
+	bool ballCanTouch = true;
+
+	void UpdateEdgeHighlight(float dt);
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		float rotationDuration = 2.0f;
@@ -47,6 +52,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Highlight(bool litTile = true, bool litEdge = true) override;
+	void HighlightEdgeForDuration(float duration);
 	void CancelHighlight() override;
 
 	void activate() override;

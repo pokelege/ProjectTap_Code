@@ -18,6 +18,7 @@ ADeflectiveTile::ADeflectiveTile()
 	frameMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Frame mesh" ) );
 
 	frameMeshComponent->SetStaticMesh(frameMesh.Object);
+	frameMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	frameMeshComponent->AttachTo(TileMesh);
 
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
@@ -34,11 +35,7 @@ ADeflectiveTile::ADeflectiveTile()
 	BoxCollision->SetWorldScale3D(FVector(5.0f, 40.0f, 80.0f));
 
 	glowPowerHighlighted = 70.0f;
-	glowColor = FLinearColor(0.03f, 0.07f, 1.0f);
-	baseColor = FLinearColor(0.72f, 3.0f, 0.74, 0.5f);
 
-	glowColorHighlighted *= glowColor;
-	baseColorHighlighted *= glowColor;
 }
 
 
@@ -46,19 +43,25 @@ ADeflectiveTile::ADeflectiveTile()
 void ADeflectiveTile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	glowColor = FLinearColor(0.3f, 0.7f, 1.0f);
+	baseColor = FLinearColor(0.72f, 3.0f, 0.74, 0.5f);
+
+	glowColorHighlighted *= glowColor;
+	baseColorHighlighted *= baseColor;
 	switch (type)
 	{
-	case DeflectiveTileType::HORIZONTAL:
-		SetActorRotation(FRotator(0.0f, currentRotation, 0.0f));
-		break;
-	case DeflectiveTileType::VERTICAL_NORMAL_X:
-		SetActorRotation(FRotator(currentRotation, 0.0f, rotationDegreeLimit));
-		break;
-	case DeflectiveTileType::VERTICAL_NORMAL_Y:
-		SetActorRotation(FRotator(currentRotation, rotationDegreeLimit, rotationDegreeLimit));
-		break;
-	default:
-		break;
+		case DeflectiveTileType::HORIZONTAL:
+			SetActorRotation(FRotator(0.0f, currentRotation, 0.0f));
+			break;
+		case DeflectiveTileType::VERTICAL_NORMAL_X:
+			SetActorRotation(FRotator(currentRotation, 0.0f, rotationDegreeLimit));
+			break;
+		case DeflectiveTileType::VERTICAL_NORMAL_Y:
+			SetActorRotation(FRotator(currentRotation, rotationDegreeLimit, rotationDegreeLimit));
+			break;
+		default:
+			break;
 	}
 }
 
@@ -69,7 +72,37 @@ void ADeflectiveTile::Tick(float DeltaTime)
 
 	Spin(DeltaTime);
 
+	UpdateEdgeHighlight(DeltaTime);
+
 }
+
+void ADeflectiveTile::UpdateEdgeHighlight(float dt)
+{
+	static bool glowPowerIncreased = false;
+
+	if (edgeHighlightDuration > 0.0f)
+	{
+		if (!glowPowerIncreased)
+		{
+			glowColorHighlighted *= glowPower;
+			glowPowerIncreased = true;
+		}
+
+		HighlightEdge();
+		edgeHighlightTimer += dt;
+
+		edgeHighlightDuration = edgeHighlightTimer >= edgeHighlightDuration ? 0.0f : edgeHighlightDuration;
+
+		if (edgeHighlightDuration == 0.0f)
+		{
+			edgeHighlightTimer = 0.0f;
+			glowColorHighlighted /= glowPower;
+			glowPowerIncreased = false;
+			CancelHighlightEdge();
+		}
+	}
+}
+
 
 void ADeflectiveTile::Spin(float dt)
 {
@@ -103,6 +136,11 @@ void ADeflectiveTile::Spin(float dt)
 			break;
 		}
 
+		ballCanTouch = false;
+	}
+	else
+	{
+		ballCanTouch = true;
 	}
 
 }
@@ -131,6 +169,12 @@ void ADeflectiveTile::deactivate()
 	Super::CancelHighlight();
 }
 
+void ADeflectiveTile::HighlightEdgeForDuration(float duration)
+{
+	edgeHighlightDuration = duration;
+}
+
+
 void ADeflectiveTile::OnHit(class AActor* OtherActor, 
 							class UPrimitiveComponent* OtherComp,
 							FVector NormalImpulse, 
@@ -139,8 +183,18 @@ void ADeflectiveTile::OnHit(class AActor* OtherActor,
 
 	if (auto ball = Cast<ABallPawn>(OtherActor))
 	{
-			auto newDir = FMath::GetReflectionVector(ball->ballCollision->GetPhysicsLinearVelocity(), Hit.ImpactNormal);
-			ball->ballCollision->SetPhysicsLinearVelocity(2000 * newDir.GetSafeNormal());
+		if (ballCanTouch)
+		{
+			auto incomingVector = GetActorLocation() - ball->GetActorLocation();
+			incomingVector.Z = 0.0f;
+			auto newDir = FMath::GetReflectionVector(incomingVector, NormalImpulse);
+			ball->ballCollision->SetPhysicsLinearVelocity(200 * newDir.GetSafeNormal());
+			HighlightEdgeForDuration(0.3f);
+		}
+		else
+		{
+			ball->Kill();
+		}
 	}
 
 }

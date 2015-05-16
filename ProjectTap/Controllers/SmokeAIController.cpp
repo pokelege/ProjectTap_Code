@@ -25,25 +25,29 @@ void ASmokeAIController::Possess(APawn *pawn)
 }
 
 
-void ASmokeAIController::SetEnemy()
+bool ASmokeAIController::SetEnemy()
 {
 	ASmokePawn* smokePawn = Cast<ASmokePawn>(GetPawn());
 	if(smokePawn != nullptr && smokePawn->behavior != nullptr)
 	{
 		AProjectTapGameState* gamestate = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
-		if(gamestate != nullptr)
+		if(gamestate != nullptr && gamestate->CurrentPawn != nullptr)
 		{
 			BlackboardComponent->SetValueAsObject(FName("Enemy"), gamestate->CurrentPawn);
 			BlackboardComponent->SetValueAsVector(FName("Destination"), gamestate->CurrentPawn->GetActorLocation());
+			return true;
 		}
 	}
+	return false;
 }
 
-void ASmokeAIController::KillEnemy()
+bool ASmokeAIController::KillEnemy()
 {
 	AProjectTapGameState* gamestate = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
-	if(gamestate != nullptr)
+	if(gamestate != nullptr &&  gamestate->CurrentPawn != nullptr)
 	{
 		gamestate->CurrentPawn->Kill();
+		return true;
 	}
+	else return false;
 }

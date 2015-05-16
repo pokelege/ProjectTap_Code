@@ -24,7 +24,7 @@ public:
 
 	virtual void Possess(class APawn* pawn) override;
 
-	void SetEnemy();
+	bool SetEnemy();
 
-	void KillEnemy();
+	bool KillEnemy();
 };

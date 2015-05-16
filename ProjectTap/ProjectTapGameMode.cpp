@@ -35,7 +35,7 @@ void AProjectTapGameMode::BeginPlay()
 			FActorSpawnParameters params;
 			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
 			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
-			
+
 			if (ball != nullptr)
 			{
 				ball->AddVelocity(realPlayerStart->initialVelocity, realPlayerStart->GetActorLocation());
@@ -63,7 +63,11 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 	{
 		//todo GameOver
 		printonscreen( "GameOver" );
-		Respawn();
+		time += DeltaTime;
+		if(time >= restartCoolDown)
+		{
+			Respawn();
+		}
 	}
 	else if (GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_WIN)
 	{
@@ -73,28 +77,29 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 
 void AProjectTapGameMode::Respawn()
 {
-	if ( UWorld* world = GetWorld() )
-	{
-		AActor* playerStart = FindPlayerStart( 0, FString( "Player" ) );
-		FTransform playerTransform = playerStart->GetTransform();
-		if ( ABallPlayerStart* realPlayerStart = Cast<ABallPlayerStart>( playerStart ) )
-		{
-			FActorSpawnParameters params;
-			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
-			if (ball != nullptr)
-			{
-				ball->AddVelocity(realPlayerStart->initialVelocity, realPlayerStart->GetActorLocation());
-			}
-		}
-		else
-		{
-			FActorSpawnParameters params;
-			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
-			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
-		}
-		GetGameState<AProjectTapGameState>()->CurrentPawn = ball;
-	}
-	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::GAME_STATE_PLAYING);
+	GetWorld()->GetFirstPlayerController()->ClientTravel( TEXT("?restart"), TRAVEL_MAX );
+//	if ( UWorld* world = GetWorld() )
+//	{
+//		AActor* playerStart = FindPlayerStart( 0, FString( "Player" ) );
+//		FTransform playerTransform = playerStart->GetTransform();
+//		if ( ABallPlayerStart* realPlayerStart = Cast<ABallPlayerStart>( playerStart ) )
+//		{
+//			FActorSpawnParameters params;
+//			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
+//			if (ball != nullptr)
+//			{
+//				ball->AddVelocity(realPlayerStart->initialVelocity, realPlayerStart->GetActorLocation());
+//			}
+//		}
+//		else
+//		{
+//			FActorSpawnParameters params;
+//			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
+//			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
+//		}
+//		GetGameState<AProjectTapGameState>()->CurrentPawn = ball;
+//	}
+//	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::GAME_STATE_PLAYING);
 }
 
 ABallPawn* AProjectTapGameMode::getBall()

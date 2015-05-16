@@ -2,7 +2,7 @@
 
 #include "ProjectTap.h"
 #include "DeflectiveTile.h"
-
+#include "../Pawns/BallPawn.h"
 
 
 ADeflectiveTile::ADeflectiveTile()
@@ -18,6 +18,7 @@ ADeflectiveTile::ADeflectiveTile()
 	frameMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Frame mesh" ) );
 
 	frameMeshComponent->SetStaticMesh(frameMesh.Object);
+	frameMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	frameMeshComponent->AttachTo(TileMesh);
 
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
@@ -27,15 +28,14 @@ ADeflectiveTile::ADeflectiveTile()
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+
+	BoxCollision->OnComponentHit.AddDynamic(this, &ADeflectiveTile::OnHit);
+
 	//BoxCollision->SetWorldRotation(FRotator(0, 45, 0));
 	BoxCollision->SetWorldScale3D(FVector(5.0f, 40.0f, 80.0f));
 
 	glowPowerHighlighted = 70.0f;
-	glowColor = FLinearColor(0.03f, 0.07f, 1.0f);
-	baseColor = FLinearColor(0.72f, 3.0f, 0.74, 0.5f);
 
-	glowColorHighlighted *= glowColor;
-	baseColorHighlighted *= glowColor;
 }
 
 
@@ -43,19 +43,25 @@ ADeflectiveTile::ADeflectiveTile()
 void ADeflectiveTile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	glowColor = FLinearColor(0.3f, 0.7f, 1.0f);
+	baseColor = FLinearColor(0.72f, 3.0f, 0.74, 0.5f);
+
+	glowColorHighlighted *= glowColor;
+	baseColorHighlighted *= baseColor;
 	switch (type)
 	{
-	case DeflectiveTileType::HORIZONTAL:
-		SetActorRotation(FRotator(0.0f, currentRotation, 0.0f));
-		break;
-	case DeflectiveTileType::VERTICAL_NORMAL_X:
-		SetActorRotation(FRotator(currentRotation, 0.0f, rotationDegreeLimit));
-		break;
-	case DeflectiveTileType::VERTICAL_NORMAL_Y:
-		SetActorRotation(FRotator(currentRotation, rotationDegreeLimit, rotationDegreeLimit));
-		break;
-	default:
-		break;
+		case DeflectiveTileType::HORIZONTAL:
+			SetActorRotation(FRotator(0.0f, currentRotation, 0.0f));
+			break;
+		case DeflectiveTileType::VERTICAL_NORMAL_X:
+			SetActorRotation(FRotator(currentRotation, 0.0f, rotationDegreeLimit));
+			break;
+		case DeflectiveTileType::VERTICAL_NORMAL_Y:
+			SetActorRotation(FRotator(currentRotation, rotationDegreeLimit, rotationDegreeLimit));
+			break;
+		default:
+			break;
 	}
 }
 
@@ -66,11 +72,40 @@ void ADeflectiveTile::Tick(float DeltaTime)
 
 	Spin(DeltaTime);
 
+	UpdateEdgeHighlight(DeltaTime);
+
 }
+
+void ADeflectiveTile::UpdateEdgeHighlight(float dt)
+{
+	static bool glowPowerIncreased = false;
+
+	if (edgeHighlightDuration > 0.0f)
+	{
+		if (!glowPowerIncreased)
+		{
+			glowColorHighlighted *= glowPower;
+			glowPowerIncreased = true;
+		}
+
+		HighlightEdge();
+		edgeHighlightTimer += dt;
+
+		edgeHighlightDuration = edgeHighlightTimer >= edgeHighlightDuration ? 0.0f : edgeHighlightDuration;
+
+		if (edgeHighlightDuration == 0.0f)
+		{
+			edgeHighlightTimer = 0.0f;
+			glowColorHighlighted /= glowPower;
+			glowPowerIncreased = false;
+			CancelHighlightEdge();
+		}
+	}
+}
+
 
 void ADeflectiveTile::Spin(float dt)
 {
-	static float accum = 0;
 
 	if (activated && accum < rotationDegreeLimit)
 	{
@@ -101,6 +136,11 @@ void ADeflectiveTile::Spin(float dt)
 			break;
 		}
 
+		ballCanTouch = false;
+	}
+	else
+	{
+		ballCanTouch = true;
 	}
 
 }
@@ -127,4 +167,36 @@ void ADeflectiveTile::deactivate()
 	Super::deactivate();
 	Enable();
 	Super::CancelHighlight();
+}
+
+void ADeflectiveTile::HighlightEdgeForDuration(float duration)
+{
+	edgeHighlightDuration = duration;
+}
+
+
+void ADeflectiveTile::OnHit(class AActor* OtherActor, 
+							class UPrimitiveComponent* OtherComp,
+							FVector NormalImpulse, 
+							const FHitResult& Hit)
+{
+
+	if (auto ball = Cast<ABallPawn>(OtherActor))
+	{
+		if (ballCanTouch)
+		{
+			auto incomingVector = GetActorLocation() - ball->GetActorLocation();
+			incomingVector.Z = 0.0f;
+			auto newDir = FMath::GetReflectionVector(incomingVector, NormalImpulse);
+			auto newVel = 200 * newDir.GetSafeNormal();
+			ball->ballCollision->SetPhysicsLinearVelocity(newVel);
+			ball->ResetBallXYPosition(GetActorLocation());
+			HighlightEdgeForDuration(0.3f);
+		}
+		else
+		{
+			ball->Kill();
+		}
+	}
+
 }

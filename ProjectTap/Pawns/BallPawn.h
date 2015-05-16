@@ -40,6 +40,8 @@ public:
 	//reset ball to the center of the tile when hit
 	void ResetBallXYPosition(const FVector& resetPosition, const FVector& newVel);
 
+	void ResetBallXYPosition(const FVector& position);
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 

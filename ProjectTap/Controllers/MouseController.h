@@ -27,7 +27,7 @@ class PROJECTTAP_API AMouseController : public APlayerController
 	void SendBlockingTile(const FHitResult& hit);
 	void SendStrongBlockingTile(const FHitResult& hit);
 	void SendGroupedBlockingTile(const FHitResult& hit);
-
+	void SendDraggableMoveTile(const FHitResult& hit);
 	void checkObjectHighlight(const FHitResult& hit);
 
 	void NotifyMouseReleased();
@@ -36,6 +36,8 @@ class PROJECTTAP_API AMouseController : public APlayerController
 	void EnableSwipeCheck(const FHitResult& hit);
 
 	void RespawnPressed();
+
+	void GetCameraRay(FVector& WorldOrigin, FVector& WorldDirection);
 
 
 public:

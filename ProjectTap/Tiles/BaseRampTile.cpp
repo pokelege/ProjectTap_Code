@@ -27,6 +27,7 @@ ABaseRampTile::ABaseRampTile() : ATile()
 	glowColor = FLinearColor(1.0f, 1.0f, 1.0f);
 	glowPowerHighlighted = 100.0f;
 	CancelHighlight();
+
 	Disable();
 }
 

@@ -64,6 +64,7 @@ void ABallPawn::BeginPlay()
 	ballCollision->AddImpulse(initialVelocity);
 	trigger = GetWorld()->SpawnActor<APawnCastingTrigger>(GetActorLocation(), FRotator());
 	trigger->SetBallPawn(this);
+	bInvincible = false;
 }
 
 // Called every frame
@@ -111,6 +112,14 @@ void ABallPawn::ResetBallXYPosition(const FVector& position, const FVector& newV
 	{
 		SetActorLocation(newPosition);
 	}
+
+}
+
+void ABallPawn::ResetBallXYPosition(const FVector& position)
+{
+	FVector newPosition(position.X, position.Y, GetActorLocation().Z);
+
+	SetActorLocation(newPosition);
 
 }
 

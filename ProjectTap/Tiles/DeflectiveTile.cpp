@@ -188,7 +188,8 @@ void ADeflectiveTile::OnHit(class AActor* OtherActor,
 			auto incomingVector = GetActorLocation() - ball->GetActorLocation();
 			incomingVector.Z = 0.0f;
 			auto newDir = FMath::GetReflectionVector(incomingVector, NormalImpulse);
-			ball->ballCollision->SetPhysicsLinearVelocity(200 * newDir.GetSafeNormal());
+			auto newVel = 200 * newDir.GetSafeNormal();
+			ball->ResetBallXYPosition(GetActorLocation(), newVel);
 			HighlightEdgeForDuration(0.3f);
 		}
 		else

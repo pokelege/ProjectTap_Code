@@ -9,6 +9,7 @@
 #include "../Tiles/BaseRampTile.h"
 #include "../Tiles/DeflectiveTile.h"
 #include "Tiles/MagnetTile.h"
+#include "Tiles/DraggableMoveTile.h"
 
 
 
@@ -28,7 +29,6 @@ void AMouseController::SetupInputComponent()
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 	InputComponent->BindAction("Respawn", IE_Pressed, this, &AMouseController::RespawnPressed);
-
 	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::NotifyMousePressed);
 	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::NotifyMouseReleased);
 	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::DisnableSwipeCheck);
@@ -56,12 +56,11 @@ void AMouseController::PlayerTick(float DeltaTime)
 	if (raycasted)
 	{
 		SendGroupedBlockingTile(hit);
+		SendDraggableMoveTile(hit);
 		checkObjectHighlight(hit);
 	}
 
 	btManager.Tick(DeltaTime);
-
-	auto s = GetWorld();
 }
 
 void AMouseController::checkObjectHighlight(const FHitResult& hit)
@@ -71,18 +70,16 @@ void AMouseController::checkObjectHighlight(const FHitResult& hit)
 }
 
 
-
 void AMouseController::NotifyMousePressed()
 {
 	FHitResult hit;
 	GetHitResultUnderCursor(ECC_Visibility, false, hit);
-
 	ActivateOtherTiles(hit);
 	SendStrongBlockingTile(hit);
 	SendBlockingTile(hit);
 	SendGroupedBlockingTile(hit);
 	EnableSwipeCheck(hit);
-
+	
 }
 
 
@@ -90,51 +87,78 @@ void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 {
 	bool found = false;
 
-	auto ramp = Cast<ABaseRampTile>(hit.Actor.Get());
-	if (ramp != nullptr)
+	auto tile = Cast<ATile>(hit.Actor.Get());
+	if (tile != nullptr)
 	{
-		ramp->activate();
+		tile->activate();
 		found = true;
 	}
 
-	if (!found)
-	{
-		auto mag = Cast<AMagnetTile>(hit.Actor.Get());
-		if (mag != nullptr)
-		{
-			mag->activate();
-			found = true;
-		}
-	}
+	//auto ramp = Cast<ABaseRampTile>(hit.Actor.Get());
+	//if (ramp != nullptr)
+	//{
+	//	ramp->activate();
+	//	found = true;
+	//}
 
-	if (!found)
-	{
-		auto def = Cast<ADeflectiveTile>(hit.Actor.Get());
-		if (def != nullptr)
-		{
-			def->activate();
-			found = true;
-		}
-	}
+	//if (!found)
+	//{
+	//	auto mag = Cast<AMagnetTile>(hit.Actor.Get());
+	//	if (mag != nullptr)
+	//	{
+	//		mag->activate();
+	//		found = true;
+	//	}
+	//}
 
+	//if (!found)
+	//{
+	//	auto def = Cast<ADeflectiveTile>(hit.Actor.Get());
+	//	if (def != nullptr)
+	//	{
+	//		def->activate();
+	//		found = true;
+	//	}
+	//}
 }
 
 
 void AMouseController::EnableSwipeCheck(const FHitResult& hit)
 {
-
-	auto gbt = Cast<AGroupedBlockingTile>(hit.Actor.Get());
-	if (gbt != nullptr)
+	if (!bCheckForSwipe)
 	{
-		btManager.SetEnableSwipeCheck(true);
-		bCheckForSwipe = true;
+		auto gbt = Cast<AGroupedBlockingTile>(hit.Actor.Get());
+		auto draggableMoveTile = Cast<ADraggableMoveTile>(hit.Actor.Get());
+		if (gbt != nullptr || draggableMoveTile != nullptr)
+		{
+			btManager.SetEnableSwipeCheck(true);
+			bCheckForSwipe = true;
+		}
 	}
 }
 
+
 void AMouseController::DisnableSwipeCheck()
 {
-	btManager.SetEnableSwipeCheck(false);
-	bCheckForSwipe = false;
+	if (bCheckForSwipe)
+	{
+		btManager.SetEnableSwipeCheck(false);
+		bCheckForSwipe = false;
+	}
+}
+
+void AMouseController::SendDraggableMoveTile(const FHitResult& hit)
+{
+	auto dm = Cast<ADraggableMoveTile>(hit.Actor.Get());
+	if (dm != nullptr)
+	{
+		btManager.AddTile(dm);
+	}
+
+	FVector origin;
+	FVector direction;
+	GetCameraRay(origin, direction);
+	btManager.SetCameraRay(hit, origin, direction);
 }
 
 
@@ -174,9 +198,8 @@ void AMouseController::SendGroupedBlockingTile(const FHitResult& hit)
 
 void AMouseController::NotifyMouseReleased()
 {
-	btManager.DeactivateStrongBlockingTile();
-	btManager.SetEnableSwipeCheck(false);
-
+	btManager.MouseRelease();
+	
 }
 
 void AMouseController::RespawnPressed()
@@ -184,4 +207,46 @@ void AMouseController::RespawnPressed()
 	AProjectTapGameMode* gameMode = Cast<AProjectTapGameMode>(GetWorld()->GetAuthGameMode());
 	ABallPawn* ball = gameMode->getBall();
 	if(ball != nullptr) ball->Kill();
+}
+
+
+void AMouseController::GetCameraRay(FVector& WorldOrigin, FVector& WorldDirection)
+{
+	ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player);
+	FVector2D MousePosition;
+	if (LocalPlayer)
+	{
+		if (!LocalPlayer->ViewportClient->GetMousePosition(MousePosition))
+		{
+			return;
+		}
+	}
+
+	// Early out if we clicked on a HUD hitbox
+	if (GetHUD() != NULL && GetHUD()->GetHitBoxAtCoordinates(MousePosition, true))
+	{
+		return;
+	}
+
+	if (LocalPlayer != NULL && LocalPlayer->ViewportClient != NULL && LocalPlayer->ViewportClient->Viewport != NULL)
+	{
+		// Create a view family for the game viewport
+		FSceneViewFamilyContext ViewFamily(FSceneViewFamily::ConstructionValues(
+			LocalPlayer->ViewportClient->Viewport,
+			GetWorld()->Scene,
+			LocalPlayer->ViewportClient->EngineShowFlags)
+			.SetRealtimeUpdate(true));
+
+
+		// Calculate a view where the player is to update the streaming from the players start location
+		FVector ViewLocation;
+		FRotator ViewRotation;
+		FSceneView* SceneView = LocalPlayer->CalcSceneView(&ViewFamily, /*out*/ ViewLocation, /*out*/ ViewRotation, LocalPlayer->ViewportClient->Viewport);
+
+		if (SceneView)
+		{
+
+			SceneView->DeprojectFVector2D(MousePosition, WorldOrigin, WorldDirection);
+		}
+	}
 }

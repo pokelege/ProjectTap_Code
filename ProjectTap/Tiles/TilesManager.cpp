@@ -6,6 +6,7 @@
 #include "StrongBlockingTile.h"
 #include "GroupedBlockingTile.h"
 #include "Ramp.h"
+#include "DraggableMoveTile.h"
 
  //Sets default values
 UTilesManager::UTilesManager()
@@ -130,10 +131,40 @@ void UTilesManager::AddTile(AStrongBlockingTile* tile)
 	}
 }
 
+void UTilesManager::AddTile(ADraggableMoveTile* tile)
+{
+	if (tile != nullptr && tile != currDraggableTile)
+	{		
+		currDraggableTile = tile;
+		SetDraggableMoveTileCurrent();		
+	}
+}
+
+
 void UTilesManager::Tick(float dt)
 {
 	UpdateGroupedBlockingTiles();
+	UpdateDraggableMoveTile();
+
 }
+
+void UTilesManager::UpdateDraggableMoveTile()
+{
+	if (isMousePressed && currDraggableTile != nullptr)
+	{
+		currDraggableTile->DragTo(hit, worldOrigin, worldDirection);
+	}
+}
+
+void UTilesManager::SetCameraRay(const FHitResult& _hit,
+								 const FVector& _worldOrigin, 
+								 const FVector& _worldDirection)
+{
+	hit = _hit;
+	worldOrigin = _worldOrigin;
+	worldDirection = _worldDirection;
+}
+
 
 void UTilesManager::UpdateGroupedBlockingTiles()
 {
@@ -193,4 +224,22 @@ void UTilesManager::SetGroupedBlockingTileCurrent()
 	DeactivateStrongBlockingTile();
 }
 
+void UTilesManager::SetDraggableMoveTileCurrent()
+{
+	currentTileType = CurrentTileType::DRAGGABLE_TILE;
 
+}
+
+
+void UTilesManager::MouseRelease()
+{
+	DeactivateStrongBlockingTile();
+	SetEnableSwipeCheck(false);
+	
+	if (currDraggableTile != nullptr)
+	{
+		currDraggableTile->RemoveFocus();
+		currDraggableTile = nullptr;
+	}
+
+}

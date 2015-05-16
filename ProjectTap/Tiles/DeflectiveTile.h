@@ -38,7 +38,10 @@ public:
 	ADeflectiveTile();
 
 	UFUNCTION()
-	void OnHit(class AActor* OtherActor, class UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnHit(class AActor* OtherActor, 
+		   	   class UPrimitiveComponent* OtherComp, 
+			   FVector NormalImpulse, 
+			   const FHitResult& Hit);
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

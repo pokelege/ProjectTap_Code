@@ -173,6 +173,7 @@ void ATurretPawn::UpdateLaserTag(float dt)
 		{
 			laserLength = (pawn->GetActorLocation() - nozzleLocalUpdatable).Size();
 		}
+
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable + direction * laserLength, 0);
 }
 

@@ -6,7 +6,7 @@ public class ProjectTap : ModuleRules
 {
 	public ProjectTap(TargetInfo Target)
 	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore","AIModule" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

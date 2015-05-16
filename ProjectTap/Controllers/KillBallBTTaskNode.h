@@ -15,7 +15,7 @@ class PROJECTTAP_API UKillBallBTTaskNode : public UBTTaskNode
 
 
 public:
-	virtual PRAGMA_POP EBTNodeResult::Type ExecuteTask
+	virtual EBTNodeResult::Type ExecuteTask
 	(
 	  UBehaviorTreeComponent & OwnerComp,
 	  uint8 * NodeMemory

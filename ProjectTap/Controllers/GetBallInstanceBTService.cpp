@@ -1,19 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectTap.h"
-#include "FindBallBTTaskNode.h"
+#include "GetBallInstanceBTService.h"
 #include "SmokeAIController.h"
 
 
 
 
 
-EBTNodeResult::Type UFindBallBTTaskNode::ExecuteTask(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory)
+void UGetBallInstanceBTService::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory, float DeltaSeconds)
 {
 	ASmokeAIController* ai = Cast<ASmokeAIController>(OwnerComp.GetAIOwner());
 	if(ai != nullptr)
 	{
-		if(ai->SetEnemy()) return EBTNodeResult::Type::Succeeded;
+		ai->SetEnemy();
 	}
-	return EBTNodeResult::Type::Failed;
 }

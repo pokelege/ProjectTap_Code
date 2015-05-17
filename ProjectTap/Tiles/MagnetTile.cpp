@@ -20,7 +20,7 @@ AMagnetTile::AMagnetTile() : ATile()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> distortion(*FName("/Game/Models/distortion").ToString());
 	distortionMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Distortion mesh" ) );
 	distortionMesh->SetStaticMesh(distortion.Object);
-	distortionMesh->SetWorldScale3D(FVector(500,1,1));
+	distortionMesh->SetWorldScale3D(FVector(0,1,1));
 	distortionMesh->AttachTo(RootComponent);
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
@@ -31,7 +31,6 @@ void AMagnetTile::BeginPlay()
 	GetWorld()->GetFirstPlayerController()->InputComponent->BindAction("ActivateCube", IE_Released, this, &AMagnetTile::deactivate);
 	magnetParticle->DeactivateSystem();
 	magnetParticle->Deactivate();
-	distortionMesh->SetRelativeScale3D(FVector(0,1,1));
 }
 
 void AMagnetTile::Tick( float DeltaTime )
@@ -120,5 +119,5 @@ void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 	 Super::activate();
 	 magnetParticle->Activate(true);
 	 magnetParticle->ActivateSystem();
-	 distortionMesh->SetRelativeScale3D(FVector(500,1,1));
+	 distortionMesh->SetRelativeScale3D(FVector(length,1,1));
  }

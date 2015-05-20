@@ -19,7 +19,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float length = 99999.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
-	float targetVelocity = 1000.0f;
+	float targetVelocity = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
+	float centerTolerance = 0.001f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	class UParticleSystemComponent* magnetParticle;

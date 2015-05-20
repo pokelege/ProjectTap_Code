@@ -21,6 +21,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float targetVelocity = 1000.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
+	class UParticleSystemComponent* magnetParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
+	UStaticMeshComponent* distortionMesh;
 	AMagnetTile();
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
@@ -39,4 +43,5 @@ public:
 	);
 
 	virtual void deactivate() override;
+	virtual void activate() override;
 };

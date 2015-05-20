@@ -182,9 +182,17 @@ FVector ClampNormalAxis(FVector dir)
 	FVector normal;
 
 	if (FMath::Abs(x) > FMath::Abs(y))
+	{
 		normal.X = x > 0.0f ? 1.0f : -1.0f;
+		normal.Y = 0.0f;
+		normal.Z = 0.0f;
+	}
 	else
+	{
 		normal.Y = x > 0.0f ? 1.0f : -1.0f;
+		normal.X = 0.0f;
+		normal.Z = 0.0f;
+	}
 
 	return normal;
 }
@@ -202,7 +210,7 @@ void ADeflectiveTile::OnHit(class AActor* OtherActor,
 			auto incomingVector = GetActorLocation() - ball->GetActorLocation();
 			incomingVector.Z = 0.0f;
 			auto newDir = FMath::GetReflectionVector(incomingVector, NormalImpulse);
-			auto newVel = 200 * ClampNormalAxis(newDir.SafeNormal());
+			auto newVel = 500 * ClampNormalAxis(newDir.SafeNormal());
 			ball->ballCollision->SetPhysicsAngularVelocity(FVector::ZeroVector);
 			ball->ballCollision->SetPhysicsLinearVelocity(newVel);
 			ball->ResetBallXYPosition(GetActorLocation());

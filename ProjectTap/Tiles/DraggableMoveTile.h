@@ -10,6 +10,8 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 {
 	GENERATED_BODY()
 
+	static TArray<class GVertex*> routeGraph;
+
 	FVector anchorHitPoint;
 	FVector newGoalPos;
 	float cameraRayLength;

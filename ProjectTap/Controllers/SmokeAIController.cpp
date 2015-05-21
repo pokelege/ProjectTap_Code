@@ -49,5 +49,6 @@ bool ASmokeAIController::KillEnemy()
 		gamestate->CurrentPawn->Kill();
 		return true;
 	}
-	else return false;
+	else
+		return false;
 }

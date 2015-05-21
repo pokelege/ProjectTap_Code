@@ -14,7 +14,7 @@ class PROJECTTAP_API ALaser : public AActor
 	ALaser* nextLaser = nullptr;
 	FVector currHitPoint;
 	float timer = .0f;
-	float elapseTime = 1/ 30.0f;
+	float elapseTime = 1 / 30.0f;
 	int currentDepth = 0;
 	const int MAX_DEPTH = 8;
 

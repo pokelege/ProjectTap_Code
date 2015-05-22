@@ -19,6 +19,7 @@ AEndTile::AEndTile() : ATile()
 	{
 		BoxCollision->SetBoxExtent(FVector(0.1f,0.1f,1), false);
 	}
+
 	BoxCollision->bGenerateOverlapEvents = true;
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);

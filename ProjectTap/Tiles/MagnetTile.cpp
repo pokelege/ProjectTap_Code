@@ -102,8 +102,8 @@ void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 //	physicsLinearVelocity += (targetVelocity - localDotProduct) * actorForwardVectorNegative;
 //	prim->SetPhysicsLinearVelocity(physicsLinearVelocity);
 //	ball->SetActorLocation(ball->GetActorLocation() - (GetActorForwardVector() * force * DeltaTime),true);
-
-	ball->AddVelocity(-GetActorForwardVector() * targetVelocity, ball->GetActorLocation(), false);
+	auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
+	prim->AddImpulse(-GetActorForwardVector() * targetVelocity);
 	float distanceAtNormal = FVector::DotProduct(ball->GetActorLocation() - GetActorLocation(), GetActorForwardVector());
 	FVector normalLoc = (distanceAtNormal * GetActorForwardVector()) + GetActorLocation();
 	FVector normalToBall = ball->GetActorLocation() - normalLoc;
@@ -123,8 +123,8 @@ void AMagnetTile::deactivate()
 	if(ball != nullptr)
 	{
 		auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
-		prim->SetPhysicsLinearVelocity(FVector());
-		prim->SetPhysicsAngularVelocity(FVector());
+		prim->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
+		prim->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
 	}
 	magnetParticle->DeactivateSystem();
 	magnetParticle->Deactivate();

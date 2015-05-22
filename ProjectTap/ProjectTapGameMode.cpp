@@ -8,6 +8,7 @@
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "Pawns/BallPawn.h"
 #include "Pawns/BallPlayerStart.h"
+#include "DataStructure/Graph.h"
 #define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
 AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer ): Super( initializer )
 {
@@ -21,6 +22,12 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 void AProjectTapGameMode::LoadNextLevel()
 {
 	//FStreamLevelAction::FindAndCacheLevelStreamingObject(TEXT("TrollLevel"), GetWorld());
+}
+
+
+void AProjectTapGameMode::EndPlay()
+{
+	Graph::GetInstance()->Destroy();
 }
 
 

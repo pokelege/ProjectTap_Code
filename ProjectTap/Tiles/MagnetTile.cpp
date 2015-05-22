@@ -110,7 +110,7 @@ void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 	float dist = normalToBall.Size();
 	if(dist > centerTolerance)
 	{
-		FVector normal = normalToBall.SafeNormal();
+		FVector normal = normalToBall.GetSafeNormal();
 		ball->AddActorWorldTransform(FTransform(dist * -normal));
 	}
 }

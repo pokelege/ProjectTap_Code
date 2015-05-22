@@ -30,6 +30,8 @@ public:
 
 	virtual void Tick ( float DeltaTime ) override;
 
+	virtual void EndPlay();
+
 	void Respawn();
 
 	ABallPawn* getBall();

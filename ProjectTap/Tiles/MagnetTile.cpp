@@ -22,7 +22,6 @@ AMagnetTile::AMagnetTile() : ATile()
 	distortionMesh->SetStaticMesh(distortion.Object);
 	distortionMesh->SetWorldScale3D(FVector(0,1,1));
 	distortionMesh->AttachTo(RootComponent);
-
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
 }
@@ -37,22 +36,22 @@ void AMagnetTile::BeginPlay()
 void AMagnetTile::Tick( float DeltaTime )
 {
 	Super::Tick(DeltaTime);
-	if(!activated) return;
+	if(!activated)
+	{
+		if(lastBall != nullptr)
+		{
+			auto prim = Cast<UPrimitiveComponent>(lastBall->GetRootComponent());
+			prim->SetPhysicsLinearVelocity(FVector());
+			prim->SetPhysicsAngularVelocity(FVector());
+			lastBall = nullptr;
+		}
+		return;
+	}
 
 	ABallPawn* pawn = FindBallPawn();
 	if((pawn != nullptr))
 	{
 		PullBall(pawn, DeltaTime);
-	}
-	else
-	{
-		AProjectTapGameState* gamestate = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
-		if(gamestate != nullptr &&  gamestate->CurrentPawn != nullptr)
-		{
-			pawn = gamestate->CurrentPawn;
-			auto prim = Cast<UPrimitiveComponent>(pawn->GetRootComponent());
-			prim->SetEnableGravity(true);
-		}
 	}
 }
 
@@ -95,46 +94,47 @@ class ABallPawn* AMagnetTile::FindBallPawn()
 
 void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 {
-//	auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
-//	FVector physicsLinearVelocity = prim->GetPhysicsLinearVelocity();
-//	FVector actorForwardVectorNegative = -GetActorForwardVector();
-//	float localDotProduct = FVector::DotProduct(physicsLinearVelocity, actorForwardVectorNegative);
-//	physicsLinearVelocity += (targetVelocity - localDotProduct) * actorForwardVectorNegative;
-//	prim->SetPhysicsLinearVelocity(physicsLinearVelocity);
-//	ball->SetActorLocation(ball->GetActorLocation() - (GetActorForwardVector() * force * DeltaTime),true);
+	auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
+	prim->AddImpulse(targetVelocity * -GetActorForwardVector());
 
-	ball->AddVelocity(-GetActorForwardVector() * targetVelocity, ball->GetActorLocation(), false);
-	float distanceAtNormal = FVector::DotProduct(ball->GetActorLocation() - GetActorLocation(), GetActorForwardVector());
-	FVector normalLoc = (distanceAtNormal * GetActorForwardVector()) + GetActorLocation();
-	FVector normalToBall = ball->GetActorLocation() - normalLoc;
-	float dist = normalToBall.Size();
-	if(dist > centerTolerance)
+	if(lastBall == nullptr)
 	{
-		FVector normal = normalToBall.GetSafeNormal();
-		ball->AddActorWorldTransform(FTransform(dist * -normal));
+		float distanceAtNormal = FVector::DotProduct(ball->GetActorLocation() - GetActorLocation(), GetActorForwardVector());
+		FVector normalLoc = (distanceAtNormal * GetActorForwardVector()) + GetActorLocation();
+		FVector normalToBall = ball->GetActorLocation() - normalLoc;
+		float dist = normalToBall.Size();
+		if(dist > centerTolerance)
+		{
+			FVector normal = normalToBall.GetSafeNormal();
+			prim->AddRelativeLocation(dist * -normal);
+		}
 	}
+	lastBall = ball;
+	//ball->SetActorLocation(ball->GetActorLocation() - (GetActorForwardVector() * force * DeltaTime),true);
+
+	//ball->AddVelocity(-GetActorForwardVector() * force, ball->GetActorLocation(), false);
 }
 
-void AMagnetTile::deactivate()
-{
-	if(!activated) return;
-	Super::deactivate();
-	ABallPawn* ball = FindBallPawn();
-	if(ball != nullptr)
-	{
-		auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
-		prim->SetPhysicsLinearVelocity(FVector());
-		prim->SetPhysicsAngularVelocity(FVector());
-	}
-	magnetParticle->DeactivateSystem();
-	magnetParticle->Deactivate();
-	distortionMesh->SetRelativeScale3D(FVector(0,1,1));
-}
+ void AMagnetTile::deactivate()
+ {
+	 if(!activated) return;
+	 Super::deactivate();
+//	 ABallPawn* ball = FindBallPawn();
+//	 if(ball != nullptr)
+//	 {
+//		 auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
+//		 prim->SetPhysicsLinearVelocity(FVector());
+//		 prim->SetPhysicsAngularVelocity(FVector());
+//	 }
+	 magnetParticle->DeactivateSystem();
+	 magnetParticle->Deactivate();
+	 distortionMesh->SetRelativeScale3D(FVector(0,1,1));
+ }
 
-void AMagnetTile::activate()
-{
-	Super::activate();
-	magnetParticle->Activate(true);
-	magnetParticle->ActivateSystem();
-	distortionMesh->SetRelativeScale3D(FVector(length,1,1));
-}
+ void AMagnetTile::activate()
+ {
+	 Super::activate();
+	 magnetParticle->Activate(true);
+	 magnetParticle->ActivateSystem();
+	 distortionMesh->SetRelativeScale3D(FVector(length,1,1));
+ }

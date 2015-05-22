@@ -15,11 +15,12 @@ class PROJECTTAP_API AMagnetTile : public ATile
 
 	class ABallPawn* FindBallPawn();
 	void PullBall(class ABallPawn* ball, float DeltaTime);
+	class ABallPawn* lastBall;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float length = 99999.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
-	float targetVelocity = 100.0f;
+	float targetVelocity = 1000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float centerTolerance = 0.001f;

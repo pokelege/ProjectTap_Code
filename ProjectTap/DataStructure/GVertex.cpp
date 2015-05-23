@@ -18,24 +18,27 @@ AGVertex::AGVertex()
 	debugMesh->SetWorldScale3D(FVector(0.1f));
 	debugMesh->SetStaticMesh(tempMesh.Object);
 
-	Graph::GetInstance()->addVertex(this);
-
 	for (size_t i = 0; i < MAX_NUM; i++)
 	{
 		connectTo[i] = -1;
 	}
 
-#ifdef DEBUG_ON
+	vertexIndex = -1;
+
 	//initialize debug arrows
-	for (size_t i = 0; i < debugArrows.Num(); i++)
+	for (size_t i = 0; i < MAX_NUM; i++)
 	{
-		debugArrows[i] = CreateDefaultSubobject<UArrowComponent>(TEXT("graphArrow"));
+		auto name = FString("debugArrow").Append(FString::FromInt(i));
+		debugArrows.Add(CreateDefaultSubobject<UArrowComponent>(*name));
 	}
 
-#endif
+	for (size_t i = 0; i < MAX_NUM; i++)
+	{
+		debugArrows[i]->AttachTo(RootComponent);
+	}
+
 }
 
-#ifdef DEBUG_ON
 void AGVertex::regenerateDebugArrows()
 {
 	auto g = Graph::GetInstance();
@@ -43,26 +46,32 @@ void AGVertex::regenerateDebugArrows()
 	for (size_t i = 0; i < MAX_NUM; i++)
 	{
 		auto vIndex = connectTo[i];
-
-		if (vIndex != -1)
+		bool indexValid = vIndex >= 0 && vIndex < g->MAX_SIZE && vIndex != vertexIndex;
+		if (indexValid)
 		{
 			auto other = g->getVertex(vIndex);
 			auto start = GetActorLocation();
 			auto end = other->GetActorLocation();
 			auto distance = FVector::Dist(start, end);
-			auto dir = (end - start).GetSafeNormal();
+			auto dir = (end - start);
 
 			auto arrow = debugArrows[i];
-			auto arrowLocation = start + dir * distance * 0.5f;
-			arrow->SetWorldLocation(arrowLocation);
-			auto trans = FRotationMatrix::MakeFromX(dir);
-			trans.SetOrigin(arrowLocation);
-			arrow->SetWorldTransform(FTransform(trans));
-			arrow->SetRelativeScale3D(FVector(distance * 0.5f, 0.0f, 0.0f));
+			arrow->SetWorldLocation(start);
+			auto rot = FRotationMatrix::MakeFromX(dir);			
+			arrow->SetWorldLocation(start);
+			arrow->SetWorldRotation(FRotator(rot.ToQuat()));
+			arrow->SetWorldScale3D(FVector(80.0f, 10.0f, 10.0f));
+			//FTransform transform;
+			//transform.SetLocation(arrowLocation);
+			//transform.SetRotation(rot.ToQuat());
+			//arrow->SetWorldTransform(transform);
+		}
+		else 
+		{
+			connectTo[i] = -1;
 		}
 	}
 }
-#endif
 
 void AGVertex::BeginPlay()
 {
@@ -73,9 +82,29 @@ void AGVertex::BeginPlay()
 
 void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
 {
-	
-	regenerateDebugArrows();
+	if (PropertyChangedEvent.Property != nullptr)
+	{
+		auto pName = PropertyChangedEvent.Property->GetName();
+
+		if (pName.Equals(TEXT("clickToGetIndex")))
+		{
+			Graph::GetInstance()->addVertex(this);
+		}
+		else if (pName.Equals(TEXT("clickToMakeArrows")))
+		{
+			regenerateDebugArrows();
+		}
+	}
 }
+
+void AGVertex::PostLoad()
+{
+	Super::PostLoad();
+
+	Graph::GetInstance()->addVertex(this);
+
+}
+
 
 void AGVertex::BeginDestroy()
 {

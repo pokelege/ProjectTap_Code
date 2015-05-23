@@ -1,6 +1,7 @@
 #include "ProjectTap.h"
 #include "Graph.h"
 #include "GVertex.h"
+#include <assert.h>
 
 bool Graph::isInitialized = false;
 Graph* Graph::graph = nullptr;
@@ -25,7 +26,7 @@ void Graph::Init()
 	{
 		for (size_t j = 0; j < MAX_SIZE; j++)
 		{
-			matrix[i][j] = 0;
+			matrix[i][j] = NONEDGE;
 		}
 	}
 }
@@ -82,12 +83,16 @@ void Graph::setUndirectedEdge(int32 v1, int32 v2)
 
 void Graph::deleteUndirectedEdge(int32 v1, int32 v2)
 {
-	matrix[v1][v2] = NONEDGE;
-	matrix[v2][v1] = NONEDGE;
+	if (v1 >= 0 && v2 >= 0)
+	{
+		matrix[v1][v2] = NONEDGE;
+		matrix[v2][v1] = NONEDGE;
+	}
 }
 
 bool Graph::hasEdge(int32 v1, int32 v2)
 {
+	assert(index >= 0 && index < MAX_SIZE);
 	return matrix[v1][v2] == EDGE;
 }
 
@@ -103,7 +108,7 @@ void Graph::generateEdges()
 			{
 				auto connectIndex = vertex->connectTo[i];
 
-				if (connectIndex != -1)
+				if (connectIndex >= 0 && connectIndex < MAX_SIZE)
 				{
 					setUndirectedEdge(vertex->vertexIndex, connectIndex);
 				}
@@ -113,12 +118,15 @@ void Graph::generateEdges()
 }
 
 AGVertex* Graph::getVertex(int index)
-{
+{	
+	assert(index >= 0 && index < MAX_SIZE);
+
 	return mark[index];
 }
 
 void Graph::MakeVertexOccupied(int32 v)
 {
+	assert(index >= 0 && index < MAX_SIZE);
 	mark[v]->hasTile = true;
 }
 
@@ -137,21 +145,25 @@ bool Graph::MoveTileFromTo(int32 from, int32 to)
 
 bool Graph::IsVertexOccupied(int32 v)
 {
+	assert(index >= 0 && index < MAX_SIZE);
 	return mark[v]->hasTile;
 }
 
 void Graph::addVertex(AGVertex* vertex)
 {
-	for (size_t i = 0; i < mark.Num() && !mark.Contains(vertex); i++)
+	bool containsVertex = false;
+	//check if contains vertex
+	for (size_t i = 0; i < mark.Num() && !containsVertex; i++)
+	{
+		containsVertex = mark[i] != nullptr && vertex == mark[i];
+	}
+
+	for (size_t i = 0; i < mark.Num() && !containsVertex; i++)
 	{
 		if (mark[i] == nullptr)
 		{
 			mark[i] = vertex;
 			vertex->vertexIndex = i;
-			break;
-		}
-		else if (mark[i] == vertex)
-		{
 			break;
 		}
 	}
@@ -161,7 +173,7 @@ void Graph::removeVertex(AGVertex* vertex)
 {
 	for (size_t i = 0; i < mark.Num(); i++)
 	{
-		if (mark[i] == vertex)
+		if (mark[i] != nullptr && (mark[i]->vertexIndex == vertex->vertexIndex))
 		{
 			mark[i] = nullptr;
 			break;

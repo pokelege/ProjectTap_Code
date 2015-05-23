@@ -7,7 +7,9 @@
 class Graph
 {
 	int32** matrix;
+	friend class AGVertex;
 	const int32 MAX_SIZE = 25;
+private:
 	const int32 NONEDGE = 0;
 	const int32 EDGE = 1;
 

@@ -15,11 +15,7 @@ class PROJECTTAP_API AGVertex : public AActor
 	const int32 MAX_NUM = 4;
 	bool hasTile = false;
 
-#ifdef DEBUG_ON
 	void regenerateDebugArrows();
-#else
-	void regenerateDebugArrows(){}
-#endif
 
 public:
 
@@ -30,12 +26,19 @@ public:
 		TArray<int32> connectTo;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Tile)
-		int32 vertexIndex;
-#ifdef DEBUG_ON
+		int32 vertexIndex = -1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+		bool clickToGetIndex;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+		bool clickToMakeArrows;
+
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Tile)
 		TArray<UArrowComponent*> debugArrows;
 
-#endif
+	virtual void PostLoad() override;
 
 	virtual void BeginPlay() override;
 

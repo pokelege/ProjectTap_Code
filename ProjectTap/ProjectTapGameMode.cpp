@@ -25,7 +25,7 @@ void AProjectTapGameMode::LoadNextLevel()
 }
 
 
-void AProjectTapGameMode::EndPlay()
+void AProjectTapGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Graph::GetInstance()->Destroy();
 }

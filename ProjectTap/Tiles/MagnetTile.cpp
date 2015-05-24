@@ -40,9 +40,9 @@ void AMagnetTile::Tick( float DeltaTime )
 	{
 		if(lastBall != nullptr)
 		{
-			auto prim = Cast<UPrimitiveComponent>(lastBall->GetRootComponent());
-			prim->SetPhysicsLinearVelocity(FVector());
-			prim->SetPhysicsAngularVelocity(FVector());
+//			auto prim = Cast<UPrimitiveComponent>(lastBall->GetRootComponent());
+//			prim->SetPhysicsLinearVelocity(FVector());
+//			prim->SetPhysicsAngularVelocity(FVector());
 			lastBall = nullptr;
 		}
 		return;
@@ -52,6 +52,13 @@ void AMagnetTile::Tick( float DeltaTime )
 	if((pawn != nullptr))
 	{
 		PullBall(pawn, DeltaTime);
+	}
+	else if(lastBall != nullptr)
+	{
+//		auto prim = Cast<UPrimitiveComponent>(lastBall->GetRootComponent());
+//		prim->SetPhysicsLinearVelocity(FVector());
+//		prim->SetPhysicsAngularVelocity(FVector());
+		lastBall = nullptr;
 	}
 }
 
@@ -105,8 +112,9 @@ void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 		float dist = normalToBall.Size();
 		if(dist > centerTolerance)
 		{
-			FVector normal = normalToBall.GetSafeNormal();
-			prim->AddRelativeLocation(dist * -normal);
+			FVector toAdd = dist * -normalToBall.GetSafeNormal();
+			toAdd.Z = 0;
+			prim->AddRelativeLocation(toAdd);
 		}
 	}
 	lastBall = ball;

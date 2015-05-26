@@ -99,9 +99,13 @@ bool ATurretPawn::FoundPlayerToHit()
 	auto laserVector = (player->GetActorLocation() - nozzleLocalUpdatable).GetSafeNormal() * maxDistance;
 
 	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
-	auto hitActor = hit.Actor.Get();
-
-	return Cast<ABallPawn>(hitActor) != nullptr;
+	while(hit.GetActor() != nullptr && Cast<ABullet>(hit.GetActor()) != nullptr)
+	{
+		queryParam.AddIgnoredComponent(hit.GetComponent());
+		hit = FHitResult();
+		GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
+	}
+	return Cast<ABallPawn>(hit.GetActor()) != nullptr;
 }
 
 void ATurretPawn::Fire()
@@ -149,7 +153,11 @@ void ATurretPawn::Tick( float DeltaTime )
 	}
 	else
 	{
-		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable + direction * maxDistance, 0);
+		currentTime+= DeltaTime;
+		TurretGunMesh->SetRelativeRotation(FRotator(0,FMath::Sin(currentTime) * FOV,0));
+		nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
+		laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocalUpdatable, 0);
+		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable + TurretGunMesh->GetForwardVector() * maxDistance, 0);
 	}
 }
 

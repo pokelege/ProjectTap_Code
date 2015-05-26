@@ -19,7 +19,7 @@ class PROJECTTAP_API ATurretPawn : public APawn
 	const float MAX_HEALTH = 10.0f;
 	bool died = false;
 	float current_hp = MAX_HEALTH;
-
+	float currentTime = 0;
 	void UpdateLaserTag(float dt);
 	void UpdateTurretDamage(float dt);
 public:
@@ -53,7 +53,7 @@ public:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
@@ -64,7 +64,7 @@ public:
 
 	bool FoundPlayerToHit();
 
-	void Fire();	
+	void Fire();
 
 	void Damage(float deathDuration);
 

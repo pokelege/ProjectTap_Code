@@ -109,11 +109,11 @@ void ATurretPawn::Fire()
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
 	ABallPawn* player = gameState->CurrentPawn;
 	if(player == nullptr) return;
-	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - nozzleLocal);
+	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - nozzleLocalUpdatable);
 	float distance = turretToBallNormal.Size();
 	turretToBallNormal.Normalize();
 
-	ABullet* bullet = this->GetWorld()->SpawnActor<ABullet>(nozzleLocal, turretToBallNormal.Rotation());
+	ABullet* bullet = this->GetWorld()->SpawnActor<ABullet>(nozzleLocalUpdatable, turretToBallNormal.Rotation());
 
 	UPrimitiveComponent* comp = Cast<UPrimitiveComponent>(bullet->GetRootComponent());
 	comp->AddImpulse(turretToBallNormal * bulletForce);
@@ -165,11 +165,11 @@ void ATurretPawn::UpdateLaserTag(float dt)
 		auto pawn = state->CurrentPawn;
 
 		auto l = pawn->GetActorLocation();
-		direction = (pawn->GetActorLocation() - nozzleLocalUpdatable).GetSafeNormal();
+		direction = (pawn->GetActorLocation() - TurretGunMesh->GetComponentLocation()).GetSafeNormal();
 
 		auto gunPrimitive = Cast<UPrimitiveComponent>(TurretGunMesh);
 		gunPrimitive->SetWorldRotation(direction.Rotation());
-
+		nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
 		//change laser length
 		FHitResult hit;
 		FCollisionQueryParams queryParam;
@@ -186,7 +186,7 @@ void ATurretPawn::UpdateLaserTag(float dt)
 		{
 			laserLength = (pawn->GetActorLocation() - nozzleLocalUpdatable).Size();
 		}
-
+		laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocalUpdatable, 0);
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable + direction * laserLength, 0);
 }
 

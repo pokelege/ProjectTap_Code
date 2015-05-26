@@ -7,14 +7,15 @@
 // Sets default values
 ABlockingTile::ABlockingTile( )
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	FName path("/Game/Models/BlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
 
-	BoxCollision->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
+	BoxCollision->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+	BoxCollision->SetBoxExtent(FVector(40.0f,40.0f,80.0f));
 	//SetActorScale3D(FVector(.25f, 0.25f, .1f));
 
 	glowColor = FLinearColor(1.0f, 0.537034, 0.077178);

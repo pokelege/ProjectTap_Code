@@ -15,7 +15,7 @@ const FName ATurretPawn::GUN_MESH = FName("/Game/Models/TurretGun");
 // Sets default values
 ATurretPawn::ATurretPawn()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> baseMeshSource(*BASE_MESH.ToString());
@@ -88,7 +88,20 @@ bool ATurretPawn::FoundPlayerToHit()
 	float dot = FVector::DotProduct(turretToBallNormal,forward);
 	float radians = FMath::Cos(FMath::DegreesToRadians(FOV));
 	if (dot < radians || distance > maxDistance * maxDistance) return false;
-	return true;
+	FHitResult hit;
+	FCollisionQueryParams queryParam;
+	queryParam.bFindInitialOverlaps = false;
+	queryParam.bReturnFaceIndex = true;
+	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
+
+	auto pos = TurretGunMesh->GetSocketLocation("Nozzle");
+	auto rayStart = pos + (player->GetActorLocation() - nozzleLocalUpdatable).GetSafeNormal();
+	auto laserVector = (player->GetActorLocation() - nozzleLocalUpdatable).GetSafeNormal() * maxDistance;
+
+	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
+	auto hitActor = hit.Actor.Get();
+
+	return Cast<ABallPawn>(hitActor) != nullptr;
 }
 
 void ATurretPawn::Fire()
@@ -178,7 +191,7 @@ void ATurretPawn::UpdateLaserTag(float dt)
 }
 
 void ATurretPawn::Damage(float deathDuration)
-{	
+{
 	if(deathDuration == 0.0f)
 	{
 		Kill();

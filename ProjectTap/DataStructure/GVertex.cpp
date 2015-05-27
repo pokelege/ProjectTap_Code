@@ -3,9 +3,8 @@
 #include "ProjectTap.h"
 #include "GVertex.h"
 #include "Graph.h"
-
-
-
+#include "Engine/GameInstance.h"
+#include "ProjectTapGameState.h"
 
 AGVertex::AGVertex()
 {
@@ -41,37 +40,52 @@ AGVertex::AGVertex()
 
 void AGVertex::regenerateDebugArrows()
 {
-	auto g = Graph::GetInstance();
+	auto g = getGraph();
 
 	for (size_t i = 0; i < MAX_NUM; i++)
 	{
 		auto vIndex = connectTo[i];
+		auto arrow = debugArrows[i];
 		bool indexValid = vIndex >= 0 && vIndex < g->MAX_SIZE && vIndex != vertexIndex;
 		if (indexValid)
 		{
 			auto other = g->getVertex(vIndex);
-			auto start = GetActorLocation();
-			auto end = other->GetActorLocation();
-			auto distance = FVector::Dist(start, end);
-			auto dir = (end - start);
 
-			auto arrow = debugArrows[i];
-			arrow->SetWorldLocation(start);
-			auto rot = FRotationMatrix::MakeFromX(dir);			
-			arrow->SetWorldLocation(start);
-			arrow->SetWorldRotation(FRotator(rot.ToQuat()));
-			arrow->SetWorldScale3D(FVector(80.0f, 10.0f, 10.0f));
-			//FTransform transform;
-			//transform.SetLocation(arrowLocation);
-			//transform.SetRotation(rot.ToQuat());
-			//arrow->SetWorldTransform(transform);
+			if (other != nullptr)
+			{
+				auto start = GetActorLocation();
+				auto end = other->GetActorLocation();
+				auto distance = FVector::Dist(start, end);
+				auto dir = (end - start);				
+
+				arrow->SetWorldLocation(start);
+				auto rot = FRotationMatrix::MakeFromX(dir);
+				arrow->SetWorldLocation(start);
+				arrow->SetWorldRotation(FRotator(rot.ToQuat()));
+				arrow->SetRelativeScale3D(FVector(distance / 8.0f, 10.0f, 10.0f));				
+			}
+			else
+			{
+				connectTo[i] = -1;
+				arrow->SetRelativeScale3D(FVector(0.0f));
+			}
 		}
 		else 
 		{
 			connectTo[i] = -1;
+			arrow->SetRelativeScale3D(FVector(0.0f));
 		}
 	}
 }
+
+void AGVertex::renerateGraphArrows()
+{
+	for (TActorIterator<AGVertex> v_itr(GetWorld()); v_itr; ++v_itr)
+	{
+		v_itr->regenerateDebugArrows();
+	}
+}
+
 
 void AGVertex::BeginPlay()
 {
@@ -79,20 +93,40 @@ void AGVertex::BeginPlay()
 	debugMesh->SetHiddenInGame(true);
 }
 
+AGraph* AGVertex::getGraph()
+{
+	AGraph* graph = nullptr;
+	//find graph actor
+	for (TActorIterator<AGraph> graph_itr(GetWorld()); graph_itr; ++graph_itr)
+	{
+		graph = *graph_itr;
+	}
+
+	return graph;
+}
 
 void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
 {
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+	auto w = GetWorld();
+	auto g = getGraph();
+	
 	if (PropertyChangedEvent.Property != nullptr)
 	{
 		auto pName = PropertyChangedEvent.Property->GetName();
 
 		if (pName.Equals(TEXT("clickToGetIndex")))
 		{
-			Graph::GetInstance()->addVertex(this);
+			g->addVertex(this);
+		}
+		else if (pName.Equals(TEXT("connectTo")))
+		{
+			g->generateEdges();
+			regenerateDebugArrows();
 		}
 		else if (pName.Equals(TEXT("clickToMakeArrows")))
 		{
-			regenerateDebugArrows();
+			renerateGraphArrows();
 		}
 	}
 }
@@ -100,9 +134,8 @@ void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEve
 void AGVertex::PostLoad()
 {
 	Super::PostLoad();
-
-	Graph::GetInstance()->addVertex(this);
-
+	vertexIndex = -1;
+	//Graph::GetInstance()->addVertex(this);
 }
 
 
@@ -110,7 +143,7 @@ void AGVertex::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	Graph::GetInstance()->removeVertex(this);
+	//Graph::GetInstance()->removeVertex(this);
 }
 
 

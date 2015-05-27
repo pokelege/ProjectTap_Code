@@ -10,8 +10,7 @@ class PROJECTTAP_API AGVertex : public AActor
 {
 	GENERATED_BODY()
 
-
-	friend class Graph;
+	friend class AGraph;
 	const int32 MAX_NUM = 4;
 	bool hasTile = false;
 
@@ -45,6 +44,10 @@ public:
 	virtual void BeginDestroy() override;
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
+
+	class AGraph* getGraph();
+
+	void renerateGraphArrows();
 
 	AGVertex();
 	~AGVertex();

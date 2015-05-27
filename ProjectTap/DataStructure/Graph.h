@@ -1,14 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include <Array.h>
+#include "GameFramework/Actor.h"
+#include "Graph.generated.h"
 
-class Graph
+UCLASS()
+class PROJECTTAP_API AGraph : public AActor
 {
+	GENERATED_BODY()
+
 	int32** matrix;
 	friend class AGVertex;
 	const int32 MAX_SIZE = 25;
+
 private:
 	const int32 NONEDGE = 0;
 	const int32 EDGE = 1;
@@ -16,13 +21,6 @@ private:
 	TArray<class AGVertex*> mark;
 	int32 numVert = 0;
 	int32 numEdge = 0;
-
-	static bool isInitialized;
-
-	static Graph* graph;
-
-	Graph();
-	~Graph();
 
 	void Init();
 
@@ -32,8 +30,12 @@ private:
 
 	void deleteUndirectedEdge(int32 v1, int32 v2);
 
+	void deleteAllVertsConnectionsToVert(int32 v, int32 connectIndex);
+
 public:
-	static Graph* GetInstance();
+
+	AGraph();
+	~AGraph();
 
 	void generateEdges();
 
@@ -57,7 +59,6 @@ public:
 
 	AGVertex* getVertex(int index);
 
-
-	void Destroy();
+	void BeginDestroy() override;
 	
 };

@@ -27,7 +27,7 @@ void AProjectTapGameMode::LoadNextLevel()
 
 void AProjectTapGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	//Graph::GetInstance()->Destroy();
+
 }
 
 
@@ -51,14 +51,12 @@ void AProjectTapGameMode::BeginPlay()
 		else
 		{
 			FActorSpawnParameters params;
-			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
 			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
 		}
 
 		GetGameState<AProjectTapGameState>()->CurrentPawn = ball;
-
-		//FStreamLevelAction::FindAndCacheLevelStreamingObject(TEXT("TrollLevel"), world);
 	}
+
 	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::GAME_STATE_PLAYING);
 
 }

@@ -5,12 +5,17 @@
 #include "GameFramework/Actor.h"
 #include "Graph.generated.h"
 
+struct VertexArray
+{
+	TArray<int32> vertex;
+};
+
 UCLASS()
 class PROJECTTAP_API AGraph : public AActor
 {
 	GENERATED_BODY()
 
-	int32** matrix;
+	TArray<VertexArray> matrix;
 	friend class AGVertex;
 	const int32 MAX_SIZE = 25;
 

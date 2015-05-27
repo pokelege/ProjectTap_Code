@@ -15,6 +15,7 @@ class PROJECTTAP_API AGVertex : public AActor
 	bool hasTile = false;
 
 	void regenerateDebugArrows();
+
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
@@ -43,6 +44,8 @@ public:
 	virtual void BeginDestroy() override;
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
+
+	class AGraph* getGraph();
 
 	void renerateGraphArrows();
 

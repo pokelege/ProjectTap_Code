@@ -40,7 +40,7 @@ AGVertex::AGVertex()
 
 void AGVertex::regenerateDebugArrows()
 {
-	auto g = GetWorld()->GetGameState<AProjectTapGameState>()->dragTileGraph;
+	auto g = getGraph();
 
 	for (size_t i = 0; i < MAX_NUM; i++)
 	{
@@ -93,22 +93,35 @@ void AGVertex::BeginPlay()
 	debugMesh->SetHiddenInGame(true);
 }
 
+AGraph* AGVertex::getGraph()
+{
+	AGraph* graph = nullptr;
+	//find graph actor
+	for (TActorIterator<AGraph> graph_itr(GetWorld()); graph_itr; ++graph_itr)
+	{
+		graph = *graph_itr;
+	}
+
+	return graph;
+}
 
 void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
 {
-
 	Super::PostEditChangeProperty(PropertyChangedEvent);
+	auto w = GetWorld();
+	auto g = getGraph();
+	
 	if (PropertyChangedEvent.Property != nullptr)
 	{
 		auto pName = PropertyChangedEvent.Property->GetName();
 
 		if (pName.Equals(TEXT("clickToGetIndex")))
 		{
-			//Graph::GetInstance()->addVertex(this);
+			g->addVertex(this);
 		}
 		else if (pName.Equals(TEXT("connectTo")))
 		{
-			//Graph::GetInstance()->generateEdges();
+			g->generateEdges();
 			regenerateDebugArrows();
 		}
 		else if (pName.Equals(TEXT("clickToMakeArrows")))

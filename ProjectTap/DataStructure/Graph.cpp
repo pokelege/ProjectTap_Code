@@ -5,44 +5,35 @@
 
 AGraph::AGraph()
 {
-
+	Init();
 }
 
 void AGraph::Init()
 {
-	matrix = new int32*[MAX_SIZE];
-
-	mark.SetNum(MAX_SIZE);
-
-	for (size_t i = 0; i < MAX_SIZE; i++)
-	{
-		matrix[i] = new int32[MAX_SIZE];
-	}
+	matrix.SetNum(MAX_SIZE);
 
 	for (size_t i = 0; i < MAX_SIZE; i++)
 	{
 		for (size_t j = 0; j < MAX_SIZE; j++)
 		{
-			matrix[i][j] = NONEDGE;
+			if (j == 0)
+			{
+				matrix[i].vertex.SetNum(MAX_SIZE);
+			}
+
+			matrix[i].vertex[j] = NONEDGE;
 		}
 	}
 }
 
 void AGraph::BeginDestroy()
 {
-	for (size_t i = 0; i < MAX_SIZE; i++)
-	{
-		delete[]matrix[i];
-	}
-
-	delete[]matrix;
-	matrix = nullptr;
+	Super::BeginDestroy();
 }
 
 
 AGVertex* AGraph::FindEdgeInDirection(const FVector& dir)
 {
-
 	return nullptr;
 }
 
@@ -50,8 +41,8 @@ void AGraph::setUndirectedEdge(int32 v1, int32 v2)
 {
 	if (v1 != v2)
 	{
-		matrix[v1][v2] = EDGE;
-		matrix[v2][v1] = EDGE;
+		matrix[v1].vertex[v2] = EDGE;
+		matrix[v2].vertex[v1] = EDGE;
 	}
 }
 
@@ -59,15 +50,15 @@ void AGraph::deleteUndirectedEdge(int32 v1, int32 v2)
 {
 	if (v1 >= 0 && v2 >= 0)
 	{
-		matrix[v1][v2] = NONEDGE;
-		matrix[v2][v1] = NONEDGE;
+		matrix[v1].vertex[v2] = NONEDGE;
+		matrix[v2].vertex[v1] = NONEDGE;
 	}
 }
 
 bool AGraph::hasEdge(int32 v1, int32 v2)
 {
 	assert(index >= 0 && index < MAX_SIZE);
-	return matrix[v1][v2] == EDGE;
+	return matrix[v1].vertex[v2] == EDGE;
 }
 
 void AGraph::deleteAllVertsConnectionsToVert(int32 v, int32 connectIndex)
@@ -81,7 +72,6 @@ void AGraph::deleteAllVertsConnectionsToVert(int32 v, int32 connectIndex)
 		}
 	}
 }
-
 
 void AGraph::generateEdges()
 {
@@ -146,11 +136,11 @@ bool AGraph::IsVertexOccupied(int32 v)
 void AGraph::addVertex(AGVertex* vertex)
 {
 	bool containsVertex = false;
+
 	//check if contains vertex
 	for (size_t i = 0; i < mark.Num() && !containsVertex; i++)
 	{
 		containsVertex = mark[i] != nullptr && 
-			//vertex->GetName().Equals(mark[i]->GetName()) &&
 			vertex->vertexIndex == mark[i]->vertexIndex;
 	}
 

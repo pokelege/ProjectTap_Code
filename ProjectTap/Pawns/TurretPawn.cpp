@@ -154,7 +154,7 @@ void ATurretPawn::Tick( float DeltaTime )
 	else
 	{
 		currentTime+= DeltaTime;
-		TurretGunMesh->SetRelativeRotation(FRotator(0,FMath::Sin(currentTime) * FOV,0));
+		TurretGunMesh->SetRelativeRotation(FRotator(0,FMath::Sin(currentTime) * (FOV * 0.5f),0));
 		nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
 		laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocalUpdatable, 0);
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable + TurretGunMesh->GetForwardVector() * maxDistance, 0);

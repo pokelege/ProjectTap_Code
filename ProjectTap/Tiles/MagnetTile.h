@@ -15,7 +15,7 @@ class PROJECTTAP_API AMagnetTile : public ATile
 
 	class ABallPawn* FindBallPawn();
 	void PullBall(class ABallPawn* ball, float DeltaTime);
-	class ABallPawn* lastBall;
+	class ABallPawn* lastBall = nullptr;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float length = 99999.0f;

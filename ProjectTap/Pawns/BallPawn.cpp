@@ -6,7 +6,7 @@
 #include "BallPawn.h"
 #include "../Tiles/Tile.h"
 #include "PawnCastingTrigger.h"
-
+#include "BallPlayerStart.h"
 
 // Sets default values
 ABallPawn::ABallPawn()
@@ -38,7 +38,7 @@ ABallPawn::ABallPawn()
 	ballCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ballCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	ballCollision->GetBodyInstance()->bOverrideMass = true;
-	ballCollision->GetBodyInstance()->MassInKg = 10.0f;	
+	ballCollision->GetBodyInstance()->MassInKg = 10.0f;
 
 	//tileOverlapCollision->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Game/Models/Ball"));
@@ -53,7 +53,13 @@ ABallPawn::ABallPawn()
 
 	ballMesh->SetSimulatePhysics(false);
 
-
+	spring = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Spring"));
+	spring->AttachTo(GetRootComponent());
+	spring->bInheritPitch = false;
+	spring->bInheritYaw = false;
+	spring->bInheritRoll = false;
+	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	camera->AttachTo(spring);
 }
 
 // Called when the game starts or when spawned
@@ -105,7 +111,7 @@ void ABallPawn::AddVelocity(const FVector& vel, const FVector& resetPos, bool cl
 void ABallPawn::ResetBallXYPosition(const FVector& position, const FVector& newVel)
 {
 	FVector newPosition(position.X, position.Y, GetActorLocation().Z);
-	
+
 	auto vel = ballCollision->GetPhysicsLinearVelocity();
 	auto clampedVel = newVel;
 	clampedVel.Z = 0.0f;
@@ -145,4 +151,23 @@ void ABallPawn::FellOutOfWorld(const class UDamageType & dmgType)
 void ABallPawn::setInvincibility(bool invincible)
 {
 	bInvincible = invincible;
+}
+
+void ABallPawn::setCamera(ABallPlayerStart* playerStart)
+{
+	if(playerStart != nullptr)
+	{
+		camera->SetWorldTransform(playerStart->camera->GetTransform());
+		spring->TargetOffset = camera->GetRelativeTransform().GetLocation();
+		camera->SetRelativeLocation(FVector());
+
+		spring->bEnableCameraLag = playerStart->lagCamera;
+		spring->CameraLagSpeed = playerStart->lagSpeed;
+		spring->CameraLagMaxDistance = playerStart->lagMaxDistance;
+	}
+}
+
+AActor *ABallPawn::getCamera()
+{
+	return camera == nullptr ? nullptr : camera->GetAttachmentRootActor();
 }

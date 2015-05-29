@@ -6,7 +6,7 @@
 #include "BallPlayerStart.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class PROJECTTAP_API ABallPlayerStart : public APlayerStart
@@ -15,4 +15,17 @@ class PROJECTTAP_API ABallPlayerStart : public APlayerStart
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	FVector initialVelocity = FVector(0.0f, 0.0f, 0.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	AActor* camera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	bool followPlayer = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	bool lagCamera = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	float lagSpeed = 1.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	float lagMaxDistance = 100.0f;
 };

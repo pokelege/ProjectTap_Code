@@ -19,10 +19,9 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 
 	void LoadNextLevel();
 	float time = 0;
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = GameModeSettings)
+	class AActor* camera;
 	float restartCoolDown = 1.0f;
+public:
 
 	AProjectTapGameMode ( const FObjectInitializer& initializer );
 

@@ -10,6 +10,7 @@
 #include "../Tiles/DeflectiveTile.h"
 #include "Tiles/MagnetTile.h"
 #include "Tiles/DraggableMoveTile.h"
+#include "ProjectTapGameState.h"
 
 
 
@@ -38,6 +39,12 @@ void AMouseController::SetupInputComponent()
 void AMouseController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
+	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
+	if(gameState->CurrentCamera != nullptr && gameState->CurrentCamera != currentCamera)
+	{
+		currentCamera = gameState->CurrentCamera;
+		SetViewTarget(currentCamera);
+	}
 	FHitResult hit;
 
 	//cast a ray for every 1/10 of a second
@@ -79,7 +86,7 @@ void AMouseController::NotifyMousePressed()
 	SendBlockingTile(hit);
 	SendGroupedBlockingTile(hit);
 	EnableSwipeCheck(hit);
-	
+
 }
 
 
@@ -199,7 +206,7 @@ void AMouseController::SendGroupedBlockingTile(const FHitResult& hit)
 void AMouseController::NotifyMouseReleased()
 {
 	btManager.MouseRelease();
-	
+
 }
 
 void AMouseController::RespawnPressed()

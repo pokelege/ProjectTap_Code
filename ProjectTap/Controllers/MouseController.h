@@ -8,7 +8,7 @@
 #include "MouseController.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS(config=Game)
 class PROJECTTAP_API AMouseController : public APlayerController
@@ -39,12 +39,12 @@ class PROJECTTAP_API AMouseController : public APlayerController
 
 	void GetCameraRay(FVector& WorldOrigin, FVector& WorldDirection);
 
-
+	AActor* currentCamera = nullptr;
 public:
   AMouseController(const FObjectInitializer& initializer);
   // Begin PlayerController interface
   virtual void PlayerTick(float DeltaTime) override;
   virtual void SetupInputComponent() override;
 
-  
+
 };

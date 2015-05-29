@@ -9,11 +9,12 @@ UCLASS()
 class PROJECTTAP_API ABallPawn : public APawn
 {
 	GENERATED_BODY()
-	
+
 	class APawnCastingTrigger* trigger = nullptr;
 
 	bool bInvincible = false;
 
+	UCameraComponent* camera;
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
@@ -24,7 +25,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 		FVector initialVelocity = FVector(0.0f, 0.0f, 0.0f);
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
+	USpringArmComponent* spring;
 	// Sets default values for this actor's properties
 	ABallPawn();
 
@@ -47,7 +49,11 @@ public:
 
 	virtual void FellOutOfWorld(const class UDamageType & dmgType) override;
 
-	void Kill();	
+	void Kill();
 
 	void setInvincibility(bool invincible);
+
+	void setCamera(class ABallPlayerStart* playerStart);
+
+	AActor* getCamera();
 };

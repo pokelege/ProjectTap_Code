@@ -28,7 +28,7 @@ public:
 		int32 vertexIndex = -1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		bool clickToGetIndex;
+		bool clickUpdateAllNodes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		bool clickToMakeArrows;

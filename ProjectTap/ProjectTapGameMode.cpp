@@ -41,7 +41,11 @@ void AProjectTapGameMode::BeginPlay()
 		{
 			FActorSpawnParameters params;
 			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
-			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
+			ball = world->SpawnActor<ABallPawn>(
+				ABallPawn::StaticClass(), 
+				playerTransform.GetTranslation(), 
+				FRotator( playerTransform.GetRotation()), 
+				params);
 
 			if (ball != nullptr)
 			{

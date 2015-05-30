@@ -2,15 +2,17 @@
 
 #include "ProjectTap.h"
 #include "DraggableMoveTile.h"
-
+#include "../DataStructure/GVertex.h"
 
 ADraggableMoveTile::ADraggableMoveTile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	indicatorParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("indicatorParticle"));
+	indicatorParticle->AttachTo(RootComponent);
 
+	/*ConstructorHelpers::FObjectFinder<UParticleSystem> particleAssets(TEXT("/Game/Particles/P_IndicatorParticle"));
+	indicatorParticle->SetTemplate(particleAssets.Object);*/
 }
-
 
 void ADraggableMoveTile::BeginPlay()
 {
@@ -63,7 +65,7 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 
 void ADraggableMoveTile::UpdateDragMove(float dt)
 {
-	if (isSelected)
+	if (!isSelected)
 	{		
 		auto moveDir = (newGoalPos - GetActorLocation()).GetSafeNormal();
 		auto reachedPos = FVector::DistSquared(newGoalPos, GetActorLocation()) < 1.0f;
@@ -82,7 +84,6 @@ void ADraggableMoveTile::UpdateDragMove(float dt)
 FVector ADraggableMoveTile::calculateCurrentDir()
 {
 	auto startNode = path[currNode];
-	//auto endNode = path[];
 	return FVector();
 }
 

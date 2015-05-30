@@ -20,6 +20,13 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 
 	FVector calculateCurrentDir();
 public:	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
+	UParticleSystemComponent* indicatorParticle;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	class AGVertex* currentVertex = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float dragTolerance = 5.0f;
 

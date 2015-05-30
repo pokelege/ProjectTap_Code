@@ -115,9 +115,12 @@ void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEve
 	{
 		auto pName = PropertyChangedEvent.Property->GetName();
 
-		if (pName.Equals(TEXT("clickToGetIndex")))
+		if (pName.Equals(TEXT("clickUpdateAllNodes")))
 		{
-			g->addVertex(this);
+			for (TActorIterator<AGVertex> v_itr(GetWorld()); v_itr; ++v_itr)
+			{
+				g->addVertex(*v_itr);
+			}
 		}
 		else if (pName.Equals(TEXT("connectTo")))
 		{
@@ -134,18 +137,17 @@ void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEve
 void AGVertex::PostLoad()
 {
 	Super::PostLoad();
-	vertexIndex = -1;
-	//Graph::GetInstance()->addVertex(this);
 }
-
 
 void AGVertex::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	//Graph::GetInstance()->removeVertex(this);
+	if (GetWorld() != nullptr)
+	{
+		getGraph()->removeVertex(this);
+	}
 }
-
 
 AGVertex::~AGVertex()
 {

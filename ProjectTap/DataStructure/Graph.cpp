@@ -11,6 +11,7 @@ AGraph::AGraph()
 void AGraph::Init()
 {
 	matrix.SetNum(MAX_SIZE);
+	mark.SetNum(MAX_SIZE);
 
 	for (size_t i = 0; i < MAX_SIZE; i++)
 	{
@@ -31,10 +32,69 @@ void AGraph::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-
-AGVertex* AGraph::FindEdgeInDirection(const FVector& dir)
+AGVertex* AGraph::next(int32 v, int32 v2)
 {
+	for (size_t i = v2 + 1; i < MAX_SIZE; ++i)
+	{
+		if (matrix[v].vertex[i] == EDGE)
+		{
+			return mark[i];
+		}
+	}
+
 	return nullptr;
+}
+
+AGVertex* AGraph::first(int32 v)
+{
+	for (size_t i = 0; i < MAX_SIZE; i++)
+	{
+		if (matrix[v].vertex[i] == EDGE)
+		{
+			return mark[i];
+		}
+	}
+
+	return nullptr;
+}
+
+AGVertex* AGraph::FindNearestVertexTo(const FVector& dragRay, 
+									  const AGVertex* vertex,
+									  const float thresholdSquared)
+{
+	AGVertex* goal = nullptr;
+	auto minRange = FLT_MAX;
+
+	//find the closest vertex from all verts that are connected to this vertex
+	for (size_t i = 0; i < vertex->connectTo.Num(); i++)
+	{
+		auto v = vertex->connectTo[i];
+		if (v != -1)
+		{			
+			for (auto goal = first(v); 
+				goal != nullptr && goal->vertexIndex < MAX_SIZE; 
+				goal = next(v, goal->vertexIndex))
+			{
+				auto goalDir = goal->GetActorLocation() - vertex->GetActorLocation();
+				auto flatGoalDir = FVector(goalDir.X, goalDir.Y, 0.0f);
+				auto dotProduct = FVector::DotProduct(dragRay, flatGoalDir);
+
+				if (dotProduct > 0.0f)
+				{
+					auto degree = FMath::RadiansToDegrees(FMath::Acos(dotProduct));
+					float distance = (goalDir - dragRay).SizeSquared();
+					bool inRange = distance < thresholdSquared && distance < minRange;
+
+					if (inRange)
+					{
+						goal = mark[v];
+					}
+				}
+			}
+		}
+	}
+		
+	return goal;
 }
 
 void AGraph::setUndirectedEdge(int32 v1, int32 v2)

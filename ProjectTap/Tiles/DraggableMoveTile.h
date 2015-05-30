@@ -19,9 +19,14 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 	void UpdateDragMove(float dt);
 
 	FVector calculateCurrentDir();
+
+	void UpdateIndicator();
 public:	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Indicator)
 	UParticleSystemComponent* indicatorParticle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Indicator)
+	UStaticMeshComponent* arrowMeshComponent;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)

@@ -3,15 +3,23 @@
 #include "ProjectTap.h"
 #include "DraggableMoveTile.h"
 #include "../DataStructure/GVertex.h"
+#include "Classes/Particles/ParticleEmitter.h"
 
 ADraggableMoveTile::ADraggableMoveTile()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	arrowMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow mesh"));
+
+	FName path("/Game/Models/ArrowPlane");
+	ConstructorHelpers::FObjectFinder<UStaticMesh> arrowMesh(*path.ToString());
+	arrowMeshComponent->SetStaticMesh(arrowMesh.Object);
+	arrowMeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	arrowMeshComponent->AttachTo(RootComponent);
+
 	indicatorParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("indicatorParticle"));
 	indicatorParticle->AttachTo(RootComponent);
-
-	/*ConstructorHelpers::FObjectFinder<UParticleSystem> particleAssets(TEXT("/Game/Particles/P_IndicatorParticle"));
-	indicatorParticle->SetTemplate(particleAssets.Object);*/
+	ConstructorHelpers::FObjectFinder<UParticleSystem> particleAssets(TEXT("/Game/Particles/P_IndicatorParticle"));
+	indicatorParticle->SetTemplate(particleAssets.Object);
 }
 
 void ADraggableMoveTile::BeginPlay()
@@ -23,6 +31,14 @@ void ADraggableMoveTile::Tick( float DeltaTime )
 {
 	UpdateDragMove(DeltaTime);
 }
+
+void ADraggableMoveTile::UpdateIndicator()
+{
+	auto indicatorBody = indicatorParticle->EmitterInstances[0];
+	indicatorBody->SetBeamSourcePoint(GetActorLocation(), 0);
+	indicatorBody->SetBeamTargetPoint(FVector(), 0);
+}
+
 
 void ADraggableMoveTile::DragTo(const FHitResult& hit, 
 								const FVector& cameraLocation,
@@ -65,18 +81,19 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 
 void ADraggableMoveTile::UpdateDragMove(float dt)
 {
-	if (!isSelected)
+	if (isSelected)
 	{		
 		auto moveDir = (newGoalPos - GetActorLocation()).GetSafeNormal();
 		auto reachedPos = FVector::DistSquared(newGoalPos, GetActorLocation()) < 1.0f;
 	
 		if (reachedPos)
 		{
-			SetActorLocation(newGoalPos);
+			//SetActorLocation(newGoalPos);
+			UpdateIndicator();
 		}
 		else if (moveDir.SizeSquared() > 0.1f)
 		{
-			SetActorLocation(GetActorLocation() + moveDir * dragMoveSpeed * dt);
+			//SetActorLocation(GetActorLocation() + moveDir * dragMoveSpeed * dt);
 		}
 	}
 }

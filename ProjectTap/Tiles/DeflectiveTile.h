@@ -39,7 +39,7 @@ public:
 	float currentRotation = 45;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UStaticMeshComponent* frameMeshComponent;
+		UStaticMeshComponent* frameMeshComponent;
 	ADeflectiveTile();
 
 	UFUNCTION()

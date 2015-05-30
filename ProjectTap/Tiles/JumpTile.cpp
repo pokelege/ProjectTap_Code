@@ -10,7 +10,7 @@ AJumpTile::AJumpTile() : ABaseRampTile()
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*JUMP_MESH_PATH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	TileMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
+	//TileMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
 
 
 }
@@ -40,7 +40,7 @@ void AJumpTile::calculateImpulse()
 {
 	float vz = FMath::Sqrt(2 * -GetWorld()->GetGravityZ() * height);
 	float forceZ = ball->ballCollision->GetMass() * vz / duration;
-	
+
 	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 	auto distance = FVector::Dist(target->GetActorLocation(), GetActorLocation());
 	auto horizontalAcceleration = 2 * distance / FMath::Square(2 * duration);

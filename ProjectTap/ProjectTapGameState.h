@@ -8,7 +8,7 @@
 
 
 /**
- * 
+ *
  */
 UCLASS()
 class PROJECTTAP_API AProjectTapGameState : public AGameState
@@ -23,6 +23,7 @@ protected:
 
 public:
 	ABallPawn* CurrentPawn;
+	class AActor* CurrentCamera;
 	void SetState(GameState NewState);
 	GameState GetState();
 };

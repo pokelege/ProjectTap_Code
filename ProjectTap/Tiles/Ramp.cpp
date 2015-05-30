@@ -10,7 +10,7 @@ ARamp::ARamp(): ABaseRampTile()
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*RAMP_MESH_PATH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	TileMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
+	//TileMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
 	forceMultiplier = 2000.0f;
 
 }
@@ -45,7 +45,7 @@ void ARamp::activate()
 {
 	if(rotationSequence == nullptr || ball == nullptr || activated || !IsEnabled()) return;
 	Super::activate();
-	
+
 	switch(rotationDirection)
 	{
 		case Direction::XPlus:

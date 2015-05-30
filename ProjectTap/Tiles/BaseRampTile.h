@@ -7,13 +7,13 @@
 #include "BaseRampTile.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class PROJECTTAP_API ABaseRampTile : public ATile
 {
 	GENERATED_BODY()
-	
+
 	static const FName BASE_RAMP_CURVE_PATH;
 
 protected:
@@ -23,11 +23,12 @@ protected:
 
 	friend class APawnCastingTrigger;
 	ABallPawn* ball = nullptr;
+	USceneComponent* offset;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UCurveFloat* rotationSequence;
 
-    ABaseRampTile();
+	ABaseRampTile();
 
 	virtual void Tick( float DeltaTime ) override;
 

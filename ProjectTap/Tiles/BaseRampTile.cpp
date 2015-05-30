@@ -9,7 +9,7 @@ ABaseRampTile::ABaseRampTile() : ATile()
 {
 	if(BoxCollision)
 	{
-		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
+		BoxCollision->SetBoxExtent(FVector(40,40,2), false);
 		BoxCollision->SetRelativeLocation(FVector(0, 0, -10), false, nullptr);
 		BoxCollision->AddLocalOffset(FVector(0, 0, -10));
 		BoxCollision->bGenerateOverlapEvents = true;
@@ -17,10 +17,10 @@ ABaseRampTile::ABaseRampTile() : ATile()
 
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(*BASE_RAMP_CURVE_PATH.ToString());
 	if(curve.Object != nullptr) rotationSequence = curve.Object;
-
-	auto pc = Cast<UPrimitiveComponent>(RootComponent);
-	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 2.0f));
-
+	offset = CreateDefaultSubobject<USceneComponent>( TEXT( "Ramp offset" ) );
+	offset->AttachTo(GetRootComponent());
+	offset->SetRelativeLocation(FVector(40,0,0));
+	TileMesh->AttachTo(offset);
 	baseColorHighlighted = FLinearColor(0.0f, 5.0f, .0f);
 	glowColorHighlighted = FLinearColor(2.0f, 1.7f, .0f);
 	baseColor = FLinearColor(1.0f, 1.0f, 1.0f);
@@ -44,7 +44,7 @@ void ABaseRampTile::Tick(float DeltaTime)
 			deactivate();
 		}
 		float curveValue = rotationSequence->GetFloatValue(time);
-		TileMesh->SetRelativeRotation(FRotator(curveValue, 0, 0));
+		offset->SetRelativeRotation(FRotator(curveValue, 0, 0));
 	}
 
 }

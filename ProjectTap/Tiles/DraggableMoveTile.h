@@ -15,6 +15,7 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 	FVector anchorHitPoint;
 	FVector newGoalPos;
 	float cameraRayLength;
+	bool isMoving = false;
 		
 	void UpdateDragMove(float dt);
 
@@ -33,7 +34,7 @@ public:
 	class AGVertex* currentVertex = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	float dragTolerance = 5.0f;
+	float dragTolerance = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float dragMoveSpeed = 5.0f;

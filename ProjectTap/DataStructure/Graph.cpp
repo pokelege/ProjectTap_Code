@@ -10,7 +10,7 @@ AGraph::AGraph()
 
 void AGraph::Init()
 {
-	matrix.SetNum(MAX_SIZE);
+	edgeMatrix.SetNum(MAX_SIZE);
 	mark.SetNum(MAX_SIZE);
 
 	for (size_t i = 0; i < MAX_SIZE; i++)
@@ -19,10 +19,10 @@ void AGraph::Init()
 		{
 			if (j == 0)
 			{
-				matrix[i].vertex.SetNum(MAX_SIZE);
+				edgeMatrix[i].vertex.SetNum(MAX_SIZE);
 			}
 
-			matrix[i].vertex[j] = NONEDGE;
+			edgeMatrix[i].vertex[j] = NONEDGE;
 		}
 	}
 }
@@ -36,7 +36,7 @@ AGVertex* AGraph::next(int32 v, int32 v2)
 {
 	for (size_t i = v2 + 1; i < MAX_SIZE; ++i)
 	{
-		if (matrix[v].vertex[i] == EDGE)
+		if (i != v && edgeMatrix[v].vertex[i] == EDGE)
 		{
 			return mark[i];
 		}
@@ -45,11 +45,22 @@ AGVertex* AGraph::next(int32 v, int32 v2)
 	return nullptr;
 }
 
+bool AGraph::IsMatrixInitialized()
+{
+	return isMatrixInitialized;
+}
+
+void AGraph::SetMatrixInitialized(bool init)
+{
+	isMatrixInitialized = init;
+}
+
+
 AGVertex* AGraph::first(int32 v)
 {
 	for (size_t i = 0; i < MAX_SIZE; i++)
 	{
-		if (matrix[v].vertex[i] == EDGE)
+		if (i != v && edgeMatrix[v].vertex[i] == EDGE)
 		{
 			return mark[i];
 		}
@@ -101,8 +112,8 @@ void AGraph::setUndirectedEdge(int32 v1, int32 v2)
 {
 	if (v1 != v2)
 	{
-		matrix[v1].vertex[v2] = EDGE;
-		matrix[v2].vertex[v1] = EDGE;
+		edgeMatrix[v1].vertex[v2] = EDGE;
+		edgeMatrix[v2].vertex[v1] = EDGE;
 	}
 }
 
@@ -110,15 +121,15 @@ void AGraph::deleteUndirectedEdge(int32 v1, int32 v2)
 {
 	if (v1 >= 0 && v2 >= 0)
 	{
-		matrix[v1].vertex[v2] = NONEDGE;
-		matrix[v2].vertex[v1] = NONEDGE;
+		////edgeMatrix[v1].vertex[v2] = NONEDGE;
+		edgeMatrix[v2].vertex[v1] = NONEDGE;
 	}
 }
 
 bool AGraph::hasEdge(int32 v1, int32 v2)
 {
 	assert(index >= 0 && index < MAX_SIZE);
-	return matrix[v1].vertex[v2] == EDGE;
+	return edgeMatrix[v1].vertex[v2] == EDGE;
 }
 
 void AGraph::deleteAllVertsConnectionsToVert(int32 v, int32 connectIndex)
@@ -150,7 +161,7 @@ void AGraph::generateEdges()
 					setUndirectedEdge(vertex->vertexIndex, connectIndex);
 					if (mark[connectIndex]->connectTo[i] == -1)
 					{
-						mark[connectIndex]->connectTo[i] = vertex->vertexIndex;
+						mark[connectIndex]->connectTo[i] = vertex->vertexIndex;						
 					}
 					else
 					{

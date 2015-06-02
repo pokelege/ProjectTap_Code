@@ -105,6 +105,18 @@ AGraph* AGVertex::getGraph()
 	return graph;
 }
 
+void AGVertex::SetOccupied(bool occupied)
+{
+	hasTile = occupied;
+}
+
+bool AGVertex::IsVertexOccupied()
+{
+	return hasTile;
+}
+
+
+
 void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -121,6 +133,7 @@ void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEve
 			{
 				g->addVertex(*v_itr);
 			}
+
 		}
 		else if (pName.Equals(TEXT("connectTo")))
 		{
@@ -129,6 +142,7 @@ void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEve
 		}
 		else if (pName.Equals(TEXT("clickToMakeArrows")))
 		{
+			g->generateEdges();
 			renerateGraphArrows();
 		}
 	}

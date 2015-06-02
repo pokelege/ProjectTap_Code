@@ -6,8 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "Graph.generated.h"
 
-struct VertexArray
+USTRUCT()
+struct FVertexArray
 {
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = vertices)
 	TArray<int32> vertex;
 };
 
@@ -16,7 +20,6 @@ class PROJECTTAP_API AGraph : public AActor
 {
 	GENERATED_BODY()
 
-	TArray<VertexArray> matrix;
 	friend class AGVertex;
 	const int32 MAX_SIZE = 25;
 
@@ -26,6 +29,7 @@ private:
 
 	int32 numVert = 0;
 	int32 numEdge = 0;
+	bool isMatrixInitialized = false;
 
 	void Init();
 
@@ -45,6 +49,10 @@ public:
 
 	AGraph();
 	~AGraph();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = vertices)
+	TArray<FVertexArray> edgeMatrix;
+
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = vertices)
 	TArray<AGVertex*> mark;
@@ -67,12 +75,15 @@ public:
 	//@return: will return nullptr if there no match
 	AGVertex* FindNearestVertexTo(const FVector& dragRay,
 								  const AGVertex* vertex,
-								  const float thresholdSquared);
+								  const float thresholdSquared = 9000.0f);	
 
 	void MakeVertexOccupied(int32 v);
 
 	bool MoveTileFromTo(int32 from, 
 					    int32 to);
+
+	void SetMatrixInitialized(bool init);
+	bool IsMatrixInitialized();
 
 	bool IsVertexOccupied(int32 v);
 

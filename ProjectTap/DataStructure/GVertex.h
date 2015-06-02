@@ -49,6 +49,10 @@ public:
 
 	void renerateGraphArrows();
 
+	void SetOccupied(bool occupied);
+
+	bool IsVertexOccupied();
+
 	AGVertex();
 	~AGVertex();
 	

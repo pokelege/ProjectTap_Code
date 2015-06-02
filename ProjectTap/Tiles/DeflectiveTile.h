@@ -43,21 +43,18 @@ public:
 	ADeflectiveTile();
 
 	UFUNCTION()
-	void OnHit(class AActor* OtherActor, 
-		   	   class UPrimitiveComponent* OtherComp, 
-			   FVector NormalImpulse, 
+	void OnHit(class AActor* OtherActor,
+			   class UPrimitiveComponent* OtherComp,
+			   FVector NormalImpulse,
 			   const FHitResult& Hit);
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	void Highlight(bool litTile = true, bool litEdge = true) override;
 	void HighlightEdgeForDuration(float duration);
-	void CancelHighlight() override;
 
 	void activate() override;
 	void deactivate() override;
-
 
 	void Spin(float dt);
 };

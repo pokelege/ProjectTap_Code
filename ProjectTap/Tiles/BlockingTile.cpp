@@ -13,10 +13,7 @@ ABlockingTile::ABlockingTile( )
 	FName path("/Game/Models/BlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-
-	BoxCollision->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 	BoxCollision->SetBoxExtent(FVector(40.0f,40.0f,80.0f));
-	//SetActorScale3D(FVector(.25f, 0.25f, .1f));
 
 	glowColor = FLinearColor(1.0f, 0.537034, 0.077178);
 }

@@ -10,8 +10,6 @@ ABaseRampTile::ABaseRampTile() : ATile()
 	if(BoxCollision)
 	{
 		BoxCollision->SetBoxExtent(FVector(40,40,2), false);
-		BoxCollision->SetRelativeLocation(FVector(0, 0, -10), false, nullptr);
-		BoxCollision->AddLocalOffset(FVector(0, 0, -10));
 		BoxCollision->bGenerateOverlapEvents = true;
 	}
 
@@ -20,15 +18,8 @@ ABaseRampTile::ABaseRampTile() : ATile()
 	offset = CreateDefaultSubobject<USceneComponent>( TEXT( "Ramp offset" ) );
 	offset->AttachTo(GetRootComponent());
 	offset->SetRelativeLocation(FVector(40,0,0));
-	TileMesh->AttachTo(offset);
-	baseColorHighlighted = FLinearColor(0.0f, 5.0f, .0f);
-	glowColorHighlighted = FLinearColor(2.0f, 1.7f, .0f);
-	baseColor = FLinearColor(1.0f, 1.0f, 1.0f);
-	glowColor = FLinearColor(1.0f, 1.0f, 1.0f);
-	glowPowerHighlighted = 100.0f;
+	TileMesh->AttachTo(offset,NAME_None,EAttachLocation::KeepWorldPosition);
 	CancelHighlight();
-
-	Disable();
 }
 
 void ABaseRampTile::Tick(float DeltaTime)
@@ -54,11 +45,5 @@ void ABaseRampTile::activate()
 	if(rotationSequence == nullptr || ball == nullptr || !IsEnabled() || activated) return;
 	Super::activate();
 	time = 0.0f;
-
-}
-
-void ABaseRampTile::Highlight(bool litTile, bool litEdge)
-{
-	Super::Highlight(false, true);
 }
 

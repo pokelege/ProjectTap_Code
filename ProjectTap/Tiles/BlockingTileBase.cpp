@@ -7,7 +7,7 @@
 // Sets default values
 ABlockingTileBase::ABlockingTileBase()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	BoxCollision->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
 	BoxCollision->bGenerateOverlapEvents = true;
@@ -17,14 +17,13 @@ ABlockingTileBase::ABlockingTileBase()
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 }
 
 // Called when the game starts or when spawned
 void ABlockingTileBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	original = GetActorLocation();
 }
 
 // Called every frame
@@ -58,8 +57,6 @@ void ABlockingTileBase::Tick( float DeltaTime )
 
 void ABlockingTileBase::lerpMaterialColorForCoolDown(const float& beta)
 {
-	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
-
 	if (material != nullptr)
 	{
 		auto lerp_baseColor = FMath::Lerp(baseColorHighlighted, baseColor, beta);

@@ -145,16 +145,6 @@ void ADeflectiveTile::Spin(float dt)
 
 }
 
-void ADeflectiveTile::Highlight(bool litTile, bool litEdge)
-{
-	Super::Highlight();
-}
-
-void ADeflectiveTile::CancelHighlight()
-{
-	Super::CancelHighlight();
-}
-
 
 void ADeflectiveTile::activate()
 {
@@ -197,9 +187,9 @@ FVector ClampNormalAxis(FVector dir)
 	return normal;
 }
 
-void ADeflectiveTile::OnHit(class AActor* OtherActor, 
+void ADeflectiveTile::OnHit(class AActor* OtherActor,
 							class UPrimitiveComponent* OtherComp,
-							FVector NormalImpulse, 
+							FVector NormalImpulse,
 							const FHitResult& Hit)
 {
 

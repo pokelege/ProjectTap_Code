@@ -24,7 +24,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
 	APortalTile* otherPortal;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
 	UBoxComponent* bluePortalTrigger;
 
@@ -37,28 +37,28 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-		virtual void OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
+	virtual void OnBlueBeginTriggerOverlap(class AActor* OtherActor,
+												 class UPrimitiveComponent* OtherComp,
+												 int32 OtherBodyIndex,
+												 bool bFromSweep,
+												 const FHitResult & SweepResult);
+
+	UFUNCTION()
+		virtual void OnBlueEndTriggerOverlap(AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult & SweepResult);
 
 	UFUNCTION()
-		virtual void OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
+		virtual void OnOrangeBeginTriggerOverlap(AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult & SweepResult);
 
 	UFUNCTION()
-		virtual void OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult & SweepResult);
-
-	UFUNCTION()
-		virtual void OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
+		virtual void OnOrangeEndTriggerOverlap(AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex,
 		bool bFromSweep,

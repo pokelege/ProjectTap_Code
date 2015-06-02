@@ -6,7 +6,7 @@
 #include "EndTile.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class PROJECTTAP_API AEndTile : public ATile
@@ -16,10 +16,8 @@ class PROJECTTAP_API AEndTile : public ATile
 	static const FName END_MESH;
 	TScriptDelegate<FWeakObjectPtr> delegate;
 public:
-	
-	AEndTile();
 
-	virtual void Highlight(bool litTile = true, bool litEdge = true) override;
+	AEndTile();
 
 	UFUNCTION()
 	void OnBeginTriggerOverlap(AActor* OtherActor,

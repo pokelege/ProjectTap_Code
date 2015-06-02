@@ -13,10 +13,10 @@ class PROJECTTAP_API ATile : public AActor
 {
 	GENERATED_BODY()
 protected:
-  FVector original;
+
   bool activated = false;
   bool enabled = true;
-public:	
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UStaticMeshComponent* TileMesh = nullptr;
 
@@ -44,15 +44,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
 		float glowPowerHighlighted = 20.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		float move_speed = 800.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		float move_distance_tolerance = 100.0f;
-	
 	// Sets default values for this actor's properties
 	ATile(  );
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Tile")
 	virtual void activate();
 
@@ -64,7 +58,7 @@ public:
 	virtual void Enable();
 	virtual void Disable();
 	virtual bool IsEnabled();
-	
+
 	virtual void BeginPlay();
 	virtual void Tick( float DeltaTime );
 
@@ -76,8 +70,8 @@ public:
 	virtual void turnOffHighlightEdge();
 	virtual void turnOffHighlightTile();
 
-	virtual void CancelHighlight();
-	virtual void turnOffHighlight();
+	virtual void CancelHighlight(bool cancelTile = true, bool cancelEdge = true);
+	virtual void turnOffHighlight(bool offTile = true, bool offEdge = true);
 
 	//called when the tile is on the moving tile
 	virtual void SetLocationWhenCarried(FVector& location);

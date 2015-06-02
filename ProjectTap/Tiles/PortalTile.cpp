@@ -21,7 +21,7 @@ APortalTile::APortalTile()
 
 	bluePortalTrigger->AttachTo(RootComponent);
 	bluePortalTrigger->bGenerateOverlapEvents = true;
-	
+
 	orangePortalTrigger->AttachTo(RootComponent);
 	orangePortalTrigger->bGenerateOverlapEvents = true;
 
@@ -30,17 +30,17 @@ APortalTile::APortalTile()
 
 
 	FScriptDelegate beginOverLap;
-	beginOverLap.BindUFunction(this, "OnBlueBeginTriggerOverlap_Implementation");
+	beginOverLap.BindUFunction(this, "OnBlueBeginTriggerOverlap");
 	bluePortalTrigger->OnComponentBeginOverlap.Add(beginOverLap);
 
 	FScriptDelegate endEndLap;
-	endEndLap.BindUFunction(this, "OnBlueEndTriggerOverlap_Implementation");
+	endEndLap.BindUFunction(this, "OnBlueEndTriggerOverlap");
 	bluePortalTrigger->OnComponentEndOverlap.Add(endEndLap);
 
-	beginOverLap.BindUFunction(this, "OnOrangeBeginTriggerOverlap_Implementation");
+	beginOverLap.BindUFunction(this, "OnOrangeBeginTriggerOverlap");
 	orangePortalTrigger->OnComponentBeginOverlap.Add(beginOverLap);
 
-	endEndLap.BindUFunction(this, "OnOrangeEndTriggerOverlap_Implementation");
+	endEndLap.BindUFunction(this, "OnOrangeEndTriggerOverlap");
 	orangePortalTrigger->OnComponentEndOverlap.Add(endEndLap);
 
 	SetActorRotation(FRotator(0, 0, 0));
@@ -113,7 +113,7 @@ void APortalTile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
+void APortalTile::OnBlueBeginTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
@@ -136,14 +136,14 @@ void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
 	}
 }
 
-void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
+void APortalTile::OnOrangeBeginTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
 	const FHitResult & SweepResult)
 {
 	if (enabled)
-	{	
+	{
 		if (enteredPortal)
 		{
 			if (auto a = Cast<ABallPawn>(OtherActor))
@@ -159,7 +159,7 @@ void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
 	}
 }
 
-void APortalTile::OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
+void APortalTile::OnBlueEndTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
@@ -172,7 +172,7 @@ void APortalTile::OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
 }
 
 
-void APortalTile::OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
+void APortalTile::OnOrangeEndTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
@@ -216,7 +216,7 @@ void APortalTile::ProcessBallEndfOverlap(AActor* actor)
 
 
 void APortalTile::TransportBallToOrange(ABallPawn* pawn)
-{	
+{
 	if (otherPortal != nullptr)
 	{
 		otherPortal->enabled = false;
@@ -250,12 +250,12 @@ void APortalTile::GetLaserPortalTransportedLocation(UPrimitiveComponent* hit4Ppo
 	if (otherPortal != nullptr && hit4PportalTrigger != nullptr)
 	{
 		bool isPortalTrigger = hit4PportalTrigger == orangePortalTrigger || hit4PportalTrigger == bluePortalTrigger;
-		
+
 		if (isPortalTrigger)
 		{
 			bool isOrangePortal = hit4PportalTrigger == orangePortalTrigger;
-			auto newLaserPos = isOrangePortal ? 
-				otherPortal->orangePortalTrigger->GetComponentLocation() : 
+			auto newLaserPos = isOrangePortal ?
+				otherPortal->orangePortalTrigger->GetComponentLocation() :
 				otherPortal->bluePortalTrigger->GetComponentLocation();
 
 			newDir = isOrangePortal ? otherPortal->GetActorRotation().Vector() : -otherPortal->GetActorRotation().Vector();

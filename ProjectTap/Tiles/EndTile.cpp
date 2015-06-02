@@ -50,8 +50,3 @@ void AEndTile::OnBeginTriggerOverlap(AActor* OtherActor,
 	}
 
 }
-
-void AEndTile::Highlight(bool litTile , bool litEdge)
-{
-
-}

@@ -111,7 +111,8 @@ void ATile::HighlightTile()
 {
 	if (material != nullptr)
 	{
-		material->SetVectorParameterValue(TEXT("BaseColor"), baseColorHighlighted);
+		material->SetScalarParameterValue(TEXT("LerpBaseColorHighlighted"), 1);
+		material->SetScalarParameterValue(TEXT("EnableBaseColor"), 1);
 	}
 }
 
@@ -119,7 +120,10 @@ void ATile::HighlightEdge()
 {
 	if (material != nullptr)
 	{
-		material->SetVectorParameterValue(TEXT("Color"), glowColorHighlighted);
+		material->SetScalarParameterValue(TEXT("LerpEdgeColorHighlighted"), 1);
+		material->SetScalarParameterValue(TEXT("LerpEdgePowerHighlighted"), 1);
+		material->SetScalarParameterValue(TEXT("EnableEdgeColor"), 1);
+		material->SetScalarParameterValue(TEXT("EnableEdgePower"), 1);
 	}
 }
 
@@ -127,7 +131,8 @@ void ATile::CancelHighlightTile()
 {
 	if (material != nullptr)
 	{
-		material->SetVectorParameterValue(TEXT("BaseColor"), baseColor);
+		material->SetScalarParameterValue(TEXT("LerpBaseColorHighlighted"), 0);
+		material->SetScalarParameterValue(TEXT("EnableBaseColor"), 1);
 	}
 }
 
@@ -135,7 +140,10 @@ void ATile::CancelHighlightEdge()
 {
 	if (material != nullptr)
 	{
-		material->SetVectorParameterValue(TEXT("Color"), glowColor);
+		material->SetScalarParameterValue(TEXT("LerpEdgeColorHighlighted"), 0);
+		material->SetScalarParameterValue(TEXT("LerpEdgePowerHighlighted"), 0);
+		material->SetScalarParameterValue(TEXT("EnableEdgeColor"), 1);
+		material->SetScalarParameterValue(TEXT("EnableEdgePower"), 1);
 	}
 }
 
@@ -143,16 +151,15 @@ void ATile::turnOffHighlightEdge()
 {
 	if (material != nullptr)
 	{
-		FLinearColor noColor{ 0.0f, 0.0f, 0.0f };
-		material->SetVectorParameterValue(TEXT("Color"), noColor);
+		material->SetScalarParameterValue(TEXT("EnableEdgeColor"), 0);
+		material->SetScalarParameterValue(TEXT("EnableEdgePower"), 0);
 	}
 }
 void ATile::turnOffHighlightTile()
 {
 	if (material != nullptr)
 	{
-		FLinearColor noColor{ 0.0f, 0.0f, 0.0f };
-		material->SetVectorParameterValue(TEXT("BaseColor"), noColor);
+		material->SetScalarParameterValue(TEXT("EnableBaseColor"), 0);
 	}
 }
 

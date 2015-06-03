@@ -14,8 +14,6 @@ ABlockingTile::ABlockingTile( )
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
 	BoxCollision->SetBoxExtent(FVector(40.0f,40.0f,80.0f));
-
-	glowColor = FLinearColor(1.0f, 0.537034, 0.077178);
 }
 
 // Called when the game starts or when spawned

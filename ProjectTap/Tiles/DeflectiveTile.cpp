@@ -44,11 +44,6 @@ void ADeflectiveTile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	glowColor = FLinearColor(0.3f, 0.7f, 1.0f);
-	baseColor = FLinearColor(0.72f, 3.0f, 0.74, 0.5f);
-
-	glowColorHighlighted *= glowColor;
-	baseColorHighlighted *= baseColor;
 	switch (type)
 	{
 		case DeflectiveTileType::HORIZONTAL:

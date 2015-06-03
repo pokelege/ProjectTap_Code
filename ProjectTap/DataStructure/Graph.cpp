@@ -32,6 +32,7 @@ void AGraph::Init()
 	{
 		mark.SetNum(MAX_SIZE);
 	}
+
 	generateEdges();
 }
 

@@ -37,7 +37,6 @@ void ADraggableMoveTile::Tick( float DeltaTime )
 	UpdateDragMove(DeltaTime);
 	UpdateIndicator();
 }
-#define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
 
 void ADraggableMoveTile::UpdateIndicator()
 {
@@ -45,22 +44,30 @@ void ADraggableMoveTile::UpdateIndicator()
 	auto Z_offset = FVector(0.0f, 0.0f, 30.0f);
 	auto sourcePoint = GetActorLocation() + Z_offset;
 	auto targetPoint = newGoalPos;
-	targetPoint.Z = sourcePoint.Z;
+	//targetPoint.Z = sourcePoint.Z;
+	targetPoint += Z_offset;
 
 	if (isSelected)
 	{
 		indicatorBody->SetBeamSourcePoint(sourcePoint, 0);
 		indicatorBody->SetBeamTargetPoint(targetPoint, 0);
-		printonscreen(targetPoint.ToString());
+		arrowMeshComponent->SetWorldLocation(targetPoint);
+		auto rot = FRotationMatrix::MakeFromX(sourcePoint - targetPoint);
+		arrowMeshComponent->SetWorldRotation(rot.Rotator());
 	}
 	else
 	{
 		indicatorBody->SetBeamSourcePoint(GetActorLocation(), 0);
 		indicatorBody->SetBeamTargetPoint(GetActorLocation(), 0);
+		arrowMeshComponent->SetWorldLocation(GetActorLocation());
+		arrowMeshComponent->SetWorldRotation(FRotationMatrix::Identity.Rotator());
 	}
 
-	auto material = indicatorParticle->CreateDynamicMaterialInstance(0);
-	material->SetScalarParameterValue(TEXT("IsDestinationValid"), canSnap && !destinationOccupied ? 1.0f : 0.0f);
+	auto indicatorBodyMaterial = indicatorParticle->CreateDynamicMaterialInstance(0);
+	indicatorBodyMaterial->SetScalarParameterValue(TEXT("IsDestinationValid"), canSnap && !destinationOccupied ? 1.0f : 0.0f);
+
+	auto arrowMaterial = arrowMeshComponent->CreateDynamicMaterialInstance(0);
+	arrowMaterial->SetScalarParameterValue(TEXT("IsDestinationValid"), canSnap && !destinationOccupied ? 1.0f : 0.0f);
 }
 
 bool ADraggableMoveTile::cameraRayIntersectWithTilePlane(const FVector& camlocation,
@@ -69,7 +76,17 @@ bool ADraggableMoveTile::cameraRayIntersectWithTilePlane(const FVector& camlocat
 
 {
 	bool hitPlane = false;
-	//auto demo = FVector::DotProduct(camlocation, dir) + GetActorLocation();
+	auto planeNormal = GetActorUpVector();
+	auto demon = FMath::Abs(FVector::DotProduct(dir, planeNormal));
+	
+	if (demon > FLT_EPSILON)
+	{
+		auto t = FVector::DotProduct(camlocation - GetActorLocation(), planeNormal) / demon;
+		hitPlane = t >= 0;
+		if (hitPlane) {
+			hitPoint = camlocation + dir * t;
+		}
+	}
 
 	return hitPlane;
 }
@@ -77,17 +94,14 @@ bool ADraggableMoveTile::cameraRayIntersectWithTilePlane(const FVector& camlocat
 void ADraggableMoveTile::DragTo(const FHitResult& hit, 
 								const FVector& cameraLocation,
 								const FVector& camRayDirection)
-{
+{	
+	if (isMoving) return;
 	if (isSelected)
 	{
 		//use hit point as a camera ray
 		auto camRay = FVector();
-		if (camRay.Equals(FVector::ZeroVector))
-		{
-			//FVector::ray
-			cameraRayLength = FVector::Dist(cameraLocation, GetActorLocation());
-			camRay = cameraLocation + camRayDirection * cameraRayLength;
-		}
+
+		auto bCamRayHit = cameraRayIntersectWithTilePlane(cameraLocation, camRayDirection, camRay);		
 
 		auto moveRay = camRay - anchorHitPoint;
 		auto deltaLength = moveRay.SizeSquared();
@@ -113,11 +127,13 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 			if (mostPossibleVertex == nullptr)
 			{
 				canSnap = false;
+				goalVertex = nullptr;
 			}
 			
 			if (canSnap)
 			{
 				newGoalPos = mostPossibleVertex->GetActorLocation();
+				goalVertex = mostPossibleVertex;
 			}
 			else 
 			{
@@ -149,12 +165,12 @@ void ADraggableMoveTile::UpdateDragMove(float dt)
 	
 		if (reachedPos)
 		{
-			//SetActorLocation(newGoalPos);
+			SetActorLocation(newGoalPos);
 			isMoving = false;
 		}
 		else if (moveDir.SizeSquared() > 0.1f)
 		{
-			//SetActorLocation(GetActorLocation() + moveDir * dragMoveSpeed * dt);
+			SetActorLocation(GetActorLocation() + moveDir * dragMoveSpeed * dt);
 		}
 	}
 }
@@ -169,5 +185,14 @@ FVector ADraggableMoveTile::calculateCurrentDir()
 void ADraggableMoveTile::RemoveFocus()
 {
 	isSelected = false;
-	isMoving = true;
+
+	bool canMove = canSnap && !destinationOccupied && goalVertex != nullptr;
+	if (canMove)
+	{
+		isMoving = true;
+		currentVertex->SetOccupied(false);
+		goalVertex->SetOccupied(true);
+		currentVertex = goalVertex;
+		goalVertex = nullptr;
+	}
 }

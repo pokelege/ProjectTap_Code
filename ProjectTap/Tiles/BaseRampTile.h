@@ -33,4 +33,6 @@ public:
 	virtual void Tick( float DeltaTime ) override;
 
 	virtual void activate() override;
+	virtual void HighlightEdge() override;
+	virtual void CancelHighlightEdge() override;
 };

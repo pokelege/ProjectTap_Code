@@ -20,6 +20,7 @@ ABaseRampTile::ABaseRampTile() : ATile()
 	offset->SetRelativeLocation(FVector(40,0,0));
 	TileMesh->AttachTo(offset,NAME_None,EAttachLocation::KeepWorldPosition);
 	CancelHighlight();
+	Disable();
 }
 
 void ABaseRampTile::Tick(float DeltaTime)
@@ -45,5 +46,24 @@ void ABaseRampTile::activate()
 	if(rotationSequence == nullptr || ball == nullptr || !IsEnabled() || activated) return;
 	Super::activate();
 	time = 0.0f;
+}
+
+
+void ABaseRampTile::HighlightEdge()
+{
+	if(material != nullptr)
+	{
+		material->SetScalarParameterValue("EnableEdgeColorHighlighted", true);
+		material->SetScalarParameterValue("EnableEdgePowerHighlighted", true);
+	}
+}
+
+void ABaseRampTile::CancelHighlightEdge()
+{
+	if(material != nullptr)
+	{
+		material->SetScalarParameterValue("EnableEdgeColorHighlighted", false);
+		material->SetScalarParameterValue("EnableEdgePowerHighlighted", false);
+	}
 }
 

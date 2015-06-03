@@ -53,8 +53,8 @@ void ABaseRampTile::HighlightEdge()
 {
 	if(material != nullptr)
 	{
-		material->SetScalarParameterValue("EnableEdgeColorHighlighted", true);
-		material->SetScalarParameterValue("EnableEdgePowerHighlighted", true);
+		material->SetScalarParameterValue("LerpEdgeColorHighlighted", 1);
+		material->SetScalarParameterValue("LerpEdgePowerHighlighted", 1);
 	}
 }
 
@@ -62,8 +62,23 @@ void ABaseRampTile::CancelHighlightEdge()
 {
 	if(material != nullptr)
 	{
-		material->SetScalarParameterValue("EnableEdgeColorHighlighted", false);
-		material->SetScalarParameterValue("EnableEdgePowerHighlighted", false);
+		material->SetScalarParameterValue("LerpEdgeColorHighlighted", 0);
+		material->SetScalarParameterValue("LerpEdgePowerHighlighted", 0);
 	}
 }
 
+void ABaseRampTile::HighlightTile()
+{
+	if(material != nullptr)
+	{
+		material->SetScalarParameterValue("LerpBaseColorHighlighted", 1);
+	}
+}
+
+void ABaseRampTile::CancelHighlightTile()
+{
+	if(material != nullptr)
+	{
+		material->SetScalarParameterValue("LerpBaseColorHighlighted", 0);
+	}
+}

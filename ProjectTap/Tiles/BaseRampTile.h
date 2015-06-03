@@ -35,4 +35,6 @@ public:
 	virtual void activate() override;
 	virtual void HighlightEdge() override;
 	virtual void CancelHighlightEdge() override;
+	virtual void HighlightTile() override;
+	virtual void CancelHighlightTile() override;
 };

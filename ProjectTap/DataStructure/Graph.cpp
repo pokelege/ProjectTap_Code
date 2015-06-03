@@ -5,27 +5,43 @@
 
 AGraph::AGraph()
 {
-	Init();
 }
 
 void AGraph::Init()
 {
-	matrix.SetNum(MAX_SIZE);
-	mark.SetNum(MAX_SIZE);
-
-	for (size_t i = 0; i < MAX_SIZE; i++)
+	if (edgeMatrix.Num() == 0)
 	{
-		for (size_t j = 0; j < MAX_SIZE; j++)
-		{
-			if (j == 0)
-			{
-				matrix[i].vertex.SetNum(MAX_SIZE);
-			}
+		edgeMatrix.SetNum(MAX_SIZE);
 
-			matrix[i].vertex[j] = NONEDGE;
+		for (size_t i = 0; i < MAX_SIZE; i++)
+		{
+			for (size_t j = 0; j < MAX_SIZE; j++)
+			{
+				if (j == 0)
+				{
+					edgeMatrix[i].vertex.SetNum(MAX_SIZE);
+				}
+
+				edgeMatrix[i].vertex[j] = NONEDGE;
+			}
 		}
+
 	}
+
+	if (edgeMatrix.Num() == 0)
+	{
+		mark.SetNum(MAX_SIZE);
+	}
+
+	generateEdges();
 }
+
+void AGraph::PostLoad()
+{
+	Super::PostLoad();
+	Init();
+}
+
 
 void AGraph::BeginDestroy()
 {
@@ -36,7 +52,7 @@ AGVertex* AGraph::next(int32 v, int32 v2)
 {
 	for (size_t i = v2 + 1; i < MAX_SIZE; ++i)
 	{
-		if (matrix[v].vertex[i] == EDGE)
+		if (i != v && edgeMatrix[v].vertex[i] == EDGE)
 		{
 			return mark[i];
 		}
@@ -45,11 +61,30 @@ AGVertex* AGraph::next(int32 v, int32 v2)
 	return nullptr;
 }
 
+AGVertex* AGraph::getConnectedVertexByIndex(int32 vertexIndex, 
+											int32 connectionIndex)
+{
+	if (vertexIndex == connectionIndex) return nullptr;
+
+	auto hasEdge = edgeMatrix[vertexIndex].vertex[connectionIndex] == EDGE;
+	return hasEdge ? mark[connectionIndex] : nullptr;
+}
+
+//bool AGraph::IsMatrixInitialized()
+//{
+//	return isMatrixInitialized;
+//}
+//
+//void AGraph::SetMatrixInitialized(bool init)
+//{
+//	isMatrixInitialized = init;
+//}
+
 AGVertex* AGraph::first(int32 v)
 {
 	for (size_t i = 0; i < MAX_SIZE; i++)
 	{
-		if (matrix[v].vertex[i] == EDGE)
+		if (i != v && edgeMatrix[v].vertex[i] == EDGE)
 		{
 			return mark[i];
 		}
@@ -62,47 +97,45 @@ AGVertex* AGraph::FindNearestVertexTo(const FVector& dragRay,
 									  const AGVertex* vertex,
 									  const float thresholdSquared)
 {
-	AGVertex* goal = nullptr;
+	AGVertex* closestVertex = nullptr;
 	auto minRange = FLT_MAX;
 
 	//find the closest vertex from all verts that are connected to this vertex
-	for (size_t i = 0; i < vertex->connectTo.Num(); i++)
-	{
-		auto v = vertex->connectTo[i];
-		if (v != -1)
-		{			
-			for (auto goal = first(v); 
-				goal != nullptr && goal->vertexIndex < MAX_SIZE; 
-				goal = next(v, goal->vertexIndex))
+	auto goal = mark[vertex->vertexIndex];
+	for (size_t i = 0; 
+		 i < MAX_SIZE; 
+		 goal = getConnectedVertexByIndex(vertex->vertexIndex, i++))
+	{ 
+		if (goal == nullptr || goal->vertexIndex == vertex->vertexIndex) continue;		
+
+		auto goalDir = goal->GetActorLocation() - vertex->GetActorLocation();
+		auto flatGoalDir = FVector(goalDir.X, goalDir.Y, 0.0f);
+		auto dotProduct = FVector::DotProduct(dragRay, flatGoalDir);
+		
+		if (dotProduct > 0.0f)
+		{
+			auto degree = FMath::RadiansToDegrees(FMath::Acos(dotProduct));
+			float dragDistance = (dragRay).SizeSquared();
+			float mouseDistanceToGoal = FVector::Dist(goal->GetActorLocation(), dragRay + vertex->GetActorLocation());
+			bool inRange = dragDistance > thresholdSquared && mouseDistanceToGoal < minRange;
+
+			if (inRange)
 			{
-				auto goalDir = goal->GetActorLocation() - vertex->GetActorLocation();
-				auto flatGoalDir = FVector(goalDir.X, goalDir.Y, 0.0f);
-				auto dotProduct = FVector::DotProduct(dragRay, flatGoalDir);
-
-				if (dotProduct > 0.0f)
-				{
-					auto degree = FMath::RadiansToDegrees(FMath::Acos(dotProduct));
-					float distance = (goalDir - dragRay).SizeSquared();
-					bool inRange = distance < thresholdSquared && distance < minRange;
-
-					if (inRange)
-					{
-						goal = mark[v];
-					}
-				}
+				closestVertex = goal;
+				minRange = mouseDistanceToGoal;
 			}
 		}
 	}
-		
-	return goal;
+
+	return closestVertex;
 }
 
 void AGraph::setUndirectedEdge(int32 v1, int32 v2)
 {
 	if (v1 != v2)
 	{
-		matrix[v1].vertex[v2] = EDGE;
-		matrix[v2].vertex[v1] = EDGE;
+		edgeMatrix[v1].vertex[v2] = EDGE;
+		edgeMatrix[v2].vertex[v1] = EDGE;
 	}
 }
 
@@ -110,15 +143,15 @@ void AGraph::deleteUndirectedEdge(int32 v1, int32 v2)
 {
 	if (v1 >= 0 && v2 >= 0)
 	{
-		matrix[v1].vertex[v2] = NONEDGE;
-		matrix[v2].vertex[v1] = NONEDGE;
+		edgeMatrix[v1].vertex[v2] = NONEDGE;
+		edgeMatrix[v2].vertex[v1] = NONEDGE;
 	}
 }
 
 bool AGraph::hasEdge(int32 v1, int32 v2)
 {
 	assert(index >= 0 && index < MAX_SIZE);
-	return matrix[v1].vertex[v2] == EDGE;
+	return edgeMatrix[v1].vertex[v2] == EDGE;
 }
 
 void AGraph::deleteAllVertsConnectionsToVert(int32 v, int32 connectIndex)
@@ -148,14 +181,6 @@ void AGraph::generateEdges()
 				if (validIndex)
 				{
 					setUndirectedEdge(vertex->vertexIndex, connectIndex);
-					if (mark[connectIndex]->connectTo[i] == -1)
-					{
-						mark[connectIndex]->connectTo[i] = vertex->vertexIndex;
-					}
-					else
-					{
-						deleteAllVertsConnectionsToVert(v, connectIndex);
-					}
 				}
 			}
 		}

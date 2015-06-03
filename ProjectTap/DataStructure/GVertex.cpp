@@ -16,6 +16,7 @@ AGVertex::AGVertex()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Game/Models/Ball"));
 	debugMesh->SetWorldScale3D(FVector(0.1f));
 	debugMesh->SetStaticMesh(tempMesh.Object);
+	debugMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
 	for (size_t i = 0; i < MAX_NUM; i++)
 	{
@@ -105,6 +106,18 @@ AGraph* AGVertex::getGraph()
 	return graph;
 }
 
+void AGVertex::SetOccupied(bool occupied)
+{
+	hasTile = occupied;
+}
+
+bool AGVertex::IsVertexOccupied()
+{
+	return hasTile;
+}
+
+
+
 void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -121,6 +134,7 @@ void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEve
 			{
 				g->addVertex(*v_itr);
 			}
+
 		}
 		else if (pName.Equals(TEXT("connectTo")))
 		{
@@ -129,6 +143,7 @@ void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEve
 		}
 		else if (pName.Equals(TEXT("clickToMakeArrows")))
 		{
+			g->generateEdges();
 			renerateGraphArrows();
 		}
 	}

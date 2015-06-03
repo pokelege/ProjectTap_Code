@@ -16,13 +16,19 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 	FVector newGoalPos;
 	float cameraRayLength;
 	bool isMoving = false;
+	bool canSnap = false;
+	bool destinationOccupied = false;
 		
 	void UpdateDragMove(float dt);
 
 	FVector calculateCurrentDir();
 
 	void UpdateIndicator();
-public:	
+
+	bool cameraRayIntersectWithTilePlane(const FVector& camlocation,
+										 const FVector& dir,
+										 FVector& hitPoint);
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Indicator)
 	UParticleSystemComponent* indicatorParticle;
 
@@ -34,7 +40,7 @@ public:
 	class AGVertex* currentVertex = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	float dragTolerance = 100.0f;
+	float dragTolerance = 300.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float dragMoveSpeed = 5.0f;

@@ -16,6 +16,7 @@ AGVertex::AGVertex()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Game/Models/Ball"));
 	debugMesh->SetWorldScale3D(FVector(0.1f));
 	debugMesh->SetStaticMesh(tempMesh.Object);
+	debugMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
 	for (size_t i = 0; i < MAX_NUM; i++)
 	{

@@ -24,12 +24,11 @@ class PROJECTTAP_API AGraph : public AActor
 	const int32 MAX_SIZE = 25;
 
 private:
-	const int32 NONEDGE = 0;
+	const int32 NONEDGE = -1;
 	const int32 EDGE = 1;
 
 	int32 numVert = 0;
 	int32 numEdge = 0;
-	bool isMatrixInitialized = false;
 
 	void Init();
 
@@ -39,11 +38,15 @@ private:
 
 	void deleteUndirectedEdge(int32 v1, int32 v2);
 
-	void deleteAllVertsConnectionsToVert(int32 v, int32 connectIndex);
+	void deleteAllVertsConnectionsToVert(int32 v, 
+										 int32 connectIndex);
 
 	AGVertex* next(int32 v, int32 v2);
 
 	AGVertex* first(int32 v);
+
+	AGVertex* getConnectedVertexByIndex(int32 vertexIndex, 
+										int32 connectionIndex);
 
 public:
 
@@ -53,11 +56,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = vertices)
 	TArray<FVertexArray> edgeMatrix;
 
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = vertices)
 	TArray<AGVertex*> mark;
 
 	void generateEdges();
+
+	void PostLoad() override;
 
 	inline int n(){ return numVert; }
 

@@ -37,6 +37,7 @@ void ADraggableMoveTile::Tick( float DeltaTime )
 	UpdateDragMove(DeltaTime);
 	UpdateIndicator();
 }
+#define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
 
 void ADraggableMoveTile::UpdateIndicator()
 {
@@ -50,14 +51,28 @@ void ADraggableMoveTile::UpdateIndicator()
 	{
 		indicatorBody->SetBeamSourcePoint(sourcePoint, 0);
 		indicatorBody->SetBeamTargetPoint(targetPoint, 0);
+		printonscreen(targetPoint.ToString());
 	}
 	else
 	{
 		indicatorBody->SetBeamSourcePoint(GetActorLocation(), 0);
 		indicatorBody->SetBeamTargetPoint(GetActorLocation(), 0);
 	}
+
+	auto material = indicatorParticle->CreateDynamicMaterialInstance(0);
+	material->SetScalarParameterValue(TEXT("IsDestinationValid"), canSnap && !destinationOccupied ? 1.0f : 0.0f);
 }
 
+bool ADraggableMoveTile::cameraRayIntersectWithTilePlane(const FVector& camlocation,
+									 const FVector& dir,
+									 FVector& hitPoint)
+
+{
+	bool hitPlane = false;
+	//auto demo = FVector::DotProduct(camlocation, dir) + GetActorLocation();
+
+	return hitPlane;
+}
 
 void ADraggableMoveTile::DragTo(const FHitResult& hit, 
 								const FVector& cameraLocation,
@@ -65,14 +80,21 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 {
 	if (isSelected)
 	{
-		auto camRay = hit.ImpactPoint;
+		//use hit point as a camera ray
+		auto camRay = FVector();
+		if (camRay.Equals(FVector::ZeroVector))
+		{
+			//FVector::ray
+			cameraRayLength = FVector::Dist(cameraLocation, GetActorLocation());
+			camRay = cameraLocation + camRayDirection * cameraRayLength;
+		}
+
 		auto moveRay = camRay - anchorHitPoint;
 		auto deltaLength = moveRay.SizeSquared();
-		auto canSnap = false;
 
 		if (deltaLength > dragTolerance * dragTolerance)
 		{
-			auto mostPossibleVertex = currentVertex->getGraph()->FindNearestVertexTo(moveRay, currentVertex);
+			auto mostPossibleVertex = currentVertex->getGraph()->FindNearestVertexTo(moveRay, currentVertex, dragTolerance * dragTolerance);
 
 			if (mostPossibleVertex != nullptr)
 			{
@@ -84,26 +106,36 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 				{
 					newGoalPos = moveDelta + anchorHitPoint;
 					canSnap = true;
+					destinationOccupied = mostPossibleVertex->IsVertexOccupied();
 				}
 			}
-			
-			if (!canSnap)
+
+			if (mostPossibleVertex == nullptr)
 			{
-				isSelected = false;
-				newGoalPos = GetActorLocation();
+				canSnap = false;
+			}
+			
+			if (canSnap)
+			{
+				newGoalPos = mostPossibleVertex->GetActorLocation();
+			}
+			else 
+			{
+				newGoalPos = camRay;
 			}
 		}
 		else
 		{
+			canSnap = false;
 			newGoalPos = GetActorLocation() + moveRay;
 		}
 	}
 	else
 	{
-		anchorHitPoint = GetActorLocation();
-		cameraRayLength = (anchorHitPoint - cameraLocation).Size();
+		anchorHitPoint = GetActorLocation();		
 		newGoalPos = GetActorLocation();
 		isSelected = true;
+		canSnap = false;
 		isMoving = false;
 	}
 }

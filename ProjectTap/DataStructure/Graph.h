@@ -24,6 +24,9 @@ class PROJECTTAP_API AGraph : public AActor
 
 private:
 	TArray<int32> visitsMarks;
+	UStaticMesh* vertexStaticMesh;
+	UStaticMesh* edgeStaticMesh;
+
 	const int32 NONEDGE = -1;
 	const int32 EDGE = 1;
 

@@ -5,6 +5,14 @@
 
 AGraph::AGraph()
 {
+	PrimaryActorTick.bCanEverTick = false;
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> edgeMesh(TEXT("/Game/Models/edgeVisualizer"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> vertexMesh(TEXT("/Game/Models/vertexVisualizer"));
+
+	edgeStaticMesh = edgeMesh.Object;
+	vertexStaticMesh = vertexMesh.Object;
+
 }
 
 void AGraph::Init()
@@ -234,19 +242,25 @@ void AGraph::generateGraphRouteVisualization()
 {
 	for (auto mesh : edgeMeshes)
 	{		
-		mesh->DestroyComponent();
+		if (mesh != nullptr)
+		{
+			mesh->DestroyComponent();
+		}
 	}
 
 	for (auto mesh : vertexMeshes)
 	{
-		mesh->DestroyComponent();
+		if (mesh != nullptr)
+		{
+			mesh->DestroyComponent();
+		}
 	}
 
 	unmarkAll();
 	TArray<int32> stack;
-	stack.SetNum(MAX_SIZE);
-
 	DFS_makeVisualizers(stack, 0);
+	
+	Super::PostEditChange();
 }
 
 
@@ -267,9 +281,9 @@ void AGraph::DFS_makeVisualizers(TArray<int32> stack,
 	{
 		if (!v->visited)
 		{
-			//generate a visualizer for an edge
+			//generate an edge
 			auto edgeMesh = makeEdgeMeshForEdge(vIndex, v->vertexIndex);
-			initializeEdgeMesh(edgeMesh, v, mark[vIndex]);
+			initializeEdgeMesh(edgeMesh, mark[vIndex], v);
 			edgeMeshes.Add(edgeMesh);
 
 			DFS_makeVisualizers(stack, v->vertexIndex);
@@ -284,10 +298,9 @@ void AGraph::DFS_makeVisualizers(TArray<int32> stack,
 UStaticMeshComponent* AGraph::makeEdgeMeshForEdge(int32 i, int32 j)
 {
 	auto name = FString("Edge").Append(FString::FromInt(i)).Append(FString::FromInt(j));
-	auto edge = CreateDefaultSubobject<UStaticMeshComponent>(*name);
+	auto edge = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, *name);
 	edge->AttachTo(RootComponent);
-	ConstructorHelpers::FObjectFinder<UStaticMesh> edgeMesh(TEXT("/Game/Models/edgeVisualizer"));
-	edge->SetStaticMesh(edgeMesh.Object);
+	edge->SetStaticMesh(edgeStaticMesh);
 
 	return edge;
 }
@@ -295,11 +308,10 @@ UStaticMeshComponent* AGraph::makeEdgeMeshForEdge(int32 i, int32 j)
 UStaticMeshComponent* AGraph::makeVertexMeshForVertex(int32 v)
 {
 	auto name = FString("vertex").Append(FString::FromInt(v));
-	auto vertex = CreateDefaultSubobject<UStaticMeshComponent>(*name);
+	auto vertex = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, *name);
 	vertex->AttachTo(RootComponent);
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> vertexMesh(TEXT("/Game/Models/vertexVisualizer"));
-	vertex->SetStaticMesh(vertexMesh.Object);
+	vertex->SetStaticMesh(vertexStaticMesh);
 	vertex->SetWorldScale3D(FVector(40.0f, 40.0f, 1.0f));
 	vertex->SetWorldLocation(mark[v]->GetActorLocation());
 
@@ -312,15 +324,17 @@ void AGraph::initializeEdgeMesh(UStaticMeshComponent* edgeMesh,
 {
 	auto pos1 = v1->GetActorLocation();
 	auto pos2 = v2->GetActorLocation();
-	auto scaleX = FVector::Dist(pos1, pos2) / 8.0f;
+	auto ray = pos1 - pos2;
+	auto rotation = FRotationMatrix::MakeFromX(ray);
+	auto scaleX = FVector::Dist(pos1, pos2) * .5f;
 	auto scaleY = 40.0f;
 	auto scaleZ = 1.0f;
-
-	FMatrix transformMatrix = FScaleMatrix(FVector(scaleX, scaleY, scaleZ)) * 
-						FRotationMatrix::MakeFromX(pos1 - pos2) *
-						FTranslationMatrix(FVector(0.5f, 0.0f, 0.0f));
+	FMatrix transformMatrix = FScaleMatrix(FVector(scaleX * 0.92f, scaleY, scaleZ)) *
+								rotation *
+								FTranslationMatrix(pos2);
 
 	edgeMesh->SetWorldTransform(FTransform(transformMatrix));
+	edgeMesh->AddLocalOffset(FVector(scaleX, 0.0f, 0.0f));
 }
 
 void AGraph::unmarkAll()

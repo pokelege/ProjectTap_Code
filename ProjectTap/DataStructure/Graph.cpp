@@ -70,16 +70,6 @@ AGVertex* AGraph::getConnectedVertexByIndex(int32 vertexIndex,
 	return hasEdge ? mark[connectionIndex] : nullptr;
 }
 
-//bool AGraph::IsMatrixInitialized()
-//{
-//	return isMatrixInitialized;
-//}
-//
-//void AGraph::SetMatrixInitialized(bool init)
-//{
-//	isMatrixInitialized = init;
-//}
-
 AGVertex* AGraph::first(int32 v)
 {
 	for (size_t i = 0; i < MAX_SIZE; i++)
@@ -239,6 +229,127 @@ void AGraph::addVertex(AGVertex* vertex)
 		}
 	}
 }
+
+void AGraph::generateGraphRouteVisualization()
+{
+	for (auto mesh : edgeMeshes)
+	{		
+		mesh->DestroyComponent();
+	}
+
+	for (auto mesh : vertexMeshes)
+	{
+		mesh->DestroyComponent();
+	}
+
+	unmarkAll();
+	TArray<int32> stack;
+	stack.SetNum(MAX_SIZE);
+
+	DFS_makeVisualizers(stack, 0);
+}
+
+
+void AGraph::DFS_makeVisualizers(TArray<int32> stack,
+								 int32 vIndex)
+{
+	if (mark[vIndex] == nullptr || mark[vIndex]->visited) return;
+
+	markVertex(vIndex);
+	stack.Push(vIndex);
+	//generate a visulaizer for an unvisited vertex 
+	auto vertexMesh = makeVertexMeshForVertex(vIndex);
+	vertexMeshes.Add(vertexMesh);
+
+	for (auto v = first(vIndex);
+		v != nullptr;
+		v = next(vIndex, v->vertexIndex))
+	{
+		if (!v->visited)
+		{
+			//generate a visualizer for an edge
+			auto edgeMesh = makeEdgeMeshForEdge(vIndex, v->vertexIndex);
+			initializeEdgeMesh(edgeMesh, v, mark[vIndex]);
+			edgeMeshes.Add(edgeMesh);
+
+			DFS_makeVisualizers(stack, v->vertexIndex);
+		}
+	}
+
+	stack.Pop();
+}
+
+
+
+UStaticMeshComponent* AGraph::makeEdgeMeshForEdge(int32 i, int32 j)
+{
+	auto name = FString("Edge").Append(FString::FromInt(i)).Append(FString::FromInt(j));
+	auto edge = CreateDefaultSubobject<UStaticMeshComponent>(*name);
+	edge->AttachTo(RootComponent);
+	ConstructorHelpers::FObjectFinder<UStaticMesh> edgeMesh(TEXT("/Game/Models/edgeVisualizer"));
+	edge->SetStaticMesh(edgeMesh.Object);
+
+	return edge;
+}
+
+UStaticMeshComponent* AGraph::makeVertexMeshForVertex(int32 v)
+{
+	auto name = FString("vertex").Append(FString::FromInt(v));
+	auto vertex = CreateDefaultSubobject<UStaticMeshComponent>(*name);
+	vertex->AttachTo(RootComponent);
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> vertexMesh(TEXT("/Game/Models/vertexVisualizer"));
+	vertex->SetStaticMesh(vertexMesh.Object);
+	vertex->SetWorldScale3D(FVector(40.0f, 40.0f, 1.0f));
+	vertex->SetWorldLocation(mark[v]->GetActorLocation());
+
+	return vertex;
+}
+
+void AGraph::initializeEdgeMesh(UStaticMeshComponent* edgeMesh,
+								const AGVertex* v1,
+								const AGVertex* v2)
+{
+	auto pos1 = v1->GetActorLocation();
+	auto pos2 = v2->GetActorLocation();
+	auto scaleX = FVector::Dist(pos1, pos2) / 8.0f;
+	auto scaleY = 40.0f;
+	auto scaleZ = 1.0f;
+
+	FMatrix transformMatrix = FScaleMatrix(FVector(scaleX, scaleY, scaleZ)) * 
+						FRotationMatrix::MakeFromX(pos1 - pos2) *
+						FTranslationMatrix(FVector(0.5f, 0.0f, 0.0f));
+
+	edgeMesh->SetWorldTransform(FTransform(transformMatrix));
+}
+
+void AGraph::unmarkAll()
+{
+	for (size_t i = 0; i < mark.Num(); i++)
+	{
+		if (mark[i] != nullptr)
+		{
+			mark[i]->visited = false;
+		}
+	}
+}
+
+void AGraph::markVertex(int32 v)
+{
+	if (mark[v] != nullptr)
+	{
+		mark[v]->visited = true;
+	}
+}
+
+void AGraph::markVertex(AGVertex* vertex)
+{
+	if (vertex != nullptr)
+	{
+		vertex->visited = true;
+	}
+}
+
 
 void AGraph::removeVertex(AGVertex* vertex)
 {

@@ -134,16 +134,16 @@ void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEve
 			{
 				g->addVertex(*v_itr);
 			}
-
 		}
 		else if (pName.Equals(TEXT("connectTo")))
 		{
 			g->generateEdges();
 			regenerateDebugArrows();
 		}
-		else if (pName.Equals(TEXT("clickToMakeArrows")))
+		else if (pName.Equals(TEXT("clickToMakeGraph")))
 		{
 			g->generateEdges();
+			g->generateGraphRouteVisualization();
 			renerateGraphArrows();
 		}
 	}
@@ -158,6 +158,8 @@ void AGVertex::BeginDestroy()
 {
 	Super::BeginDestroy();
 
+	//make sure vertex being deleted when it is inside the editor
+	//instead of when editor is closing 
 	if (GetWorld() != nullptr)
 	{
 		getGraph()->removeVertex(this);

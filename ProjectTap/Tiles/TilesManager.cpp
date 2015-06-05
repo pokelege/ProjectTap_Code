@@ -133,7 +133,7 @@ void UTilesManager::AddTile(AStrongBlockingTile* tile)
 
 void UTilesManager::AddTile(ADraggableMoveTile* tile)
 {
-	if (tile != nullptr && tile != currDraggableTile)
+	if (tile != nullptr && currDraggableTile == nullptr)
 	{		
 		currDraggableTile = tile;
 		SetDraggableMoveTileCurrent();		

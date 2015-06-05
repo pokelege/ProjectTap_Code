@@ -42,7 +42,7 @@ public:
 	float dragTolerance = 300.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	float dragMoveSpeed = 5.0f;
+	float dragMoveSpeed = 150.0f;
 
 	// Sets default values for this actor's properties
 	ADraggableMoveTile();

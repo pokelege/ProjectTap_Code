@@ -5,6 +5,14 @@
 
 AGraph::AGraph()
 {
+	PrimaryActorTick.bCanEverTick = false;
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> edgeMesh(TEXT("/Game/Models/edgeVisualizer"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> vertexMesh(TEXT("/Game/Models/vertexVisualizer"));
+
+	edgeStaticMesh = edgeMesh.Object;
+	vertexStaticMesh = vertexMesh.Object;
+
 }
 
 void AGraph::Init()
@@ -69,16 +77,6 @@ AGVertex* AGraph::getConnectedVertexByIndex(int32 vertexIndex,
 	auto hasEdge = edgeMatrix[vertexIndex].vertex[connectionIndex] == EDGE;
 	return hasEdge ? mark[connectionIndex] : nullptr;
 }
-
-//bool AGraph::IsMatrixInitialized()
-//{
-//	return isMatrixInitialized;
-//}
-//
-//void AGraph::SetMatrixInitialized(bool init)
-//{
-//	isMatrixInitialized = init;
-//}
 
 AGVertex* AGraph::first(int32 v)
 {
@@ -239,6 +237,154 @@ void AGraph::addVertex(AGVertex* vertex)
 		}
 	}
 }
+
+void AGraph::generateGraphRouteVisualization()
+{
+	for (auto mesh : edgeMeshes)
+	{		
+		if (mesh != nullptr)
+		{
+			mesh->DestroyComponent();
+		}
+	}
+
+	for (auto mesh : vertexMeshes)
+	{
+		if (mesh != nullptr)
+		{
+			mesh->DestroyComponent();
+		}
+	}
+
+	unmarkAll();
+	TArray<int32> stack;
+	DFS_makeVisualizers(stack, 0);
+	
+	Super::PostEditChange();
+}
+
+
+void AGraph::DFS_makeVisualizers(TArray<int32>& stack,
+								 int32 vIndex)
+{
+	if (mark[vIndex] == nullptr || mark[vIndex]->visited) return;
+
+	markVertex(vIndex);
+	stack.Push(vIndex);
+	//generate a visulaizer for an unvisited vertex 
+	auto vertexMesh = makeVertexMeshForVertex(vIndex);
+	vertexMeshes.Add(vertexMesh);
+
+	for (auto v = first(vIndex);
+		v != nullptr;
+		v = next(vIndex, v->vertexIndex))
+	{
+		bool isBackEdge = v->visited && vIndex < v->vertexIndex;
+
+		if (!v->visited || isBackEdge)
+		{
+			//generate an edge
+			auto edgeMesh = makeEdgeMeshForEdge(vIndex, v->vertexIndex);
+			initializeEdgeMesh(edgeMesh, mark[vIndex], v);
+			edgeMeshes.Add(edgeMesh);
+
+			if (!v->visited)
+			{
+				DFS_makeVisualizers(stack, v->vertexIndex);
+			}
+		}
+	}
+
+	stack.Pop();
+}
+
+
+
+UStaticMeshComponent* AGraph::makeEdgeMeshForEdge(int32 i, int32 j)
+{
+	auto name = FString("Edge").Append(FString::FromInt(i)).Append(FString::FromInt(j));
+	auto edge = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, *name);
+	edge->AttachTo(RootComponent);
+	edge->SetStaticMesh(edgeStaticMesh);
+
+	return edge;
+}
+
+UStaticMeshComponent* AGraph::makeVertexMeshForVertex(int32 v)
+{
+	auto name = FString("vertex").Append(FString::FromInt(v));
+	auto vertex = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, *name);
+	vertex->AttachTo(RootComponent);
+
+	vertex->SetStaticMesh(vertexStaticMesh);
+	vertex->SetWorldScale3D(FVector(40.0f, 40.0f, 1.0f));
+	vertex->SetWorldLocation(mark[v]->GetActorLocation());
+
+	return vertex;
+}
+
+void AGraph::initializeEdgeMesh(UStaticMeshComponent* edgeMesh,
+								const AGVertex* v1,
+								const AGVertex* v2)
+{
+	auto pos1 = v1->GetActorLocation();
+	auto pos2 = v2->GetActorLocation();
+
+	
+	auto ray = pos2 - pos1;
+	
+	auto n_p1p2 = ray;
+	n_p1p2.Z = 0;
+	n_p1p2 = n_p1p2.GetSafeNormal();
+	
+	//tile is 40*40*1. The distance needs to substract half of the tile size
+	auto totalOffsetDistance = 40.0f;
+	//change start & end positions from the center of the vertex mesh
+	//to the edges of the mesh to the right direction
+	auto p1_offset = n_p1p2 * totalOffsetDistance;
+	pos1 += p1_offset;
+	pos2 += -p1_offset;
+	auto newRay = pos2 - pos1;
+
+	auto rotation = FRotationMatrix::MakeFromX(newRay);
+	auto scaleX = FVector::Dist(pos1, pos2) * .5f ;
+	auto scaleY = 40.0f;
+	auto scaleZ = 1.0f;
+	FMatrix transformMatrix = FScaleMatrix(FVector(scaleX, scaleY, scaleZ)) *
+								rotation *
+								FTranslationMatrix(pos1);
+
+	edgeMesh->SetWorldTransform(FTransform(transformMatrix));
+	edgeMesh->AddLocalOffset(FVector(scaleX, 0.0f, 0.0f));
+}
+
+void AGraph::unmarkAll()
+{
+	for (size_t i = 0; i < mark.Num(); i++)
+	{
+		if (mark[i] != nullptr)
+		{
+			mark[i]->visited = false;
+		}
+	}
+}
+
+void AGraph::markVertex(int32 v)
+{
+	if (mark[v] != nullptr)
+	{
+		mark[v]->visited = true;
+	}
+}
+
+void AGraph::markVertex(AGVertex* vertex)
+{
+	if (vertex != nullptr)
+	{
+		vertex->visited = true;
+	}
+}
+
 
 void AGraph::removeVertex(AGVertex* vertex)
 {

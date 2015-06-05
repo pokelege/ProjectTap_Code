@@ -19,11 +19,14 @@ UCLASS()
 class PROJECTTAP_API AGraph : public AActor
 {
 	GENERATED_BODY()
-
 	friend class AGVertex;
 	const int32 MAX_SIZE = 25;
 
 private:
+	TArray<int32> visitsMarks;
+	UStaticMesh* vertexStaticMesh;
+	UStaticMesh* edgeStaticMesh;
+
 	const int32 NONEDGE = -1;
 	const int32 EDGE = 1;
 
@@ -41,17 +44,44 @@ private:
 	void deleteAllVertsConnectionsToVert(int32 v, 
 										 int32 connectIndex);
 
-	AGVertex* next(int32 v, int32 v2);
+	//the following methods will only be excuted inside editor
+
+
+	void DFS_makeVisualizers(TArray<int32>& stack,
+							 int32 vIndex);
+
+	UStaticMeshComponent* makeEdgeMeshForEdge(int32 i, int32 j);
+
+	UStaticMeshComponent* makeVertexMeshForVertex(int32 j);
+
+	void initializeEdgeMesh(UStaticMeshComponent* edgeMesh,
+							const AGVertex* v1,
+							const AGVertex* v2);
+	
+	AGVertex* next(int32 v, 
+		int32 v2);
 
 	AGVertex* first(int32 v);
 
 	AGVertex* getConnectedVertexByIndex(int32 vertexIndex, 
 										int32 connectionIndex);
 
+	void unmarkAll();
+	void markVertex(int32 v_index);
+	void markVertex(AGVertex* vertex);
+
 public:
 
 	AGraph();
 	~AGraph();
+
+	//stores visualizers for all edges
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = visualizer)
+	TArray<UStaticMeshComponent*> edgeMeshes;
+
+	//stores visualizers for all verts
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = visualizer)
+	TArray<UStaticMeshComponent*> vertexMeshes;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = vertices)
 	TArray<FVertexArray> edgeMatrix;
@@ -86,7 +116,10 @@ public:
 	bool MoveTileFromTo(int32 from, 
 					    int32 to);
 
+	void generateGraphRouteVisualization();
+
 	void SetMatrixInitialized(bool init);
+
 	bool IsMatrixInitialized();
 
 	bool IsVertexOccupied(int32 v);

@@ -161,7 +161,7 @@ void ADraggableMoveTile::UpdateDragMove(float dt)
 	if (isMoving)
 	{		
 		auto moveDir = (newGoalPos - GetActorLocation()).GetSafeNormal();
-		auto reachedPos = FVector::DistSquared(newGoalPos, GetActorLocation()) < 1.0f;
+		auto reachedPos = FVector::DistSquared(newGoalPos, GetActorLocation()) < 10.0f;
 	
 		if (reachedPos)
 		{

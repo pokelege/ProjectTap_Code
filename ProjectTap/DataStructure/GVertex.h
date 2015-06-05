@@ -12,6 +12,7 @@ class PROJECTTAP_API AGVertex : public AActor
 
 	friend class AGraph;
 	const int32 MAX_NUM = 4;
+	bool visited = false;
 	bool hasTile = false;
 
 	void regenerateDebugArrows();
@@ -31,7 +32,7 @@ public:
 		bool clickUpdateAllNodes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		bool clickToMakeArrows;
+		bool clickToMakeGraph;
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Tile)

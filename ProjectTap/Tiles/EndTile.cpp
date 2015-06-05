@@ -6,7 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "EndTile.h"
 
-const FName AEndTile::END_MESH = FName("/Game/Models/End");
+const FName AEndTile::END_MESH = FName("/Game/Models/EndTile");
 
 AEndTile::AEndTile() : ATile()
 {
@@ -14,10 +14,10 @@ AEndTile::AEndTile() : ATile()
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*END_MESH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-
+	BoxCollision->SetWorldScale3D(FVector(1,1,1));
 	if(BoxCollision)
 	{
-		BoxCollision->SetBoxExtent(FVector(0.1f,0.1f,1), false);
+		BoxCollision->SetBoxExtent(FVector(40,40,80), false);
 	}
 
 	BoxCollision->bGenerateOverlapEvents = true;
@@ -25,8 +25,6 @@ AEndTile::AEndTile() : ATile()
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-	auto pc = Cast<UPrimitiveComponent>(RootComponent);
-	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
 	delegate.BindUFunction(this, TEXT("OnBeginTriggerOverlap"));
 	BoxCollision->OnComponentBeginOverlap.Add(delegate);
 }

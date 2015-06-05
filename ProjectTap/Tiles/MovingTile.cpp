@@ -8,29 +8,27 @@
 // Sets default values
 AMovingTile::AMovingTile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile mesh"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(TEXT("/Game/Models/MoveTile"));
 	TileMesh->SetStaticMesh(mesh.Object);
-	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	TileMesh->SetWorldScale3D(FVector(1.0f));
+	BoxCollision->SetWorldScale3D(FVector(1));
 
-	
-	BoxCollision->SetBoxExtent(FVector(1.0f));
-	BoxCollision->SetWorldScale3D(FVector(40.0f, 40.0f, 10.0f));
+	BoxCollision->SetBoxExtent(FVector(40.0f, 40.0f, 10.0f));
+
 
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("/Game/Curves/MovementLinear"));
 	if (curve.Object != nullptr) moveCurve = curve.Object;
-	
+
 }
 
 // Called when the game starts or when spawned
 void AMovingTile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (path.Num() > 1 && enabled)
 	{
 		currDir = (path[NextIndex()] - path[currNode]).GetSafeNormal();
@@ -80,7 +78,7 @@ void AMovingTile::UpdateMovement(float dt)
 			auto speedFactor = moveCurve->GetFloatValue(1.0f - remainingDistSq / distanceBetweenCurrentNodes);
 			auto newCurr = GetActorLocation() + currDir * speed * speedFactor * dt;
 			SetActorLocation(newCurr);
-		}                     
+		}
 		else if (pauseTimeCounter < pauseBetweenNodes)
 		{
 			if (pauseTimeCounter == 0.0f)

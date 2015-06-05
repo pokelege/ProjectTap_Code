@@ -21,27 +21,24 @@ APortalTile::APortalTile()
 
 	bluePortalTrigger->AttachTo(RootComponent);
 	bluePortalTrigger->bGenerateOverlapEvents = true;
-	
+
 	orangePortalTrigger->AttachTo(RootComponent);
 	orangePortalTrigger->bGenerateOverlapEvents = true;
 
 	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 
+	beginBlueOverlap.BindUFunction(this, "OnBlueBeginTriggerOverlap");
+	bluePortalTrigger->OnComponentBeginOverlap.Add(beginBlueOverlap);
 
-	FScriptDelegate beginOverLap;
-	beginOverLap.BindUFunction(this, "OnBlueBeginTriggerOverlap_Implementation");
-	bluePortalTrigger->OnComponentBeginOverlap.Add(beginOverLap);
+	endBlueOverlap.BindUFunction(this, "OnBlueEndTriggerOverlap");
+	bluePortalTrigger->OnComponentEndOverlap.Add(endBlueOverlap);
 
-	FScriptDelegate endEndLap;
-	endEndLap.BindUFunction(this, "OnBlueEndTriggerOverlap_Implementation");
-	bluePortalTrigger->OnComponentEndOverlap.Add(endEndLap);
+	beginOrangeOverlap.BindUFunction(this, "OnOrangeBeginTriggerOverlap");
+	orangePortalTrigger->OnComponentBeginOverlap.Add(beginOrangeOverlap);
 
-	beginOverLap.BindUFunction(this, "OnOrangeBeginTriggerOverlap_Implementation");
-	orangePortalTrigger->OnComponentBeginOverlap.Add(beginOverLap);
-
-	endEndLap.BindUFunction(this, "OnOrangeEndTriggerOverlap_Implementation");
-	orangePortalTrigger->OnComponentEndOverlap.Add(endEndLap);
+	endOrangeOverlap.BindUFunction(this, "OnOrangeEndTriggerOverlap");
+	orangePortalTrigger->OnComponentEndOverlap.Add(endOrangeOverlap);
 
 	SetActorRotation(FRotator(0, 0, 0));
 
@@ -143,7 +140,7 @@ void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
 	const FHitResult & SweepResult)
 {
 	if (enabled)
-	{	
+	{
 		if (enteredPortal)
 		{
 			if (auto a = Cast<ABallPawn>(OtherActor))
@@ -216,7 +213,7 @@ void APortalTile::ProcessBallEndfOverlap(AActor* actor)
 
 
 void APortalTile::TransportBallToOrange(ABallPawn* pawn)
-{	
+{
 	if (otherPortal != nullptr)
 	{
 		otherPortal->enabled = false;
@@ -250,12 +247,12 @@ void APortalTile::GetLaserPortalTransportedLocation(UPrimitiveComponent* hit4Ppo
 	if (otherPortal != nullptr && hit4PportalTrigger != nullptr)
 	{
 		bool isPortalTrigger = hit4PportalTrigger == orangePortalTrigger || hit4PportalTrigger == bluePortalTrigger;
-		
+
 		if (isPortalTrigger)
 		{
 			bool isOrangePortal = hit4PportalTrigger == orangePortalTrigger;
-			auto newLaserPos = isOrangePortal ? 
-				otherPortal->orangePortalTrigger->GetComponentLocation() : 
+			auto newLaserPos = isOrangePortal ?
+				otherPortal->orangePortalTrigger->GetComponentLocation() :
 				otherPortal->bluePortalTrigger->GetComponentLocation();
 
 			newDir = isOrangePortal ? otherPortal->GetActorRotation().Vector() : -otherPortal->GetActorRotation().Vector();

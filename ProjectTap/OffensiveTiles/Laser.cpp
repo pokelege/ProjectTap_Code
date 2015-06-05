@@ -9,11 +9,11 @@
 #include "../Tiles/PortalTile.h"
 #include "Classes/Particles/ParticleEmitter.h"
 
-
+#define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
 // Sets default values
 ALaser::ALaser()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	root = CreateDefaultSubobject<UEmptyComponent>(TEXT("RootEmpty"));
@@ -32,7 +32,6 @@ ALaser::ALaser()
 	mesh->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> laserEmitterMesh(TEXT("/Game/Models/TurretGun"));
 	mesh->SetStaticMesh(laserEmitterMesh.Object);
-
 }
 
 // Called when the game starts or when spawned
@@ -40,6 +39,7 @@ void ALaser::BeginPlay()
 {
 	Super::BeginPlay();
 	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
+	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);
 }
 
 void ALaser::SetLaserDepth(unsigned i)
@@ -71,7 +71,7 @@ void ALaser::checkLaserCollisions(float dt)
 	queryParam.bFindInitialOverlaps = false;
 	queryParam.bReturnFaceIndex = true;
 	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
-	
+
 	auto pos = GetActorLocation();
 	auto rayStart = pos + dir * 2.0f;
 	auto laserVector = dir * length;
@@ -80,14 +80,14 @@ void ALaser::checkLaserCollisions(float dt)
 	//ray cast to see if laser hits anything
 	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
 	auto hitActor = hit.Actor.Get();
-	
+
 	if (hitActor != nullptr)
 	{
 		currHitPoint = hit.ImpactPoint;
 
 		//kills ball if laser hits it
 		auto ball = Cast<ABallPawn>(hitActor);
-		
+
 		if (ball != nullptr)
 		{
 			ball->Kill();
@@ -100,13 +100,26 @@ void ALaser::checkLaserCollisions(float dt)
 			bool typeFound = false;
 			//if hits deflective tile then spawn a new laser object
 			auto tile = Cast<ADeflectiveTile>(hitActor);
-			if (CanSpawnSubLaser() && tile != nullptr && hit.Component != tile->frameMeshComponent)
+			bool isFrame = false;
+			if (tile != nullptr)
 			{
 				typeFound = true;
+				TArray<USceneComponent*> Children;
+				tile->frameCollisionsComponent->GetChildrenComponents(true, Children);
+				for(int i = 0; i < Children.Num() && typeFound ; ++i)
+				{
+//					printonscreen(hit.Component.Get()->GetName());
+//					printonscreen(Children[i]->GetName());
+					if(hit.Component.Get() == Children[i])
+					{
+						typeFound = false;
+						isFrame = true;
+					}
+				}
 				//cut the laser length to make sure new sub laser start doesn't hit the same object
-				SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
+				if(typeFound && CanSpawnSubLaser()) SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
 			}
-			
+
 
 			//if sub laser already exists then keep updating its rotation and position
 			auto subLaserExistsHitDeflectiveTile = currentDepth < MAX_DEPTH && nextLaser != nullptr && tile != nullptr;
@@ -132,7 +145,7 @@ void ALaser::checkLaserCollisions(float dt)
 					blockingTile->ApplyActivationTimeFactor(0.5f);
 				}
 
-			} 
+			}
 
 			//if the laser hits turret then kills it
 			if (!typeFound)
@@ -162,13 +175,13 @@ void ALaser::checkLaserCollisions(float dt)
 			if (subLaserExistsHitPortalTile)
 			{
 				FVector newSourcePos;
- 				portal->GetLaserPortalTransportedLocation(hit.GetComponent(), nextLaser->dir, newSourcePos);
+				portal->GetLaserPortalTransportedLocation(hit.GetComponent(), nextLaser->dir, newSourcePos);
 				nextLaser->SetActorLocation(newSourcePos);
 				nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(newSourcePos, 0);
 				nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(newSourcePos + nextLaser->dir * length, 0);
 			}
 
-			bool notHitDeflectiveTile = tile == nullptr || hit.Component == tile->frameMeshComponent;
+			bool notHitDeflectiveTile = tile == nullptr || isFrame;
 			bool notHitPortal = portal == nullptr;
 			if (notHitDeflectiveTile && notHitPortal)
 			{
@@ -225,6 +238,8 @@ void ALaser::KillSubLaser()
 {
 	if (nextLaser != nullptr)
 	{
+		laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
+		laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);;
 		nextLaser->KillSubLaser();
 		nextLaser->Destroy();
 		nextLaser = nullptr;

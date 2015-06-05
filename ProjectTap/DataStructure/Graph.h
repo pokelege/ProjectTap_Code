@@ -47,7 +47,7 @@ private:
 	//the following methods will only be excuted inside editor
 
 
-	void DFS_makeVisualizers(TArray<int32> stack,
+	void DFS_makeVisualizers(TArray<int32>& stack,
 							 int32 vIndex);
 
 	UStaticMeshComponent* makeEdgeMeshForEdge(int32 i, int32 j);
@@ -58,7 +58,8 @@ private:
 							const AGVertex* v1,
 							const AGVertex* v2);
 	
-	AGVertex* next(int32 v, int32 v2);
+	AGVertex* next(int32 v, 
+		int32 v2);
 
 	AGVertex* first(int32 v);
 

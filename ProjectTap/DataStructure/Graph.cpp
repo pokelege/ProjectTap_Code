@@ -264,7 +264,7 @@ void AGraph::generateGraphRouteVisualization()
 }
 
 
-void AGraph::DFS_makeVisualizers(TArray<int32> stack,
+void AGraph::DFS_makeVisualizers(TArray<int32>& stack,
 								 int32 vIndex)
 {
 	if (mark[vIndex] == nullptr || mark[vIndex]->visited) return;
@@ -279,14 +279,19 @@ void AGraph::DFS_makeVisualizers(TArray<int32> stack,
 		v != nullptr;
 		v = next(vIndex, v->vertexIndex))
 	{
-		if (!v->visited)
+		bool isBackEdge = v->visited && vIndex < v->vertexIndex;
+
+		if (!v->visited || isBackEdge)
 		{
 			//generate an edge
 			auto edgeMesh = makeEdgeMeshForEdge(vIndex, v->vertexIndex);
 			initializeEdgeMesh(edgeMesh, mark[vIndex], v);
 			edgeMeshes.Add(edgeMesh);
 
-			DFS_makeVisualizers(stack, v->vertexIndex);
+			if (!v->visited)
+			{
+				DFS_makeVisualizers(stack, v->vertexIndex);
+			}
 		}
 	}
 
@@ -324,14 +329,30 @@ void AGraph::initializeEdgeMesh(UStaticMeshComponent* edgeMesh,
 {
 	auto pos1 = v1->GetActorLocation();
 	auto pos2 = v2->GetActorLocation();
-	auto ray = pos1 - pos2;
-	auto rotation = FRotationMatrix::MakeFromX(ray);
-	auto scaleX = FVector::Dist(pos1, pos2) * .5f;
+
+	
+	auto ray = pos2 - pos1;
+	
+	auto n_p1p2 = ray;
+	n_p1p2.Z = 0;
+	n_p1p2 = n_p1p2.GetSafeNormal();
+	
+	//tile is 40*40*1. The distance needs to substract half of the tile size
+	auto totalOffsetDistance = 40.0f;
+	//change start & end positions from the center of the vertex mesh
+	//to the edges of the mesh to the right direction
+	auto p1_offset = n_p1p2 * totalOffsetDistance;
+	pos1 += p1_offset;
+	pos2 += -p1_offset;
+	auto newRay = pos2 - pos1;
+
+	auto rotation = FRotationMatrix::MakeFromX(newRay);
+	auto scaleX = FVector::Dist(pos1, pos2) * .5f ;
 	auto scaleY = 40.0f;
 	auto scaleZ = 1.0f;
-	FMatrix transformMatrix = FScaleMatrix(FVector(scaleX * 0.92f, scaleY, scaleZ)) *
+	FMatrix transformMatrix = FScaleMatrix(FVector(scaleX, scaleY, scaleZ)) *
 								rotation *
-								FTranslationMatrix(pos2);
+								FTranslationMatrix(pos1);
 
 	edgeMesh->SetWorldTransform(FTransform(transformMatrix));
 	edgeMesh->AddLocalOffset(FVector(scaleX, 0.0f, 0.0f));

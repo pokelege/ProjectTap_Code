@@ -40,32 +40,32 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-	void OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
-								   UPrimitiveComponent* OtherComp,
-								   int32 OtherBodyIndex,
-								   bool bFromSweep,
-								   const FHitResult & SweepResult);
-
-	UFUNCTION()
-		void OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
-									 UPrimitiveComponent* OtherComp,
-									 int32 OtherBodyIndex,
-									 bool bFromSweep,
-									 const FHitResult & SweepResult);
-
-	UFUNCTION()
-		void OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
-										 UPrimitiveComponent* OtherComp,
+	virtual void OnBlueBeginTriggerOverlap_Implementation(class AActor* OtherActor,
+										 class UPrimitiveComponent* OtherComp,
 										 int32 OtherBodyIndex,
 										 bool bFromSweep,
 										 const FHitResult & SweepResult);
 
 	UFUNCTION()
-		void OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
-									   UPrimitiveComponent* OtherComp,
-									   int32 OtherBodyIndex,
-									   bool bFromSweep,
-									   const FHitResult & SweepResult);
+	virtual void OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult & SweepResult);
+
+	UFUNCTION()
+	virtual void OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult & SweepResult);
+
+	UFUNCTION()
+	virtual void OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult & SweepResult);
 
 	void Enable() override;
 

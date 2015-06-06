@@ -6,6 +6,7 @@
 // Sets default values
 ATile::ATile()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Tile mesh" ) );
 
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Tile collision"));

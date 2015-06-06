@@ -13,8 +13,7 @@ APortalTile::APortalTile()
 
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	BoxCollision->SetBoxExtent(FVector(1.0f));
-	BoxCollision->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
+	BoxCollision->SetWorldScale3D(FVector(1.0f));
 
 	bluePortalTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("BlueTrigger"));
 	orangePortalTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("OrangeTrigger"));
@@ -28,70 +27,72 @@ APortalTile::APortalTile()
 	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 
-	beginBlueOverlap.BindUFunction(this, "OnBlueBeginTriggerOverlap");
-	bluePortalTrigger->OnComponentBeginOverlap.Add(beginBlueOverlap);
+	FScriptDelegate beginOverLap;
+	beginOverLap.BindUFunction(this, "OnBlueBeginTriggerOverlap");
+	bluePortalTrigger->OnComponentBeginOverlap.Add(beginOverLap);
 
-	endBlueOverlap.BindUFunction(this, "OnBlueEndTriggerOverlap");
-	bluePortalTrigger->OnComponentEndOverlap.Add(endBlueOverlap);
+	FScriptDelegate endEndLap;
+	endEndLap.BindUFunction(this, "OnBlueEndTriggerOverlap");
+	bluePortalTrigger->OnComponentEndOverlap.Add(endEndLap);
 
-	beginOrangeOverlap.BindUFunction(this, "OnOrangeBeginTriggerOverlap");
-	orangePortalTrigger->OnComponentBeginOverlap.Add(beginOrangeOverlap);
+	beginOverLap.BindUFunction(this, "OnOrangeBeginTriggerOverlap");
+	orangePortalTrigger->OnComponentBeginOverlap.Add(beginOverLap);
 
-	endOrangeOverlap.BindUFunction(this, "OnOrangeEndTriggerOverlap");
-	orangePortalTrigger->OnComponentEndOverlap.Add(endOrangeOverlap);
-
-	SetActorRotation(FRotator(0, 0, 0));
+	endEndLap.BindUFunction(this, "OnOrangeEndTriggerOverlap");
+	orangePortalTrigger->OnComponentEndOverlap.Add(endEndLap);
 
 	GeneratePortalCollision();
+	AdjustOrientationAndTriggerBoxes();
 }
 
 void APortalTile::AdjustOrientationAndTriggerBoxes()
 {
-	bluePortalTrigger->AddLocalOffset(FVector(-.2f, 0.0f, 0.0f));
-	orangePortalTrigger->AddLocalOffset(FVector(.2f, 0.0f, 0.0f));
-	bluePortalTrigger->SetBoxExtent(FVector(1.0f));
-	bluePortalTrigger->SetRelativeScale3D(FVector(.2f, 1.0f, 1.0f));
+	bluePortalTrigger->SetRelativeLocation(FVector(-10.000000,0.000000,0.000000));
+	orangePortalTrigger->SetRelativeLocation(FVector(10.000000,0.000000,0.000000));
 
-	orangePortalTrigger->SetBoxExtent(FVector(1.0f));
-	orangePortalTrigger->SetRelativeScale3D(FVector(.2f, 1.0f, 1.0f));
+	bluePortalTrigger->SetBoxExtent(FVector(10.000000,30.000000,30.000000));
+
+	orangePortalTrigger->SetBoxExtent(FVector(10.000000,30.000000,30.000000));
 
 	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
 	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
-
 }
 
 void APortalTile::GeneratePortalCollision()
 {
 	auto left = CreateDefaultSubobject<UBoxComponent>(TEXT("left"));
-	left->AddLocalOffset(FVector(0.0f, 1.0f, 0.0f));
-	left->SetRelativeScale3D(FVector(1.0f, 0.1f, 1.0f));
+
 
 	auto right = CreateDefaultSubobject<UBoxComponent>(TEXT("right"));
-	right->AddLocalOffset(FVector(0.0f, -1.0f, 0.0f));
-	right->SetRelativeScale3D(FVector(1.0f, 0.1f, 1.0f));
+
 
 	auto top = CreateDefaultSubobject<UBoxComponent>(TEXT("top"));
-	top->AddLocalOffset(FVector(0.0f, 0.0f, 1.f));
-	top->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.02f));
+
 
 	auto bottom = CreateDefaultSubobject<UBoxComponent>(TEXT("bottom"));
-	bottom->AddLocalOffset(FVector(0.0f, 0.005f, -1.0f));
-	bottom->SetRelativeScale3D(FVector(1.0f, 1.0f, 0.02f));
+
+	left->AttachTo(RootComponent);
+	right->AttachTo(RootComponent);
+	top->AttachTo(RootComponent);
+	bottom->AttachTo(RootComponent);
 
 	SetMeshCollisionProperty(left);
 	SetMeshCollisionProperty(right);
 	SetMeshCollisionProperty(top);
 	SetMeshCollisionProperty(bottom);
 
-	left->AttachTo(RootComponent);
-	right->AttachTo(RootComponent);
-	top->AttachTo(RootComponent);
-	bottom->AttachTo(RootComponent);
+	left->SetRelativeLocation(FVector(0.000000,-38.000000,0.000000));
+	left->SetBoxExtent(FVector(40.000000,2.000000,40.000000));
+	right->SetRelativeLocation(FVector(0.000000,38.000000,0.000000));
+	right->SetBoxExtent(FVector(40.000000,2.000000,40.000000));
+	top->SetRelativeLocation(FVector(0.000000,0.000000,38.000000));
+	top->SetBoxExtent(FVector(40.000000,40.000000,2.000000));
+	bottom->SetRelativeLocation(FVector(0.000000,0.000000,-38.000000));
+	bottom->SetBoxExtent(FVector(40.000000,40.000000,2.000000));
 }
 
 void APortalTile::SetMeshCollisionProperty(UBoxComponent* box)
 {
-	box->SetBoxExtent(FVector(1.0f));
 	box->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	box->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	box->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
@@ -102,7 +103,6 @@ void APortalTile::SetMeshCollisionProperty(UBoxComponent* box)
 void APortalTile::BeginPlay()
 {
 	Super::BeginPlay();
-	AdjustOrientationAndTriggerBoxes();
 }
 
 void APortalTile::Tick(float DeltaTime)

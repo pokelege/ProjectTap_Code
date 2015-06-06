@@ -46,6 +46,14 @@ public:
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
 
+	virtual void EditorApplyTranslation
+	(
+		const FVector & DeltaTranslation,
+		bool bAltDown,
+		bool bShiftDown,
+		bool bCtrlDown
+	) override;
+
 	class AGraph* getGraph();
 
 	void renerateGraphArrows();

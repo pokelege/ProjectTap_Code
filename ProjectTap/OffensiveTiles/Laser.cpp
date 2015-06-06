@@ -62,7 +62,6 @@ void ALaser::Tick( float DeltaTime )
 	}
 }
 
-#define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
 
 void ALaser::checkLaserCollisions(float dt)
 {

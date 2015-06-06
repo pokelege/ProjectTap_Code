@@ -10,8 +10,6 @@ ABaseRampTile::ABaseRampTile() : ATile()
 	if(BoxCollision)
 	{
 		BoxCollision->SetBoxExtent(FVector(40,40,2), false);
-		BoxCollision->SetRelativeLocation(FVector(0, 0, -10), false, nullptr);
-		BoxCollision->AddLocalOffset(FVector(0, 0, -10));
 		BoxCollision->bGenerateOverlapEvents = true;
 	}
 
@@ -20,14 +18,8 @@ ABaseRampTile::ABaseRampTile() : ATile()
 	offset = CreateDefaultSubobject<USceneComponent>( TEXT( "Ramp offset" ) );
 	offset->AttachTo(GetRootComponent());
 	offset->SetRelativeLocation(FVector(40,0,0));
-	TileMesh->AttachTo(offset);
-	baseColorHighlighted = FLinearColor(0.0f, 5.0f, .0f);
-	glowColorHighlighted = FLinearColor(2.0f, 1.7f, .0f);
-	baseColor = FLinearColor(1.0f, 1.0f, 1.0f);
-	glowColor = FLinearColor(1.0f, 1.0f, 1.0f);
-	glowPowerHighlighted = 100.0f;
+	TileMesh->AttachTo(offset,NAME_None,EAttachLocation::KeepWorldPosition);
 	CancelHighlight();
-
 	Disable();
 }
 
@@ -54,11 +46,39 @@ void ABaseRampTile::activate()
 	if(rotationSequence == nullptr || ball == nullptr || !IsEnabled() || activated) return;
 	Super::activate();
 	time = 0.0f;
-
 }
 
-void ABaseRampTile::Highlight(bool litTile, bool litEdge)
+
+void ABaseRampTile::HighlightEdge()
 {
-	Super::Highlight(false, true);
+	if(material != nullptr)
+	{
+		material->SetScalarParameterValue("LerpEdgeColorHighlighted", 1);
+		material->SetScalarParameterValue("LerpEdgePowerHighlighted", 1);
+	}
 }
 
+void ABaseRampTile::CancelHighlightEdge()
+{
+	if(material != nullptr)
+	{
+		material->SetScalarParameterValue("LerpEdgeColorHighlighted", 0);
+		material->SetScalarParameterValue("LerpEdgePowerHighlighted", 0);
+	}
+}
+
+void ABaseRampTile::HighlightTile()
+{
+	if(material != nullptr)
+	{
+		material->SetScalarParameterValue("LerpBaseColorHighlighted", 1);
+	}
+}
+
+void ABaseRampTile::CancelHighlightTile()
+{
+	if(material != nullptr)
+	{
+		material->SetScalarParameterValue("LerpBaseColorHighlighted", 0);
+	}
+}

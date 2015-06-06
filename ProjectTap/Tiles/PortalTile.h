@@ -13,18 +13,21 @@ class PROJECTTAP_API APortalTile : public ATile
 {
 	GENERATED_BODY()
 
+	TScriptDelegate<FWeakObjectPtr> beginBlueOverlap;
+	TScriptDelegate<FWeakObjectPtr> endBlueOverlap;
+	TScriptDelegate<FWeakObjectPtr> beginOrangeOverlap;
+	TScriptDelegate<FWeakObjectPtr> endOrangeOverlap;
 	void AdjustOrientationAndTriggerBoxes();
 
 	void SetMeshCollisionProperty(UBoxComponent* box);
 	void GeneratePortalCollision();
-
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
 	float velocityMultiplier = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
 	APortalTile* otherPortal;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
 	UBoxComponent* bluePortalTrigger;
 
@@ -37,32 +40,32 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION()
-		virtual void OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult & SweepResult);
+	void OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
+								   UPrimitiveComponent* OtherComp,
+								   int32 OtherBodyIndex,
+								   bool bFromSweep,
+								   const FHitResult & SweepResult);
 
 	UFUNCTION()
-		virtual void OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult & SweepResult);
+		void OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
+									 UPrimitiveComponent* OtherComp,
+									 int32 OtherBodyIndex,
+									 bool bFromSweep,
+									 const FHitResult & SweepResult);
 
 	UFUNCTION()
-		virtual void OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult & SweepResult);
+		void OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
+										 UPrimitiveComponent* OtherComp,
+										 int32 OtherBodyIndex,
+										 bool bFromSweep,
+										 const FHitResult & SweepResult);
 
 	UFUNCTION()
-		virtual void OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult & SweepResult);
+		void OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
+									   UPrimitiveComponent* OtherComp,
+									   int32 OtherBodyIndex,
+									   bool bFromSweep,
+									   const FHitResult & SweepResult);
 
 	void Enable() override;
 

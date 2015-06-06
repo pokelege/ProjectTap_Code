@@ -6,13 +6,13 @@
 #include "JumpTile.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class PROJECTTAP_API AJumpTile : public ABaseRampTile
 {
 	GENERATED_BODY()
-	
+
 	static const FName JUMP_MESH_PATH;
 	FVector force;
 public:
@@ -24,7 +24,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
 	AActor* target = nullptr;
-	
+
 	AJumpTile();
 
 	virtual void BeginPlay() override;

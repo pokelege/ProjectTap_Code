@@ -32,9 +32,9 @@ public:
 
 	virtual void Tick( float DeltaTime ) override;
 
-	virtual void Highlight(bool litTile = true, bool litEdge = true) override;
-
-	virtual void turnOffHighlight() override{}
-
 	virtual void activate() override;
+	virtual void HighlightEdge() override;
+	virtual void CancelHighlightEdge() override;
+	virtual void HighlightTile() override;
+	virtual void CancelHighlightTile() override;
 };

@@ -10,9 +10,6 @@ AJumpTile::AJumpTile() : ABaseRampTile()
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*JUMP_MESH_PATH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	//TileMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
-
-
 }
 
 void AJumpTile::BeginPlay()

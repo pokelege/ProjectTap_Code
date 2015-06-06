@@ -10,9 +10,7 @@ ARamp::ARamp(): ABaseRampTile()
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*RAMP_MESH_PATH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	//TileMesh->SetRelativeLocation(FVector(1,0,0), false, nullptr);
 	forceMultiplier = 2000.0f;
-
 }
 
 void ARamp::BeginPlay()
@@ -61,7 +59,5 @@ void ARamp::activate()
 			ball->AddVelocity((forceMultiplier * FVector(0, -1, 0)) + FVector(0, 0, additionalZForce), GetActorLocation());
 			break;
 	}
-
-
 }
 

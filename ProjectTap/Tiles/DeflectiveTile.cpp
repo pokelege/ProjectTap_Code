@@ -8,18 +8,41 @@
 ADeflectiveTile::ADeflectiveTile()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	FName path("/Game/Models/DeflectingTile");
-	FName framePath("/Game/Models/DeflectingTileFrame");
+	BoxCollision->SetWorldScale3D(FVector(1, 1, 1));
+	FName path("/Game/Models/DeflectiveTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
-	ConstructorHelpers::FObjectFinder<UStaticMesh> frameMesh(*framePath.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	BoxCollision->SetBoxExtent(FVector(0.9f));
-	frameMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Frame mesh" ) );
+	BoxCollision->SetBoxExtent(FVector(4,36,76));
 
-	frameMeshComponent->SetStaticMesh(frameMesh.Object);
-	frameMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-	frameMeshComponent->AttachTo(TileMesh);
+	frameCollisionsComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Frame collisions"));
+	frameCollisionsComponent->AttachTo(RootComponent);
+
+	UBoxComponent* box1 = CreateDefaultSubobject<UBoxComponent>(TEXT("Frame top"));
+	box1->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	box1->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	box1->AttachTo(frameCollisionsComponent);
+	box1->SetBoxExtent(FVector(8.000000,36.000000,5.000000));
+	box1->SetRelativeLocation(FVector(0,0,78));
+	UBoxComponent* box2 = CreateDefaultSubobject<UBoxComponent>(TEXT("Frame bottom"));
+	box2->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	box2->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	box2->AttachTo(frameCollisionsComponent);
+	box2->SetBoxExtent(FVector(8.000000,36.000000,5.000000));
+	box2->SetRelativeLocation(FVector(0,0,-78));
+
+	UBoxComponent* box3 = CreateDefaultSubobject<UBoxComponent>(TEXT("Frame right"));
+	box3->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	box3->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	box3->AttachTo(frameCollisionsComponent);
+	box3->SetBoxExtent(FVector(8.000000,5.000000,80.000000));
+	box3->SetRelativeLocation(FVector(0,38,0));
+
+	UBoxComponent* box4 = CreateDefaultSubobject<UBoxComponent>(TEXT("Frame left"));
+	box4->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	box4->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	box4->AttachTo(frameCollisionsComponent);
+	box4->SetBoxExtent(FVector(8.000000,5.000000,80.000000));
+	box4->SetRelativeLocation(FVector(0,-38,0));
 
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
@@ -30,9 +53,6 @@ ADeflectiveTile::ADeflectiveTile()
 
 
 	BoxCollision->OnComponentHit.AddDynamic(this, &ADeflectiveTile::OnHit);
-
-	//BoxCollision->SetWorldRotation(FRotator(0, 45, 0));
-	BoxCollision->SetWorldScale3D(FVector(5.0f, 40.0f, 80.0f));
 
 	glowPowerHighlighted = 70.0f;
 
@@ -145,16 +165,6 @@ void ADeflectiveTile::Spin(float dt)
 
 }
 
-void ADeflectiveTile::Highlight(bool litTile, bool litEdge)
-{
-	Super::Highlight();
-}
-
-void ADeflectiveTile::CancelHighlight()
-{
-	Super::CancelHighlight();
-}
-
 
 void ADeflectiveTile::activate()
 {
@@ -197,9 +207,9 @@ FVector ClampNormalAxis(FVector dir)
 	return normal;
 }
 
-void ADeflectiveTile::OnHit(class AActor* OtherActor, 
+void ADeflectiveTile::OnHit(class AActor* OtherActor,
 							class UPrimitiveComponent* OtherComp,
-							FVector NormalImpulse, 
+							FVector NormalImpulse,
 							const FHitResult& Hit)
 {
 

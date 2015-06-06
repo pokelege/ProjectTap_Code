@@ -21,7 +21,6 @@ ATile::ATile()
 	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	BoxCollision->SetNotifyRigidBodyCollision(true);
 	CancelHighlight();
-
 }
 
 void ATile::activate()
@@ -60,7 +59,7 @@ bool ATile::IsEnabled()
 void ATile::BeginPlay()
 {
   Super::BeginPlay();
-  original = GetActorLocation();
+  material = TileMesh->CreateDynamicMaterialInstance(0);
   CancelHighlight();
 }
 
@@ -71,90 +70,80 @@ void ATile::Tick(float DeltaTime)
 
 void ATile::Highlight(bool litTile, bool litEdge)
 {
-	if (!activated && enabled)
+	if (litTile)
 	{
-		material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
+		HighlightTile();
+	}
 
-		if (material != nullptr)
-		{
-			if (litTile)
-			{
-				material->SetVectorParameterValue(TEXT("BaseColor"), baseColorHighlighted);
-			}
-
-			if (litEdge)
-			{
-				material->SetScalarParameterValue(TEXT("glow"), glowPowerHighlighted);
-				material->SetVectorParameterValue(TEXT("Color"), glowColorHighlighted);
-			}
-		}
+	if (litEdge)
+	{
+		HighlightEdge();
 	}
 }
 
-void ATile::CancelHighlight()
+void ATile::CancelHighlight(bool cancelTile, bool cancelEdge)
 {
-	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
-
-	if (material != nullptr && enabled)
+	if (cancelTile)
 	{
-		material->SetVectorParameterValue(TEXT("BaseColor"), baseColor);
-		material->SetScalarParameterValue(TEXT("glow"), glowPower);
-		material->SetVectorParameterValue(TEXT("Color"), glowColor);
+		CancelHighlightTile();
+	}
+
+	if (cancelEdge)
+	{
+		CancelHighlightEdge();
 	}
 }
 
 
-void ATile::turnOffHighlight()
+void ATile::turnOffHighlight(bool offTile, bool offEdge)
 {
-	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
-
-	if (material != nullptr)
+	if(offTile)
 	{
-		FLinearColor noColor{ 0.0f, 0.0f, 0.0f };
-		material->SetVectorParameterValue(TEXT("BaseColor"), noColor);
-		material->SetScalarParameterValue(TEXT("glow"), 0.0f);
-		material->SetVectorParameterValue(TEXT("Color"), noColor);
+		turnOffHighlightTile();
+	}
+	if(offEdge)
+	{
+		turnOffHighlightEdge();
 	}
 }
 
 void ATile::HighlightTile()
 {
-	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
-
 	if (material != nullptr)
 	{
-		FLinearColor noColor{ 0.0f, 0.0f, 0.0f };
-		material->SetVectorParameterValue(TEXT("BaseColor"), baseColorHighlighted);
+		material->SetScalarParameterValue(TEXT("LerpBaseColorHighlighted"), 1);
+		material->SetScalarParameterValue(TEXT("EnableBaseColor"), 1);
 	}
 }
 
 void ATile::HighlightEdge()
 {
-	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
-
 	if (material != nullptr)
 	{
-		material->SetVectorParameterValue(TEXT("Color"), glowColorHighlighted);
+		material->SetScalarParameterValue(TEXT("LerpEdgeColorHighlighted"), 1);
+		material->SetScalarParameterValue(TEXT("LerpEdgePowerHighlighted"), 1);
+		material->SetScalarParameterValue(TEXT("EnableEdgeColor"), 1);
+		material->SetScalarParameterValue(TEXT("EnableEdgePower"), 1);
 	}
 }
 
 void ATile::CancelHighlightTile()
 {
-	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
-
 	if (material != nullptr)
 	{
-		material->SetVectorParameterValue(TEXT("BaseColor"), baseColor);
+		material->SetScalarParameterValue(TEXT("LerpBaseColorHighlighted"), 0);
+		material->SetScalarParameterValue(TEXT("EnableBaseColor"), 1);
 	}
 }
 
 void ATile::CancelHighlightEdge()
 {
-	material = TileMesh->CreateAndSetMaterialInstanceDynamic(0);
-
 	if (material != nullptr)
 	{
-		material->SetVectorParameterValue(TEXT("Color"), glowColor);
+		material->SetScalarParameterValue(TEXT("LerpEdgeColorHighlighted"), 0);
+		material->SetScalarParameterValue(TEXT("LerpEdgePowerHighlighted"), 0);
+		material->SetScalarParameterValue(TEXT("EnableEdgeColor"), 1);
+		material->SetScalarParameterValue(TEXT("EnableEdgePower"), 1);
 	}
 }
 
@@ -162,16 +151,15 @@ void ATile::turnOffHighlightEdge()
 {
 	if (material != nullptr)
 	{
-		FLinearColor noColor{ 0.0f, 0.0f, 0.0f };
-		material->SetVectorParameterValue(TEXT("Color"), noColor);
+		material->SetScalarParameterValue(TEXT("EnableEdgeColor"), 0);
+		material->SetScalarParameterValue(TEXT("EnableEdgePower"), 0);
 	}
 }
 void ATile::turnOffHighlightTile()
 {
 	if (material != nullptr)
 	{
-		FLinearColor noColor{ 0.0f, 0.0f, 0.0f };
-		material->SetVectorParameterValue(TEXT("BaseColor"), noColor);
+		material->SetScalarParameterValue(TEXT("EnableBaseColor"), 0);
 	}
 }
 

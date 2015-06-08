@@ -10,7 +10,7 @@ enum class CurrentTileType : char
 	GROUPED_BLOCKING_TILE,
 	DRAGGABLE_TILE
 };
-
+  
 class UTilesManager
 {
 	TArray<class ABlockingTile*> activatedBlocks;

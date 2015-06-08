@@ -17,6 +17,7 @@ class PROJECTTAP_API AGVertex : public AActor
 
 	void regenerateDebugArrows();
 
+	
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)

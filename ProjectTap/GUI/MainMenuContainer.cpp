@@ -12,7 +12,7 @@ AMainMenuContainer::AMainMenuContainer()
 }
 
 
-void AMainMenuContainer::PrintMessageProjectTap()
+void AMainMenuContainer::PrintMessageProjectTap_Implementation()
 {
 	printonscreen(TEXT("click!!!"));
 }

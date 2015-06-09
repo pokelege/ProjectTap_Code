@@ -12,14 +12,14 @@ ATurretToggleTile::ATurretToggleTile():ATile()
 
 	if(BoxCollision)
 	{
-		BoxCollision->SetBoxExtent(FVector(1,1,1), false);
+		BoxCollision->SetBoxExtent(FVector(40,40,80), false);
 	}
 
 	if(boxTrigger == nullptr)
 	{
 		boxTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("TurretToggleTile box trigger"));
 		boxTrigger->AttachTo(this->GetRootComponent());
-		boxTrigger->SetBoxExtent(FVector(0.5f,0.5f,2.0f), false);
+		boxTrigger->SetBoxExtent(FVector(20,20,160), false);
 	}
 
 	boxTrigger->SetCollisionResponseToAllChannels(ECR_Ignore);
@@ -29,8 +29,6 @@ ATurretToggleTile::ATurretToggleTile():ATile()
 	boxTrigger->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	boxTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Overlap);
 
-	auto pc = Cast<UPrimitiveComponent>(RootComponent);
-	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 80.0f));
 	delegate.BindUFunction(this, "OnBeginTriggerOverlap");
 	boxTrigger->OnComponentBeginOverlap.Add(delegate);
 }

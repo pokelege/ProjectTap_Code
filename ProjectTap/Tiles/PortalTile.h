@@ -39,29 +39,32 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+
+
 	UFUNCTION()
-	virtual void OnBlueBeginTriggerOverlap_Implementation(class AActor* OtherActor,
+	void OnBlueBeginTriggerOverlap(class AActor* OtherActor,
+									class UPrimitiveComponent* OtherComp,
+									int32 OtherBodyIndex,
+									bool bFromSweep,
+									const FHitResult & SweepResult);
+
+	UFUNCTION()
+	void OnBlueEndTriggerOverlap(class AActor* OtherActor,
 										 class UPrimitiveComponent* OtherComp,
 										 int32 OtherBodyIndex,
 										 bool bFromSweep,
 										 const FHitResult & SweepResult);
 
+
 	UFUNCTION()
-	virtual void OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
+	void OnOrangeBeginTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
 	const FHitResult & SweepResult);
 
 	UFUNCTION()
-	virtual void OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult & SweepResult);
-
-	UFUNCTION()
-	virtual void OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
+	virtual void OnOrangeEndTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,

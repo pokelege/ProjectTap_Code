@@ -27,19 +27,18 @@ APortalTile::APortalTile()
 	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 
-	FScriptDelegate beginOverLap;
-	beginOverLap.BindUFunction(this, "OnBlueBeginTriggerOverlap");
-	bluePortalTrigger->OnComponentBeginOverlap.Add(beginOverLap);
+	beginBlueOverlap.BindUFunction(this, "OnBlueBeginTriggerOverlap");
+	bluePortalTrigger->OnComponentBeginOverlap.Add(beginBlueOverlap);
 
-	FScriptDelegate endEndLap;
-	endEndLap.BindUFunction(this, "OnBlueEndTriggerOverlap");
-	bluePortalTrigger->OnComponentEndOverlap.Add(endEndLap);
 
-	beginOverLap.BindUFunction(this, "OnOrangeBeginTriggerOverlap");
-	orangePortalTrigger->OnComponentBeginOverlap.Add(beginOverLap);
+	endBlueOverlap.BindUFunction(this, "OnBlueEndTriggerOverlap");
+	bluePortalTrigger->OnComponentEndOverlap.Add(endBlueOverlap);
 
-	endEndLap.BindUFunction(this, "OnOrangeEndTriggerOverlap");
-	orangePortalTrigger->OnComponentEndOverlap.Add(endEndLap);
+	beginOrangeOverlap.BindUFunction(this, "OnOrangeBeginTriggerOverlap");
+	orangePortalTrigger->OnComponentBeginOverlap.Add(beginOrangeOverlap);
+
+	endOrangeOverlap.BindUFunction(this, "OnOrangeEndTriggerOverlap");
+	orangePortalTrigger->OnComponentEndOverlap.Add(endOrangeOverlap);
 
 	GeneratePortalCollision();
 	AdjustOrientationAndTriggerBoxes();
@@ -52,10 +51,23 @@ void APortalTile::AdjustOrientationAndTriggerBoxes()
 
 	bluePortalTrigger->SetBoxExtent(FVector(10.000000,30.000000,30.000000));
 
-	orangePortalTrigger->SetBoxExtent(FVector(10.000000,30.000000,30.000000));
+	orangePortalTrigger->SetBoxExtent(FVector(10,30,30));
 
-	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
-	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
+	orangePortalTrigger->SetCollisionResponseToAllChannels(ECR_Ignore);
+	orangePortalTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	orangePortalTrigger->bGenerateOverlapEvents = true;
+	orangePortalTrigger->SetNotifyRigidBodyCollision(false);
+	orangePortalTrigger->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Overlap);
+	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECR_Block);
+
+	bluePortalTrigger->SetCollisionResponseToAllChannels(ECR_Ignore);
+	bluePortalTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	bluePortalTrigger->bGenerateOverlapEvents = true;
+	bluePortalTrigger->SetNotifyRigidBodyCollision(false);
+	bluePortalTrigger->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Overlap);
+	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECR_Block);
 }
 
 void APortalTile::GeneratePortalCollision()
@@ -110,7 +122,7 @@ void APortalTile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
+void APortalTile::OnBlueBeginTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
@@ -133,7 +145,7 @@ void APortalTile::OnBlueBeginTriggerOverlap_Implementation(AActor* OtherActor,
 	}
 }
 
-void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
+void APortalTile::OnOrangeBeginTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
@@ -156,7 +168,7 @@ void APortalTile::OnOrangeBeginTriggerOverlap_Implementation(AActor* OtherActor,
 	}
 }
 
-void APortalTile::OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
+void APortalTile::OnBlueEndTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,
@@ -169,7 +181,7 @@ void APortalTile::OnBlueEndTriggerOverlap_Implementation(AActor* OtherActor,
 }
 
 
-void APortalTile::OnOrangeEndTriggerOverlap_Implementation(AActor* OtherActor,
+void APortalTile::OnOrangeEndTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,
 	bool bFromSweep,

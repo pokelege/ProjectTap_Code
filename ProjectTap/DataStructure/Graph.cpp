@@ -50,6 +50,39 @@ void AGraph::PostLoad()
 	Init();
 }
 
+void AGraph::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.Property != nullptr)
+	{
+		auto name = PropertyChangedEvent.Property->GetName();
+		if (name.Equals("clearRoutVisuals"))
+		{
+			clearRouteVisuals();
+		}
+	}
+}
+
+void AGraph::clearRouteVisuals()
+{
+	for (auto mesh : edgeMeshes)
+	{
+		if (mesh != nullptr)
+		{
+			mesh->DestroyComponent();
+		}
+	}
+
+	for (auto mesh : vertexMeshes)
+	{
+		if (mesh != nullptr)
+		{
+			mesh->DestroyComponent();
+		}
+	}
+}
+
 
 void AGraph::BeginDestroy()
 {
@@ -240,21 +273,7 @@ void AGraph::addVertex(AGVertex* vertex)
 
 void AGraph::generateGraphRouteVisualization()
 {
-	for (auto mesh : edgeMeshes)
-	{		
-		if (mesh != nullptr)
-		{
-			mesh->DestroyComponent();
-		}
-	}
-
-	for (auto mesh : vertexMeshes)
-	{
-		if (mesh != nullptr)
-		{
-			mesh->DestroyComponent();
-		}
-	}
+	clearRouteVisuals();
 
 	unmarkAll();
 	TArray<int32> stack;
@@ -294,7 +313,6 @@ void AGraph::DFS_makeVisualizers(TArray<int32>& stack,
 			}
 		}
 	}
-
 	stack.Pop();
 }
 

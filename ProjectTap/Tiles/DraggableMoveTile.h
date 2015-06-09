@@ -59,7 +59,6 @@ public:
 				const FVector& camRayDirection);
 
 
-
 	void RemoveFocus();
 	
 private:

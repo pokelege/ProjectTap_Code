@@ -116,6 +116,17 @@ bool AGVertex::IsVertexOccupied()
 	return hasTile;
 }
 
+void AGVertex::EditorApplyTranslation
+(
+const FVector & DeltaTranslation,
+bool bAltDown,
+bool bShiftDown,
+bool bCtrlDown
+) 
+{
+	Super::EditorApplyTranslation(DeltaTranslation, bAltDown, bShiftDown, bCtrlDown);
+	renerateGraphArrows();
+}
 
 
 void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)

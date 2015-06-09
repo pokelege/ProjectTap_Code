@@ -70,6 +70,7 @@ private:
 	void markVertex(int32 v_index);
 	void markVertex(AGVertex* vertex);
 
+	void clearRouteVisuals();
 public:
 
 	AGraph();
@@ -88,6 +89,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = vertices)
 	TArray<AGVertex*> mark;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = graph)
+	bool clearRoutVisuals;
 
 	void generateEdges();
 
@@ -119,6 +123,8 @@ public:
 	void generateGraphRouteVisualization();
 
 	void SetMatrixInitialized(bool init);
+
+	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
 
 	bool IsMatrixInitialized();
 

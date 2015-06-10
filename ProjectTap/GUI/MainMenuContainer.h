@@ -13,9 +13,10 @@ class PROJECTTAP_API AMainMenuContainer : public AActor
 {
 	GENERATED_BODY()
 	
+
 public:
 
-	UFUNCTION(BlueprintNativeEvent, BluePrintCallable, Category = MainMenu)
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
 	void PrintMessageProjectTap();
 	
 	AMainMenuContainer();

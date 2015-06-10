@@ -19,7 +19,7 @@ ATurretPawn::ATurretPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> baseMeshSource(*BASE_MESH.ToString());
-
+	
 	UBoxComponent* collisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Turret Collision"));
 	collisionBox->SetBoxExtent(FVector(1,1,3));
 	this->SetRootComponent(collisionBox);

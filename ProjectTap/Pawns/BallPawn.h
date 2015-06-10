@@ -26,7 +26,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 		FVector initialVelocity = FVector(0.0f, 0.0f, 0.0f);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
-	USpringArmComponent* spring;
+	class UConstrainingSpringArmComponent* spring;
 	// Sets default values for this actor's properties
 	ABallPawn();
 

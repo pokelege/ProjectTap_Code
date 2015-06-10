@@ -28,4 +28,11 @@ public:
 	float lagSpeed = 1.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	float lagMaxDistance = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	bool lockX = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	bool lockY = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	bool lockZ = true;
 };

@@ -27,9 +27,10 @@ ADraggableMoveTile::ADraggableMoveTile()
 void ADraggableMoveTile::BeginPlay()
 {
 	Super::BeginPlay();
-	assert(currentVertex != nullptr);
-	SetActorLocation(currentVertex->GetActorLocation());
-	currentVertex->SetOccupied(true);
+	if (currentVertex != nullptr){
+		SetActorLocation(currentVertex->GetActorLocation());
+		currentVertex->SetOccupied(true);
+	}
 }
 
 void ADraggableMoveTile::Tick( float DeltaTime )

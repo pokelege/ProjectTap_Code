@@ -12,12 +12,12 @@ AMainMenuContainer::AMainMenuContainer()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-
 void AMainMenuContainer::PrintMessageProjectTap()
 {
 	for(TActorIterator<ARamp> v_itr(GetWorld()); v_itr; ++v_itr)
 	{
 		v_itr->activate();
+		
 		break;
 	}
 }

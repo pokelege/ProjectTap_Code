@@ -17,7 +17,6 @@ class PROJECTTAP_API AProjectTapGameState : public AGameState
 
 public:
 	enum GameState {UNKNOWN, GAME_STATE_PLAYING, GAME_STATE_GAME_OVER, GAME_STATE_WIN};
-	class AGraph* dragTileGraph;
 protected:
 	GameState CurrentState = UNKNOWN;
 

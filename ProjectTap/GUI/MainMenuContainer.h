@@ -13,7 +13,6 @@ class PROJECTTAP_API AMainMenuContainer : public AActor
 {
 	GENERATED_BODY()
 	
-
 public:
 
 	UFUNCTION(BluePrintCallable, Category = MainMenu)

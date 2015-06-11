@@ -4,9 +4,10 @@
 #include "ProjectTapGameState.h"
 #include "Engine/GameInstance.h"
 #include "BallPawn.h"
-#include "../Tiles/Tile.h"
+#include "Tiles/Tile.h"
 #include "PawnCastingTrigger.h"
 #include "BallPlayerStart.h"
+#include "ConstrainingSpringArmComponent.h"
 
 // Sets default values
 ABallPawn::ABallPawn()
@@ -53,7 +54,7 @@ ABallPawn::ABallPawn()
 
 	ballMesh->SetSimulatePhysics(false);
 
-	spring = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Spring"));
+	spring = CreateDefaultSubobject<UConstrainingSpringArmComponent>(TEXT("Camera Spring"));
 	spring->AttachTo(GetRootComponent());
 	spring->bInheritPitch = false;
 	spring->bInheritYaw = false;
@@ -71,6 +72,7 @@ void ABallPawn::BeginPlay()
 	trigger = GetWorld()->SpawnActor<APawnCastingTrigger>(GetActorLocation(), FRotator());
 	trigger->SetBallPawn(this);
 	bInvincible = false;
+	spring->SetLockPosition(GetActorLocation());
 }
 
 // Called every frame
@@ -157,6 +159,9 @@ void ABallPawn::setCamera(ABallPlayerStart* playerStart)
 {
 	if(playerStart != nullptr)
 	{
+		spring->lockX = playerStart->lockX;
+		spring->lockY = playerStart->lockY;
+		spring->lockZ = playerStart->lockZ;
 		camera->SetWorldTransform(playerStart->camera->GetTransform());
 		spring->TargetOffset = camera->GetRelativeTransform().GetLocation();
 		camera->SetRelativeLocation(FVector());

@@ -28,6 +28,7 @@ AMagnetTile::AMagnetTile() : ATile()
 
 void AMagnetTile::BeginPlay()
 {
+	Super::BeginPlay();
 	GetWorld()->GetFirstPlayerController()->InputComponent->BindAction("ActivateCube", IE_Released, this, &AMagnetTile::deactivate);
 	magnetParticle->DeactivateSystem();
 	magnetParticle->Deactivate();

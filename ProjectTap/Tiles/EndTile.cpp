@@ -46,5 +46,4 @@ void AEndTile::OnBeginTriggerOverlap(AActor* OtherActor,
 		if (gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
 
 	}
-
 }

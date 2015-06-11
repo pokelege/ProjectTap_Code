@@ -16,6 +16,8 @@ class PROJECTTAP_API AEndTile : public ATile
 	static const FName END_MESH;
 	TScriptDelegate<FWeakObjectPtr> delegate;
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level)
+	FName loadLevelName = FName("MainMenu");
 
 	AEndTile();
 

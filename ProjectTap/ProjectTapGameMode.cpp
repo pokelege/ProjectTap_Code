@@ -101,6 +101,7 @@ ABallPawn* AProjectTapGameMode::getBall()
 
 bool AProjectTapGameMode::LoadNextLevel()
 {
+	if(loadingLevel) return false;
 	UGameplayStatics::OpenLevel(GetWorld(),GetGameState<AProjectTapGameState>()->currentLevelToLoadWhenWin);
-	return true;
+	return loadingLevel = true;
 }

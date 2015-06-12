@@ -43,7 +43,11 @@ void AEndTile::OnBeginTriggerOverlap(AActor* OtherActor,
 		FWorldContext* worldContext = gameInstance->GetWorldContext();
 		UWorld* world = worldContext->World();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-		if (gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
+		if (gameState)
+		{
+			gameState->currentLevelToLoadWhenWin = loadLevelName;
+			gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
+		}
 
 	}
 }

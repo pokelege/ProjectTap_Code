@@ -30,6 +30,13 @@ AEndTile::AEndTile() : ATile()
 	spiralComponent->SetStaticMesh(spiralMesh.Object);
 	spiralComponent->AttachTo(BoxCollision);
 	spiralComponent->SetRelativeLocation(FVector(0,0,85));
+
+	auto particleComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particle"));
+	ConstructorHelpers::FObjectFinder<UParticleSystem> particle(TEXT("/Game/Particles/P_Portal"));
+	particleComponent->SetTemplate(particle.Object);
+	particleComponent->AttachTo(BoxCollision);
+	particleComponent->SetRelativeLocation(FVector(0,0,80));
+
 	delegate.BindUFunction(this, TEXT("OnBeginTriggerOverlap"));
 	BoxCollision->OnComponentBeginOverlap.Add(delegate);
 }

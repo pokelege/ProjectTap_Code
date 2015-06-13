@@ -14,26 +14,32 @@ AEndTile::AEndTile() : ATile()
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*END_MESH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	BoxCollision->SetWorldScale3D(FVector(1,1,1));
+
 	if(BoxCollision)
 	{
 		BoxCollision->SetBoxExtent(FVector(40,40,80), false);
 	}
 
-	BoxCollision->bGenerateOverlapEvents = true;
-	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	auto spiralComponent = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Spiral mesh" ) );
+	ConstructorHelpers::FObjectFinder<UStaticMesh> spiralMesh(*FName("/Game/Models/SM_SpiralPlane").ToString());
+	spiralComponent->SetStaticMesh(spiralMesh.Object);
+	spiralComponent->AttachTo(BoxCollision);
+	spiralComponent->SetRelativeLocation(FVector(0,0,85));
 
-	delegate.BindUFunction(this, TEXT("OnBeginTriggerOverlap"));
-	BoxCollision->OnComponentBeginOverlap.Add(delegate);
+	auto particleComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particle"));
+	ConstructorHelpers::FObjectFinder<UParticleSystem> particle(TEXT("/Game/Particles/P_Portal"));
+	particleComponent->SetTemplate(particle.Object);
+	particleComponent->AttachTo(BoxCollision);
+	particleComponent->SetRelativeLocation(FVector(0,0,80));
+
+	delegate.BindUFunction(this, TEXT("OnBeginHit"));
+	BoxCollision->OnComponentHit.Add(delegate);
 }
 
-void AEndTile::OnBeginTriggerOverlap(AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult & SweepResult)
+void AEndTile::OnBeginHit(class AActor* OtherActor,
+						  class UPrimitiveComponent* OtherComp,
+						  FVector NormalImpulse,
+						  const FHitResult& Hit)
 {
 	if (Cast<ABallPawn>(OtherActor) != nullptr)
 	{
@@ -43,8 +49,11 @@ void AEndTile::OnBeginTriggerOverlap(AActor* OtherActor,
 		FWorldContext* worldContext = gameInstance->GetWorldContext();
 		UWorld* world = worldContext->World();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-		if (gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
+		if (gameState)
+		{
+			gameState->currentLevelToLoadWhenWin = loadLevelName;
+			gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
+		}
 
 	}
-
 }

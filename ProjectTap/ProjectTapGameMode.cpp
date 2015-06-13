@@ -19,12 +19,6 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AProjectTapGameMode::LoadNextLevel()
-{
-	//FStreamLevelAction::FindAndCacheLevelStreamingObject(TEXT("TrollLevel"), GetWorld());
-}
-
-
 void AProjectTapGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 
@@ -43,9 +37,9 @@ void AProjectTapGameMode::BeginPlay()
 			FActorSpawnParameters params;
 			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
 			ball = world->SpawnActor<ABallPawn>(
-				ABallPawn::StaticClass(), 
-				playerTransform.GetTranslation(), 
-				FRotator( playerTransform.GetRotation()), 
+				ABallPawn::StaticClass(),
+				playerTransform.GetTranslation(),
+				FRotator( playerTransform.GetRotation()),
 				params);
 
 			if (ball != nullptr)
@@ -87,6 +81,11 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 	else if (GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_WIN)
 	{
 		printonscreen( "You win!" );
+		time += DeltaTime;
+		if(time >= restartCoolDown)
+		{
+			LoadNextLevel();
+		}
 	}
 }
 
@@ -98,4 +97,11 @@ void AProjectTapGameMode::Respawn()
 ABallPawn* AProjectTapGameMode::getBall()
 {
 	return ball;
+}
+
+bool AProjectTapGameMode::LoadNextLevel()
+{
+	if(loadingLevel) return false;
+	UGameplayStatics::OpenLevel(GetWorld(),GetGameState<AProjectTapGameState>()->currentLevelToLoadWhenWin);
+	return loadingLevel = true;
 }

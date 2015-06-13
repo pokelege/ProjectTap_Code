@@ -16,8 +16,7 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 	ABallPawn* ball;
 
 	FStreamLevelAction* levelStream;
-
-	void LoadNextLevel();
+	bool loadingLevel = false;
 	float time = 0;
 	class AActor* camera;
 	float restartCoolDown = 1.0f;
@@ -34,4 +33,6 @@ public:
 	void Respawn();
 
 	ABallPawn* getBall();
+	UFUNCTION()
+	bool LoadNextLevel();
 };

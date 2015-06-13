@@ -23,6 +23,7 @@ protected:
 public:
 	ABallPawn* CurrentPawn;
 	class AActor* CurrentCamera;
+	FName currentLevelToLoadWhenWin;
 	void SetState(GameState NewState);
 	GameState GetState();
 };

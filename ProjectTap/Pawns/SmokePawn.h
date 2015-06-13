@@ -13,8 +13,10 @@ class PROJECTTAP_API ASmokePawn : public APawn
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Smoke)
 	class UBehaviorTree* behavior;
-UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Smoke)
-UFloatingPawnMovement* movement;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Smoke)
+	UFloatingPawnMovement* movement;
+
 	// Sets default values for this pawn's properties
 	ASmokePawn();
 

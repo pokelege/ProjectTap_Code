@@ -93,6 +93,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = graph)
 	bool clearRoutVisuals;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = graph)
+	bool clickToInitialize;
+
+
 	void generateEdges();
 
 	void PostLoad() override;

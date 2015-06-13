@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Map.h"
 #include "GameFramework/Actor.h"
 #include "GVertex.generated.h"
 
@@ -14,17 +15,22 @@ class PROJECTTAP_API AGVertex : public AActor
 	const int32 MAX_NUM = 4;
 	bool visited = false;
 	bool hasTile = false;
+	bool isSelected = false;
 
 	void regenerateDebugArrows();
 
+	void disconnectTo(int32 v);
+
+	void connectTo(int32 v);
 	
+	UArrowComponent* makeArrowToVertex(int32 v);
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		UStaticMeshComponent* debugMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		TArray<int32> connectTo;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Tile)
+		TArray<int32> connections;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Tile)
 		int32 vertexIndex = -1;
@@ -35,15 +41,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		bool clickToMakeGraph;
 
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Tile)
-		TArray<UArrowComponent*> debugArrows;
+	TMap<int32, UArrowComponent*> debugArrows;
 
 	virtual void PostLoad() override;
 
 	virtual void BeginPlay() override;
 
 	virtual void BeginDestroy() override;
+
+	virtual void EditorKeyPressed(FKey Key,
+								  EInputEvent Event) override;
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
 
@@ -54,6 +61,7 @@ public:
 		bool bShiftDown,
 		bool bCtrlDown
 	) override;
+
 
 	class AGraph* getGraph();
 

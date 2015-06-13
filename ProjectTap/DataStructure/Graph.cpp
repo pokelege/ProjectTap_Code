@@ -36,7 +36,7 @@ void AGraph::Init()
 
 	}
 
-	if (edgeMatrix.Num() == 0)
+	if (mark.Num() == 0)
 	{
 		mark.SetNum(MAX_SIZE);
 	}
@@ -60,6 +60,10 @@ void AGraph::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent
 		if (name.Equals("clearRoutVisuals"))
 		{
 			clearRouteVisuals();
+		}
+		else if (name.Equals("clickToInitialize"))
+		{
+			Init();
 		}
 	}
 }
@@ -189,7 +193,7 @@ void AGraph::deleteAllVertsConnectionsToVert(int32 v, int32 connectIndex)
 {
 	for (size_t i = 0; i < mark.Num(); i++)
 	{
-		bool canDelete = mark[i] != nullptr && mark[i]->connectTo[connectIndex] == mark[v]->vertexIndex;
+		bool canDelete = mark[i] != nullptr && mark[i]->connections[connectIndex] == mark[v]->vertexIndex;
 		if (canDelete)
 		{
 			deleteUndirectedEdge(i, v);
@@ -205,9 +209,9 @@ void AGraph::generateEdges()
 
 		if (vertex != nullptr)
 		{
-			for (size_t i = 0; i < vertex->MAX_NUM; i++)
+			for (size_t i = 0; i < vertex->connections.Num(); i++)
 			{
-				auto connectIndex = vertex->connectTo[i];
+				auto connectIndex = vertex->connections[i];
 				bool validIndex = connectIndex >= 0 && connectIndex < MAX_SIZE && getVertex(connectIndex) != nullptr;
 				if (validIndex)
 				{
@@ -218,16 +222,18 @@ void AGraph::generateEdges()
 	}
 }
 
-AGVertex* AGraph::getVertex(int index)
+AGVertex* AGraph::getVertex(int v)
 {	
-	assert(index >= 0 && index < MAX_SIZE);
-	return mark[index];
+	if(v >= 0 && v < MAX_SIZE)
+		return mark[v];
+	else
+		return nullptr;
 }
 
 void AGraph::MakeVertexOccupied(int32 v)
 {
-	assert(index >= 0 && index < MAX_SIZE);
-	mark[v]->hasTile = true;
+	if(v >= 0 && v < MAX_SIZE)
+		mark[v]->hasTile = true;
 }
 
 bool AGraph::MoveTileFromTo(int32 from, int32 to)

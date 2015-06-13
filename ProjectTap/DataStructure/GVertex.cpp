@@ -9,7 +9,6 @@
 AGVertex::AGVertex()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	connectTo.SetNum(4);
 	debugMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallMesh"));
 	SetRootComponent(debugMesh);
 
@@ -18,64 +17,131 @@ AGVertex::AGVertex()
 	debugMesh->SetStaticMesh(tempMesh.Object);
 	debugMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
-	for (size_t i = 0; i < MAX_NUM; i++)
-	{
-		connectTo[i] = -1;
-	}
-
 	vertexIndex = -1;
+	
+}
 
-	//initialize debug arrows
-	for (size_t i = 0; i < MAX_NUM; i++)
+#define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
+
+void AGVertex::EditorKeyPressed(FKey Key,
+	EInputEvent Event)
+{
+	Super::EditorKeyPressed(Key, Event);	
+
+	bool isConnectOperation = Key.GetFName().IsEqual("Enter");
+	bool isDeleteOperation = Key.GetFName().IsEqual("C");
+	
+	bool executeOperation = (isConnectOperation || isDeleteOperation) &&
+							EInputEvent::IE_Pressed == Event;
+	if (executeOperation)
 	{
-		auto name = FString("debugArrow").Append(FString::FromInt(i));
-		debugArrows.Add(CreateDefaultSubobject<UArrowComponent>(*name));
+		TArray<AGVertex*> selectedActors;
+		auto g = getGraph();
+		if (g == nullptr) return;
+		for (TActorIterator<AGVertex> itr(GetWorld()); itr; ++itr)
+		{
+			if (*itr != this && itr->IsSelected())
+			{
+				selectedActors.Add(*itr);
+			}
+		}
+		
+		for (auto v : selectedActors)
+		{			
+			auto validConnectionNum = connections.Num() < MAX_NUM && v->connections.Num() < MAX_NUM;			
+			auto canConnect = !v->connections.Contains(vertexIndex) &&
+								!connections.Contains(v->vertexIndex) &&
+								vertexIndex != -1 &&
+								v->vertexIndex != -1;
+
+			if (isConnectOperation && validConnectionNum && canConnect) 
+			{
+				v->connectTo(vertexIndex);
+				connectTo(v->vertexIndex);
+			}
+			else if (isDeleteOperation)
+			{
+				v->disconnectTo(vertexIndex);
+				disconnectTo(v->vertexIndex);
+			}
+
+		}
+
+	}
+}
+
+void AGVertex::connectTo(int32 v)
+{
+	auto g = getGraph();
+	auto other = g->getVertex(v);
+
+
+	bool connectionValid = other != nullptr &&
+						   !other->connections.Contains(vertexIndex) &&
+						   !connections.Contains(v) &&
+						   v != vertexIndex;
+
+	if (connectionValid)
+	{
+		auto start = GetActorLocation();
+		auto end = other->GetActorLocation();
+		auto distance = FVector::Dist(start, end);
+		auto dir = (end - start);
+	
+		auto arrow = makeArrowToVertex(other->vertexIndex);
+		arrow->SetWorldLocation(start);
+		auto rot = FRotationMatrix::MakeFromX(dir);
+		arrow->SetWorldLocation(start);
+		arrow->SetWorldRotation(FRotator(rot.ToQuat()));
+		arrow->SetRelativeScale3D(FVector(distance, 10.0f, 10.0f));
+		 
+		connections.Add(other->vertexIndex);
+		other->connections.Add(vertexIndex);
+		g->setUndirectedEdge(vertexIndex, other->vertexIndex);
+	}
+}
+
+UArrowComponent* AGVertex::makeArrowToVertex(int32 v)
+{
+	auto name = FString("debugArrow").Append(FString::FromInt(v));
+	auto arrow = ConstructObject<UArrowComponent>(UArrowComponent::StaticClass(), this, *name);
+	arrow->RegisterComponent();
+	arrow->AttachTo(GetRootComponent());
+	return arrow;
+}
+
+void AGVertex::disconnectTo(int32 v)
+{
+	static int count = 0;
+	auto g = getGraph();
+
+
+	for (size_t i = 0; i < connections.Num(); i++)
+	{
+		if (connections[i] == v)
+		{
+			if (debugArrows.Num() > 0)
+			{
+				debugArrows[v]->SetRelativeScale3D(FVector(0.0f));
+				debugArrows[v]->DestroyComponent();
+
+			}
+
+			g->deleteUndirectedEdge(vertexIndex, v);
+			connections.Remove(v);
+			break;
+		}
 	}
 
-	for (size_t i = 0; i < MAX_NUM; i++)
-	{
-		debugArrows[i]->AttachTo(RootComponent);
-	}
-
+	Super::PostEditChange();
 }
 
 void AGVertex::regenerateDebugArrows()
 {
-	auto g = getGraph();
-
-	for (size_t i = 0; i < MAX_NUM; i++)
+	for (size_t i = 0; i < MAX_NUM && i < connections.Num(); i++)
 	{
-		auto vIndex = connectTo[i];
-		auto arrow = debugArrows[i];
-		bool indexValid = vIndex >= 0 && vIndex < g->MAX_SIZE && vIndex != vertexIndex;
-		if (indexValid)
-		{
-			auto other = g->getVertex(vIndex);
-
-			if (other != nullptr)
-			{
-				auto start = GetActorLocation();
-				auto end = other->GetActorLocation();
-				auto distance = FVector::Dist(start, end);
-				auto dir = (end - start);				
-
-				arrow->SetWorldLocation(start);
-				auto rot = FRotationMatrix::MakeFromX(dir);
-				arrow->SetWorldLocation(start);
-				arrow->SetWorldRotation(FRotator(rot.ToQuat()));
-				arrow->SetRelativeScale3D(FVector(distance / 8.0f, 10.0f, 10.0f));				
-			}
-			else
-			{
-				connectTo[i] = -1;
-				arrow->SetRelativeScale3D(FVector(0.0f));
-			}
-		}
-		else 
-		{
-			connectTo[i] = -1;
-			arrow->SetRelativeScale3D(FVector(0.0f));
-		}
+		auto vIndex = connections[i];
+		connectTo(vIndex);
 	}
 }
 
@@ -126,6 +192,11 @@ bool bCtrlDown
 {
 	Super::EditorApplyTranslation(DeltaTranslation, bAltDown, bShiftDown, bCtrlDown);
 	renerateGraphArrows();
+
+	if (bAltDown)
+	{
+		vertexIndex = -1;
+	}
 }
 
 
@@ -145,11 +216,6 @@ void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEve
 			{
 				g->addVertex(*v_itr);
 			}
-		}
-		else if (pName.Equals(TEXT("connectTo")))
-		{
-			g->generateEdges();
-			regenerateDebugArrows();
 		}
 		else if (pName.Equals(TEXT("clickToMakeGraph")))
 		{
@@ -171,7 +237,7 @@ void AGVertex::BeginDestroy()
 
 	//make sure vertex being deleted when it is inside the editor
 	//instead of when editor is closing 
-	if (GetWorld() != nullptr)
+	if (GetWorld() != nullptr && getGraph() != nullptr)
 	{
 		getGraph()->removeVertex(this);
 	}

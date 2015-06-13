@@ -39,7 +39,7 @@ APawnCastingTrigger::APawnCastingTrigger()
 
 void APawnCastingTrigger::SetBallPawn(ABallPawn* pawn)
 {
-	this->pawn = pawn;
+	this->currentPawn = pawn;
 }
 
 
@@ -47,7 +47,7 @@ void APawnCastingTrigger::SetBallPawn(ABallPawn* pawn)
 void APawnCastingTrigger::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -55,9 +55,9 @@ void APawnCastingTrigger::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 
-	if (pawn != nullptr)
+	if (currentPawn != nullptr)
 	{
-		
+
 	}
 
 }
@@ -85,7 +85,7 @@ void APawnCastingTrigger::OnBeginTriggerOverlap(AActor* OtherActor,
 		{
 			ramp->Enable();
 			ramp->HighlightTile();
-			ramp->ball = pawn;
+			ramp->ball = currentPawn;
 			typeFound = true;
 		}
 	}

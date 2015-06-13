@@ -57,9 +57,9 @@ void UConstrainingSpringArmComponent::UpdateDesiredArmLocation(bool bDoTrace, bo
 	PreviousDesiredRot = DesiredRot;
 
 	FVector toLock = GetComponentLocation();
-	if(lockX) toLock.X = lockPosition.X;
-	if(lockY) toLock.Y = lockPosition.Y;
-	if(lockZ) toLock.Z = lockPosition.Z;
+	if(lockX) toLock.X = lastLockPosition.X;
+	if(lockY) toLock.Y = lastLockPosition.Y;
+	if(lockZ) toLock.Z = lastLockPosition.Z;
 	// Get the spring arm 'origin', the target we want to look at
 	FVector ArmOrigin = toLock + TargetOffset;
 	// We lag the target, not the actual camera position, so rotating the camera around does not have lag
@@ -127,7 +127,7 @@ void UConstrainingSpringArmComponent::UpdateDesiredArmLocation(bool bDoTrace, bo
 		FCollisionQueryParams QueryParams(TraceTagName, false, GetOwner());
 
 		FHitResult Result;
-		GetWorld()->SweepSingle(Result, ArmOrigin, DesiredLoc, FQuat::Identity, ProbeChannel, FCollisionShape::MakeSphere(ProbeSize), QueryParams);
+		GetWorld()->SweepSingleByChannel(Result, ArmOrigin, DesiredLoc, FQuat::Identity, ProbeChannel, FCollisionShape::MakeSphere(ProbeSize), QueryParams);
 
 		ResultLoc = BlendLocations(DesiredLoc, Result.Location, Result.bBlockingHit, DeltaTime);
 	}
@@ -150,7 +150,7 @@ void UConstrainingSpringArmComponent::UpdateDesiredArmLocation(bool bDoTrace, bo
 
 void UConstrainingSpringArmComponent::SetLockPosition(const FVector& lockPosition)
 {
-	this->lockPosition.X = lockPosition.X;
-	this->lockPosition.Y = lockPosition.Y;
-	this->lockPosition.Z = lockPosition.Z;
+	this->lastLockPosition.X = lockPosition.X;
+	this->lastLockPosition.Y = lockPosition.Y;
+	this->lastLockPosition.Z = lockPosition.Z;
 }

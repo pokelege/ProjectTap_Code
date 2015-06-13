@@ -11,13 +11,13 @@ class PROJECTTAP_API APawnCastingTrigger : public AActor
 	GENERATED_BODY()
 
 	friend class APortalTile;
-	class ABallPawn* pawn = nullptr;
+	class ABallPawn* currentPawn = nullptr;
 
 private:
-	friend ABallPawn;
-	void SetBallPawn(ABallPawn* pawn);
-	
-public:	
+	friend class ABallPawn;
+	void SetBallPawn(ABallPawn* currentPawn);
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 		UBoxComponent* tileOverlapCollision;
 
@@ -26,7 +26,7 @@ public:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
@@ -43,5 +43,5 @@ public:
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult & SweepResult);
-	
+
 };

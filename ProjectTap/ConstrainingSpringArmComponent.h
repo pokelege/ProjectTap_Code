@@ -14,12 +14,12 @@ class PROJECTTAP_API UConstrainingSpringArmComponent : public USpringArmComponen
 	GENERATED_BODY()
 
 	protected:
-	FVector lockPosition;
+	FVector lastLockPosition;
 	  /** Updates the desired arm location, calling BlendLocations to do the actual blending if a trace is done */
 	  virtual void UpdateDesiredArmLocation(bool bDoTrace, bool bDoLocationLag, bool bDoRotationLag, float DeltaTime);
 public:
 
-	void SetLockPosition(const FVector& lockPosition);
+	void SetLockPosition(const FVector& lastLockPosition);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Constraint)
 	bool lockX = false;

@@ -217,7 +217,7 @@ void APortalTile::ProcessBallEndfOverlap(AActor* actor)
 		}
 		else if (trigger != nullptr)
 		{
-			trigger->pawn->setInvincibility(false);
+			trigger->currentPawn->setInvincibility(false);
 		}
 
 	}

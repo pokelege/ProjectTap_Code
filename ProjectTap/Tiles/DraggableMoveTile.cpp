@@ -183,7 +183,6 @@ FVector ADraggableMoveTile::calculateCurrentDir()
 	return FVector();
 }
 
-
 void ADraggableMoveTile::RemoveFocus()
 {
 	isSelected = false;

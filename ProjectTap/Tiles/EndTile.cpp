@@ -8,10 +8,62 @@
 
 const FName AEndTile::END_MESH = FName("/Game/Models/EndTile");
 
+void AEndTile::StartTransporting()
+{
+	targetBall->setInvincibility(true);
+	targetBallLastPosition = targetBall->GetActorLocation();
+	currentAnimationTime = 0;
+	ballToSocketCurveDuration = 0;
+	transportScalingCurveDuration = 0;
+	float minTime;
+	if(ballToSocketCurve != nullptr)
+	{
+		ballToSocketCurve->GetTimeRange(minTime, ballToSocketCurveDuration);
+	}
+	if(transportScalingCurve != nullptr)
+	{
+		transportScalingCurve->GetTimeRange(minTime, transportScalingCurveDuration);
+	}
+	transporting = true;
+}
+
+void AEndTile::PlayTransport(const float &DeltaTime)
+{
+	currentAnimationTime += DeltaTime;
+	FVector ballPosition = TileMesh->GetSocketLocation(FName("Transport"));
+	FVector ballScale = transportScalingCurve == nullptr ? FVector(1,1,1) : transportScalingCurve->GetVectorValue(0);
+	if(currentAnimationTime < ballToSocketCurveDuration)
+	{
+		if(ballToSocketCurve != nullptr)
+		{
+			ballPosition = FMath::Lerp<FVector,FVector>(targetBallLastPosition, ballPosition, ballToSocketCurve->GetVectorValue(currentAnimationTime));
+		}
+	}
+	else if(currentAnimationTime >= ballToSocketCurveDuration && currentAnimationTime < ballToSocketCurveDuration + transportScalingCurveDuration)
+	{
+		if(transportScalingCurve != nullptr)
+		{
+			ballScale = ballToSocketCurve->GetVectorValue(currentAnimationTime);
+		}
+	}
+	else
+	{
+		if(transportScalingCurve != nullptr)
+		{
+			ballScale = ballToSocketCurve->GetVectorValue(transportScalingCurveDuration);
+		}
+		UWorld* world = GetWorld();
+		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+		gameState->currentLevelToLoadWhenWin = loadLevelName;
+		gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
+	}
+	auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
+	pc->SetWorldLocation(ballPosition);
+	pc->SetWorldScale3D(ballScale);
+}
+
 AEndTile::AEndTile() : ATile()
 {
-	PrimaryActorTick.bCanEverTick = false;
-
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*END_MESH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
 
@@ -36,6 +88,14 @@ AEndTile::AEndTile() : ATile()
 	BoxCollision->OnComponentHit.Add(delegate);
 }
 
+void AEndTile::Tick(float DeltaTime)
+{
+	if(transporting)
+	{
+		PlayTransport(DeltaTime);
+	}
+}
+
 void AEndTile::OnBeginHit(class AActor* OtherActor,
 						  class UPrimitiveComponent* OtherComp,
 						  FVector NormalImpulse,
@@ -43,17 +103,16 @@ void AEndTile::OnBeginHit(class AActor* OtherActor,
 {
 	if (Cast<ABallPawn>(OtherActor) != nullptr)
 	{
-		auto pc = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
-		pc->SetSimulatePhysics(false);
-		UGameInstance* gameInstance = GetGameInstance();
-		FWorldContext* worldContext = gameInstance->GetWorldContext();
-		UWorld* world = worldContext->World();
+		UWorld* world = GetWorld();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
 		if (gameState)
 		{
-			gameState->currentLevelToLoadWhenWin = loadLevelName;
-			gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
+			gameState->SetState(AProjectTapGameState::GAME_STATE_WINNING);
 		}
-
+		targetBall = Cast<ABallPawn>(OtherActor);
+		auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
+		pc->SetSimulatePhysics(false);
+		pc->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		StartTransporting();
 	}
 }

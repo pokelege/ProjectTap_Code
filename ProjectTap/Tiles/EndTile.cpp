@@ -14,7 +14,7 @@ AEndTile::AEndTile() : ATile()
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*END_MESH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	BoxCollision->SetWorldScale3D(FVector(1,1,1));
+
 	if(BoxCollision)
 	{
 		BoxCollision->SetBoxExtent(FVector(40,40,80), false);
@@ -25,6 +25,11 @@ AEndTile::AEndTile() : ATile()
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
+	auto spiralComponent = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Spiral mesh" ) );
+	ConstructorHelpers::FObjectFinder<UStaticMesh> spiralMesh(*FName("/Game/Models/SM_SpiralPlane").ToString());
+	spiralComponent->SetStaticMesh(spiralMesh.Object);
+	spiralComponent->AttachTo(BoxCollision);
+	spiralComponent->SetRelativeLocation(FVector(0,0,85));
 	delegate.BindUFunction(this, TEXT("OnBeginTriggerOverlap"));
 	BoxCollision->OnComponentBeginOverlap.Add(delegate);
 }

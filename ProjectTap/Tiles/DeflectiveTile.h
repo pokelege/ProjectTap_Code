@@ -20,7 +20,7 @@ UCLASS()
 class PROJECTTAP_API ADeflectiveTile : public ATile
 {
 	GENERATED_BODY()
-	float timer = 0.0f;
+	float timer = 0.0f; 
 	float rotationDegreeLimit = 90;
 	float accum = 0;
 	float edgeHighlightTimer = 0.0f;

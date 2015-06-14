@@ -287,7 +287,11 @@ void AGraph::generateGraphRouteVisualization()
 
 	unmarkAll();
 	TArray<int32> stack;
-	DFS_makeVisualizers(stack, 0);
+
+	for (size_t i = 0; i < MAX_SIZE; i++)
+	{
+		DFS_makeVisualizers(stack, i);
+	}
 	
 	Super::PostEditChange();
 }

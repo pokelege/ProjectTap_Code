@@ -47,7 +47,6 @@ void ADraggableMoveTile::UpdateIndicator()
 	auto Z_offset = FVector(0.0f, 0.0f, 30.0f);
 	auto sourcePoint = GetActorLocation() + Z_offset;
 	auto targetPoint = newGoalPos;
-	//targetPoint.Z = sourcePoint.Z;
 	targetPoint += Z_offset;
 
 	if (isSelected)

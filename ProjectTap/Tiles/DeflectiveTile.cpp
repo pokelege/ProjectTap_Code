@@ -8,7 +8,7 @@
 ADeflectiveTile::ADeflectiveTile()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	BoxCollision->SetWorldScale3D(FVector(1, 1, 1));
+	BoxCollision->SetWorldScale3D(FVector(1.0f, 1.0f, 0.5f));
 	FName path("/Game/Models/DeflectiveTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
@@ -187,8 +187,8 @@ void ADeflectiveTile::HighlightEdgeForDuration(float duration)
 
 FVector ClampNormalAxis(FVector dir)
 {
-	int x = dir.X;
-	int y = dir.Y;
+	float x = dir.X;
+	float y = dir.Y;
 	FVector normal;
 
 	if (FMath::Abs(x) > FMath::Abs(y))
@@ -199,7 +199,7 @@ FVector ClampNormalAxis(FVector dir)
 	}
 	else
 	{
-		normal.Y = x > 0.0f ? 1.0f : -1.0f;
+		normal.Y = y > 0.0f ? 1.0f : -1.0f;
 		normal.X = 0.0f;
 		normal.Z = 0.0f;
 	}

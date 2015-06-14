@@ -49,8 +49,7 @@ void AGVertex::EditorKeyPressed(FKey Key,
 		for (auto v : selectedActors)
 		{			
 			auto validConnectionNum = connections.Num() < MAX_NUM && v->connections.Num() < MAX_NUM;			
-			auto canConnect = !v->connections.Contains(vertexIndex) &&
-								!connections.Contains(v->vertexIndex) &&
+			auto canConnect =
 								vertexIndex != -1 &&
 								v->vertexIndex != -1;
 
@@ -82,7 +81,9 @@ void AGVertex::connectTo(int32 v)
 	bool connectionExists = debugArrows.Find(v) != nullptr &&
 							other != nullptr;
 
-	if (connectionValid)
+	bool remakeArrow = debugArrows.Find(v) == nullptr && other != nullptr && connections.Contains(v);
+
+	if (connectionValid || remakeArrow)
 	{
 		auto start = GetActorLocation();
 		auto end = other->GetActorLocation();
@@ -96,8 +97,11 @@ void AGVertex::connectTo(int32 v)
 		arrow->SetWorldRotation(FRotator(rot.ToQuat()));
 		arrow->SetRelativeScale3D(FVector(distance / 8.0f, 10.0f, 10.0f));
 		 
-		connections.Add(other->vertexIndex);
-		g->setUndirectedEdge(vertexIndex, other->vertexIndex);
+		if (!remakeArrow)
+		{
+			connections.Add(other->vertexIndex);
+			g->setUndirectedEdge(vertexIndex, other->vertexIndex);
+		}
 	}
 	else if (connectionExists)
 	{
@@ -120,7 +124,6 @@ UArrowComponent* AGVertex::makeArrowToVertex(int32 v)
 	auto arrow = ConstructObject<UArrowComponent>(UArrowComponent::StaticClass(), this, *name);
 	arrow->RegisterComponent();
 	arrow->AttachTo(GetRootComponent());
-	
 	if (debugArrows.Find(v) != nullptr)
 	{
 		debugArrows[v]->DestroyComponent();
@@ -215,8 +218,7 @@ bool bCtrlDown
 	auto g = getGraph();
 	if (g != nullptr)
 	{
-		g->generateEdges();
-		g->generateGraphRouteVisualization();
+		g->clearRouteVisuals();
 	}
 	renerateGraphArrows();
 

@@ -35,6 +35,8 @@ void ADraggableMoveTile::BeginPlay()
 
 void ADraggableMoveTile::Tick( float DeltaTime )
 {
+	Super::Tick(DeltaTime);
+
 	UpdateDragMove(DeltaTime);
 	UpdateIndicator();
 }

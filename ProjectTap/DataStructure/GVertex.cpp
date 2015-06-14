@@ -79,7 +79,8 @@ void AGVertex::connectTo(int32 v)
 						   !connections.Contains(v) &&
 						   v != vertexIndex;
 
-	bool connectionExists = debugArrows.Find(v) != nullptr;
+	bool connectionExists = debugArrows.Find(v) != nullptr &&
+							other != nullptr;
 
 	if (connectionValid)
 	{
@@ -211,6 +212,12 @@ bool bCtrlDown
 ) 
 {
 	Super::EditorApplyTranslation(DeltaTranslation, bAltDown, bShiftDown, bCtrlDown);
+	auto g = getGraph();
+	if (g != nullptr)
+	{
+		g->generateEdges();
+		g->generateGraphRouteVisualization();
+	}
 	renerateGraphArrows();
 
 	if (bAltDown)

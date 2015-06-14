@@ -75,11 +75,11 @@ void AGVertex::connectTo(int32 v)
 	auto g = getGraph();
 	auto other = g->getVertex(v);
 
-
 	bool connectionValid = other != nullptr &&
-						   !other->connections.Contains(vertexIndex) &&
 						   !connections.Contains(v) &&
 						   v != vertexIndex;
+
+	bool connectionExists = debugArrows.Find(v) != nullptr;
 
 	if (connectionValid)
 	{
@@ -93,11 +93,23 @@ void AGVertex::connectTo(int32 v)
 		auto rot = FRotationMatrix::MakeFromX(dir);
 		arrow->SetWorldLocation(start);
 		arrow->SetWorldRotation(FRotator(rot.ToQuat()));
-		arrow->SetRelativeScale3D(FVector(distance, 10.0f, 10.0f));
+		arrow->SetRelativeScale3D(FVector(distance / 8.0f, 10.0f, 10.0f));
 		 
 		connections.Add(other->vertexIndex);
-		other->connections.Add(vertexIndex);
 		g->setUndirectedEdge(vertexIndex, other->vertexIndex);
+	}
+	else if (connectionExists)
+	{
+		auto start = GetActorLocation();
+		auto end = other->GetActorLocation();
+		auto distance = FVector::Dist(start, end);
+		auto dir = (end - start);
+		auto arrow = debugArrows[v];
+		arrow->SetWorldLocation(start);
+		auto rot = FRotationMatrix::MakeFromX(dir);
+		arrow->SetWorldLocation(start);
+		arrow->SetWorldRotation(FRotator(rot.ToQuat()));
+		arrow->SetRelativeScale3D(FVector(distance / 8.0f, 10.0f, 10.0f));
 	}
 }
 
@@ -107,6 +119,15 @@ UArrowComponent* AGVertex::makeArrowToVertex(int32 v)
 	auto arrow = ConstructObject<UArrowComponent>(UArrowComponent::StaticClass(), this, *name);
 	arrow->RegisterComponent();
 	arrow->AttachTo(GetRootComponent());
+	
+	if (debugArrows.Find(v) != nullptr)
+	{
+		debugArrows[v]->DestroyComponent();
+		debugArrows.Remove(v);
+	}
+
+	debugArrows.Add(v, arrow);
+
 	return arrow;
 }
 
@@ -115,16 +136,15 @@ void AGVertex::disconnectTo(int32 v)
 	static int count = 0;
 	auto g = getGraph();
 
-
 	for (size_t i = 0; i < connections.Num(); i++)
 	{
 		if (connections[i] == v)
 		{
-			if (debugArrows.Num() > 0)
+			if (debugArrows.Find(v) != nullptr)
 			{
 				debugArrows[v]->SetRelativeScale3D(FVector(0.0f));
 				debugArrows[v]->DestroyComponent();
-
+				debugArrows.Remove(v);
 			}
 
 			g->deleteUndirectedEdge(vertexIndex, v);
@@ -138,7 +158,7 @@ void AGVertex::disconnectTo(int32 v)
 
 void AGVertex::regenerateDebugArrows()
 {
-	for (size_t i = 0; i < MAX_NUM && i < connections.Num(); i++)
+	for (size_t i = 0; i < connections.Num(); i++)
 	{
 		auto vIndex = connections[i];
 		connectTo(vIndex);

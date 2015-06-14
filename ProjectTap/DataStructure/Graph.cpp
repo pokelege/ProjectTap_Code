@@ -7,8 +7,8 @@ AGraph::AGraph()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> edgeMesh(TEXT("/Game/Models/edgeVisualizer"));
-	ConstructorHelpers::FObjectFinder<UStaticMesh> vertexMesh(TEXT("/Game/Models/vertexVisualizer"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> edgeMesh(TEXT("/Game/Models/EdgeVisualizer"));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> vertexMesh(TEXT("/Game/Models/VertexVisualizer"));
 
 	edgeStaticMesh = edgeMesh.Object;
 	vertexStaticMesh = vertexMesh.Object;
@@ -78,6 +78,8 @@ void AGraph::clearRouteVisuals()
 		}
 	}
 
+	edgeMeshes.Empty();
+
 	for (auto mesh : vertexMeshes)
 	{
 		if (mesh != nullptr)
@@ -85,6 +87,8 @@ void AGraph::clearRouteVisuals()
 			mesh->DestroyComponent();
 		}
 	}
+
+	vertexMeshes.Empty();
 }
 
 
@@ -327,7 +331,7 @@ void AGraph::DFS_makeVisualizers(TArray<int32>& stack,
 UStaticMeshComponent* AGraph::makeEdgeMeshForEdge(int32 i, int32 j)
 {
 	auto name = FString("Edge").Append(FString::FromInt(i)).Append(FString::FromInt(j));
-	auto edge = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, *name);
+	auto edge = NewObject<UStaticMeshComponent>(this, *name);
 	edge->AttachTo(RootComponent);
 	edge->SetStaticMesh(edgeStaticMesh);
 
@@ -337,7 +341,7 @@ UStaticMeshComponent* AGraph::makeEdgeMeshForEdge(int32 i, int32 j)
 UStaticMeshComponent* AGraph::makeVertexMeshForVertex(int32 v)
 {
 	auto name = FString("vertex").Append(FString::FromInt(v));
-	auto vertex = ConstructObject<UStaticMeshComponent>(UStaticMeshComponent::StaticClass(), this, *name);
+	auto vertex = NewObject<UStaticMeshComponent>(this, *name);
 	vertex->AttachTo(RootComponent);
 
 	vertex->SetStaticMesh(vertexStaticMesh);

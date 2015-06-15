@@ -187,12 +187,16 @@ void AGVertex::BeginPlay()
 AGraph* AGVertex::getGraph()
 {
 	AGraph* graph = nullptr;
-	//find graph actor
-	for (TActorIterator<AGraph> graph_itr(GetWorld()); graph_itr; ++graph_itr)
-	{
-		graph = *graph_itr;
-	}
 
+	if (GetWorld() != nullptr)
+	{
+		//find graph actor
+		for (TActorIterator<AGraph> graph_itr(GetWorld()); graph_itr; ++graph_itr)
+		{
+			graph = *graph_itr;
+		}
+
+	}
 	return graph;
 }
 

@@ -59,8 +59,8 @@ ABallPawn::ABallPawn()
 	spring->bInheritPitch = false;
 	spring->bInheritYaw = false;
 	spring->bInheritRoll = false;
-	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	camera->AttachTo(spring);
+	cameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	cameraComponent->AttachTo(spring);
 }
 
 // Called when the game starts or when spawned
@@ -162,9 +162,9 @@ void ABallPawn::setCamera(ABallPlayerStart* playerStart)
 		spring->lockX = playerStart->lockX;
 		spring->lockY = playerStart->lockY;
 		spring->lockZ = playerStart->lockZ;
-		camera->SetWorldTransform(playerStart->camera->GetTransform());
-		spring->TargetOffset = camera->GetRelativeTransform().GetLocation();
-		camera->SetRelativeLocation(FVector());
+		cameraComponent->SetWorldTransform(playerStart->camera->GetTransform());
+		spring->TargetOffset = cameraComponent->GetRelativeTransform().GetLocation();
+		cameraComponent->SetRelativeLocation(FVector());
 
 		spring->bEnableCameraLag = playerStart->lagCamera;
 		spring->CameraLagSpeed = playerStart->lagSpeed;
@@ -174,5 +174,5 @@ void ABallPawn::setCamera(ABallPlayerStart* playerStart)
 
 AActor *ABallPawn::getCamera()
 {
-	return camera == nullptr ? nullptr : camera->GetAttachmentRootActor();
+	return cameraComponent == nullptr ? nullptr : cameraComponent->GetAttachmentRootActor();
 }

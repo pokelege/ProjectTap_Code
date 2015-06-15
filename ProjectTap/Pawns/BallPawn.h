@@ -14,7 +14,7 @@ class PROJECTTAP_API ABallPawn : public APawn
 
 	bool bInvincible = false;
 
-	UCameraComponent* camera;
+	UCameraComponent* cameraComponent;
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)

@@ -95,6 +95,20 @@ void AGraph::clearRouteVisuals()
 void AGraph::BeginDestroy()
 {
 	Super::BeginDestroy();
+
+	for (size_t i = 0; i < mark.Num(); i++)
+	{
+		if (mark[i] != nullptr)
+		{
+			auto cons = mark[i]->connections;
+			for (size_t j = 0; j < cons.Num(); j++)
+			{
+				mark[i]->disconnectTo(cons[j]);
+			}
+
+			mark[i]->vertexIndex = -1;
+		}
+	}
 }
 
 AGVertex* AGraph::next(int32 v, int32 v2)
@@ -327,6 +341,7 @@ void AGraph::DFS_makeVisualizers(TArray<int32>& stack,
 			}
 		}
 	}
+
 	stack.Pop();
 }
 

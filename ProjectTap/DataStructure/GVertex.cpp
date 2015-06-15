@@ -266,9 +266,20 @@ void AGVertex::BeginDestroy()
 
 	//make sure vertex being deleted when it is inside the editor
 	//instead of when editor is closing 
+	auto g = getGraph();
 	if (GetWorld() != nullptr && getGraph() != nullptr)
 	{
-		getGraph()->removeVertex(this);
+		for (size_t i = 0; i < connections.Num(); i++)
+		{
+			auto other = g->getVertex(connections[i]);
+			if (other != nullptr)
+			{
+				other->disconnectTo(vertexIndex);
+			}
+
+			disconnectTo(connections[i]);
+		}
+
 	}
 }
 

@@ -32,26 +32,17 @@ void AEndTile::PlayTransport(const float &DeltaTime)
 	currentAnimationTime += DeltaTime;
 	FVector ballPosition = TileMesh->GetSocketLocation(FName("Transport"));
 	FVector ballScale = transportScalingCurve == nullptr ? FVector(1,1,1) : transportScalingCurve->GetVectorValue(0);
-	if(currentAnimationTime < ballToSocketCurveDuration)
+	if(ballToSocketCurve != nullptr)
 	{
-		if(ballToSocketCurve != nullptr)
-		{
-			ballPosition = FMath::Lerp<FVector,FVector>(targetBallLastPosition, ballPosition, ballToSocketCurve->GetVectorValue(currentAnimationTime));
-		}
+		ballPosition = FMath::Lerp<FVector,FVector>(targetBallLastPosition, ballPosition, ballToSocketCurve->GetVectorValue(currentAnimationTime));
 	}
-	else if(currentAnimationTime >= ballToSocketCurveDuration && currentAnimationTime < ballToSocketCurveDuration + transportScalingCurveDuration)
+	if(transportScalingCurve != nullptr)
 	{
-		if(transportScalingCurve != nullptr)
-		{
-			ballScale = ballToSocketCurve->GetVectorValue(currentAnimationTime);
-		}
+		ballScale = transportScalingCurve->GetVectorValue(currentAnimationTime);
 	}
-	else
+
+	if(currentAnimationTime > transportScalingCurveDuration && currentAnimationTime > ballToSocketCurveDuration)
 	{
-		if(transportScalingCurve != nullptr)
-		{
-			ballScale = ballToSocketCurve->GetVectorValue(transportScalingCurveDuration);
-		}
 		UWorld* world = GetWorld();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
 		gameState->currentLevelToLoadWhenWin = loadLevelName;
@@ -60,6 +51,7 @@ void AEndTile::PlayTransport(const float &DeltaTime)
 	auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
 	pc->SetWorldLocation(ballPosition);
 	pc->SetWorldScale3D(ballScale);
+	pc->SetWorldRotation(FQuat());
 }
 
 AEndTile::AEndTile() : ATile()
@@ -84,6 +76,10 @@ AEndTile::AEndTile() : ATile()
 	particleComponent->AttachTo(BoxCollision);
 	particleComponent->SetRelativeLocation(FVector(0,0,80));
 
+	ConstructorHelpers::FObjectFinder<UCurveVector> ballToSocketCurveAsset(TEXT("/Game/Curves/BallToSocketCurve"));
+	ConstructorHelpers::FObjectFinder<UCurveVector> transportScalingCurveAsset(TEXT("/Game/Curves/TransportScalingCurve"));
+	ballToSocketCurve = ballToSocketCurveAsset.Object;
+	transportScalingCurve = transportScalingCurveAsset.Object;
 	delegate.BindUFunction(this, TEXT("OnBeginHit"));
 	BoxCollision->OnComponentHit.Add(delegate);
 }

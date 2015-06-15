@@ -56,11 +56,11 @@ void UConstrainingSpringArmComponent::UpdateDesiredArmLocation(bool bDoTrace, bo
 	}
 	PreviousDesiredRot = DesiredRot;
 
-	FVector toLock = GetComponentLocation();
-	if(lockX) toLock.X = lastLockPosition.X;
-	if(lockY) toLock.Y = lastLockPosition.Y;
-	if(lockZ) toLock.Z = lastLockPosition.Z;
 	// Get the spring arm 'origin', the target we want to look at
+	FVector toLock = GetComponentLocation();
+		if(lockX) toLock.X = lastLockPosition.X;
+		if(lockY) toLock.Y = lastLockPosition.Y;
+		if(lockZ) toLock.Z = lastLockPosition.Z;
 	FVector ArmOrigin = toLock + TargetOffset;
 	// We lag the target, not the actual camera position, so rotating the camera around does not have lag
 	FVector DesiredLoc = ArmOrigin;

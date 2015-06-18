@@ -16,15 +16,13 @@ protected:
 
   bool activated = false;
   bool enabled = true;
+  UMaterialInstanceDynamic* material = nullptr;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UStaticMeshComponent* TileMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UBoxComponent* BoxCollision = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
-	UMaterialInstanceDynamic* material = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Color)
 		FLinearColor baseColor = FLinearColor(1.0f, 0.0f, 0.0f);

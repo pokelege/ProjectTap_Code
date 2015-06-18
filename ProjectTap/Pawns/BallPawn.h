@@ -14,9 +14,14 @@ class PROJECTTAP_API ABallPawn : public APawn
 
 	bool bInvincible = false;
 
-	UCameraComponent* cameraComponent;
-public:
+	UCameraComponent* cameraComponent = nullptr;
+	UMaterialInstanceDynamic* material = nullptr;
+	bool dying = false;
+	float currentDieTime = 0;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
+	UCurveFloat* dieSequence;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	UStaticMeshComponent* ballMesh;
 

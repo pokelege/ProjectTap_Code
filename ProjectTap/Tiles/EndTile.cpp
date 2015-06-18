@@ -101,14 +101,14 @@ void AEndTile::OnBeginHit(class AActor* OtherActor,
 	{
 		UWorld* world = GetWorld();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-		if (gameState)
+		if (gameState && gameState->GetState() == AProjectTapGameState::GAME_STATE_PLAYING)
 		{
 			gameState->SetState(AProjectTapGameState::GAME_STATE_WINNING);
+			targetBall = Cast<ABallPawn>(OtherActor);
+			auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
+			pc->SetSimulatePhysics(false);
+			pc->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			StartTransporting();
 		}
-		targetBall = Cast<ABallPawn>(OtherActor);
-		auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
-		pc->SetSimulatePhysics(false);
-		pc->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		StartTransporting();
 	}
 }

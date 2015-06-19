@@ -97,6 +97,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = graph)
 	bool clickToInitialize;
 
+	virtual void BeginPlay() override;
 
 	void generateEdges();
 

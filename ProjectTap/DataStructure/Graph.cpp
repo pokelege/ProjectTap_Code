@@ -48,7 +48,14 @@ void AGraph::PostLoad()
 {
 	Super::PostLoad();
 	Init();
+
 }
+
+void AGraph::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 
 void AGraph::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
 {

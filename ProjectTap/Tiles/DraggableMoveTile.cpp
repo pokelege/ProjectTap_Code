@@ -16,6 +16,8 @@ ADraggableMoveTile::ADraggableMoveTile()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> arrowMesh(*path.ToString());
 	arrowMeshComponent->SetStaticMesh(arrowMesh.Object);
 	arrowMeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	arrowMeshComponent->SetWorldScale3D(FVector(30.0f, 40.0f, 1.0f));
+	arrowMeshComponent->SetHiddenInGame(true);
 	arrowMeshComponent->AttachTo(RootComponent);
 
 	indicatorParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("indicatorParticle"));
@@ -51,10 +53,11 @@ void ADraggableMoveTile::UpdateIndicator()
 
 	if (isSelected)
 	{
+		arrowMeshComponent->SetHiddenInGame(false);
 		indicatorBody->SetBeamSourcePoint(sourcePoint, 0);
 		indicatorBody->SetBeamTargetPoint(targetPoint, 0);
 		arrowMeshComponent->SetWorldLocation(targetPoint);
-		auto rot = FRotationMatrix::MakeFromX(sourcePoint - targetPoint);
+		auto rot = FRotationMatrix::MakeFromX(targetPoint - sourcePoint);
 		arrowMeshComponent->SetWorldRotation(rot.Rotator());
 	}
 	else
@@ -63,6 +66,7 @@ void ADraggableMoveTile::UpdateIndicator()
 		indicatorBody->SetBeamTargetPoint(GetActorLocation(), 0);
 		arrowMeshComponent->SetWorldLocation(GetActorLocation());
 		arrowMeshComponent->SetWorldRotation(FRotationMatrix::Identity.Rotator());
+		arrowMeshComponent->SetHiddenInGame(true);
 	}
 
 	auto indicatorBodyMaterial = indicatorParticle->CreateDynamicMaterialInstance(0);

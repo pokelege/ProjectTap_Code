@@ -229,6 +229,11 @@ bool bCtrlDown
 	if (bAltDown)
 	{
 		vertexIndex = -1;
+
+		for (size_t i = 0; i < connections.Num(); i++)
+		{
+			disconnectTo(connections[i]);
+		}
 	}
 }
 

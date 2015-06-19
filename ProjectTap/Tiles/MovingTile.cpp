@@ -143,7 +143,7 @@ void AMovingTile::UpdateCarryOn(float dt)
 	}
 	else if (carryOn != nullptr)
 	{
-		pos.Z += 80.0f;
+		pos.Z += 20.0f;
 		carryOn->SetActorLocation(pos);
 	}
 }

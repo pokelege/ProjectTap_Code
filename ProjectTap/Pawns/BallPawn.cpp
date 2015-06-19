@@ -61,6 +61,9 @@ ABallPawn::ABallPawn()
 	spring->bInheritRoll = false;
 	cameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	cameraComponent->AttachTo(spring);
+
+	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("/Game/Curves/BallDeath"));
+	if(curve.Object != nullptr) dieSequence = curve.Object;
 }
 
 // Called when the game starts or when spawned
@@ -73,6 +76,7 @@ void ABallPawn::BeginPlay()
 	trigger->SetBallPawn(this);
 	bInvincible = false;
 	spring->SetLockPosition(GetActorLocation());
+	material = ballMesh->CreateDynamicMaterialInstance(0);
 }
 
 // Called every frame
@@ -86,6 +90,26 @@ void ABallPawn::Tick( float DeltaTime )
 		auto pos = GetActorLocation();
 		pos.Z -= 40.0f;
 		trigger->SetActorLocation(pos);
+	}
+	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
+	if(dying && gameState->GetState() == AProjectTapGameState::GAME_STATE_DYING)
+	{
+		currentDieTime += DeltaTime;
+		if(dieSequence == nullptr)
+		{
+			material->SetScalarParameterValue(TEXT("DeathMask"), 1);
+			gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
+		}
+		else
+		{
+			material->SetScalarParameterValue(TEXT("DeathMask"), dieSequence->GetFloatValue(currentDieTime));
+			float min,max;
+			dieSequence->GetValueRange(min,max);
+			if(currentDieTime >= max)
+			{
+				gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
+			}
+		}
 	}
 }
 
@@ -135,12 +159,11 @@ void ABallPawn::ResetBallXYPosition(const FVector& position)
 
 void ABallPawn::Kill()
 {
-	if (!bInvincible)
+	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
+	if (gameState && !bInvincible && gameState->GetState() == AProjectTapGameState::GAME_STATE_PLAYING)
 	{
-		AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-		if (gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
-		if (trigger != nullptr) trigger->Destroy();
-		Destroy();
+		gameState->SetState(AProjectTapGameState::GAME_STATE_DYING);
+		dying = true;
 	}
 }
 

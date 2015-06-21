@@ -18,6 +18,8 @@ ABullet::ABullet()
 	BulletMesh->SetNotifyRigidBodyCollision(true);
 	BulletMesh->SetSimulatePhysics(true);
 	BulletMesh->SetEnableGravity(false);
+	delegate.BindUFunction(this, TEXT("OnBeginHit"));
+	BulletMesh->OnComponentHit.Add(delegate);
 }
 
 // Called when the game starts or when spawned
@@ -32,21 +34,14 @@ void ABullet::Tick( float DeltaTime )
 	Super::Tick( DeltaTime );
 }
 
-void ABullet::ReceiveHit
-(
-    class UPrimitiveComponent * MyComp,
-    AActor * Other,
-    class UPrimitiveComponent * OtherComp,
-    bool bSelfMoved,
-    FVector HitLocation,
-    FVector HitNormal,
-    FVector NormalImpulse,
-    const FHitResult & Hit
-)
+void ABullet::OnBeginHit(class AActor* OtherActor,
+				class UPrimitiveComponent* OtherComp,
+				FVector NormalImpulse,
+				const FHitResult& Hit)
 {
-	if(Cast<ATurretPawn>(Other) != nullptr) return;
+	if(Cast<ATurretPawn>(OtherActor) != nullptr) return;
 	ABallPawn* ball = nullptr;
-	if ( ( ball = Cast<ABallPawn>( Other ) ) != nullptr )
+	if ( ( ball = Cast<ABallPawn>( OtherActor ) ) != nullptr )
 	{
 		ball->Kill();
 	}

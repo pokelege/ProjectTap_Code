@@ -89,7 +89,7 @@ class ABallPawn* AMagnetTile::FindBallPawn()
 	auto rayStart = pos + GetActorForwardVector() * 2.0f;
 	auto laserVector = GetActorForwardVector() * length;
 
-	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
+	GetWorld()->LineTraceSingleByObjectType(hit,rayStart, pos + laserVector, objectParam,queryParam);
 	auto hitActor = hit.Actor.Get();
 	return Cast<ABallPawn>(hitActor);
 }

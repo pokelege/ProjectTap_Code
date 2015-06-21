@@ -77,7 +77,7 @@ void ALaser::checkLaserCollisions(float dt)
 	auto laserEmitter = laserParticle->EmitterInstances[0];
 
 	//ray cast to see if laser hits anything
-	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
+	GetWorld()->LineTraceSingleByObjectType(hit,rayStart, pos + laserVector, objectParam,queryParam);
 	auto hitActor = hit.Actor.Get();
 
 	if (hitActor != nullptr)

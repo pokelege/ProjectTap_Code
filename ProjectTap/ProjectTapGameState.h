@@ -19,11 +19,21 @@ public:
 	enum GameState {UNKNOWN, GAME_STATE_PLAYING, GAME_STATE_GAME_OVER, GAME_STATE_DYING, GAME_STATE_WIN, GAME_STATE_WINNING};
 protected:
 	GameState CurrentState = UNKNOWN;
-
+	float cameraSaturation = 1.0f;
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	float aiMaxDistance = 500.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	float aiMinDistance = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Player)
 	ABallPawn* CurrentPawn;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	class AActor* CurrentCamera;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level)
 	FName currentLevelToLoadWhenWin;
 	void SetState(GameState NewState);
 	GameState GetState();
+	float getCameraSaturation() const;
+	void setCameraSaturation(float value);
 };

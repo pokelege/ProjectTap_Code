@@ -3,6 +3,7 @@
 #include "ProjectTap.h"
 #include "SmokeAIController.h"
 #include "Pawns/SmokePawn.h"
+#include "Characters/SmokeCharacter.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -22,6 +23,15 @@ void ASmokeAIController::Possess(APawn *pawn)
 		BlackboardComponent->InitializeBlackboard(*smokePawn->behavior->BlackboardAsset);
 		BehaviorComponent->StartTree(*smokePawn->behavior);
 	}
+	else
+	{
+		ASmokeCharacter* smokeCharacter = Cast<ASmokeCharacter>(pawn);
+		if(smokeCharacter != nullptr && smokeCharacter->behavior != nullptr)
+		{
+			BlackboardComponent->InitializeBlackboard(*smokeCharacter->behavior->BlackboardAsset);
+			BehaviorComponent->StartTree(*smokeCharacter->behavior);
+		}
+	}
 }
 
 
@@ -36,6 +46,20 @@ bool ASmokeAIController::SetEnemy()
 			BlackboardComponent->SetValueAsObject(FName("Enemy"), gamestate->CurrentPawn);
 			BlackboardComponent->SetValueAsVector(FName("Destination"), gamestate->CurrentPawn->GetActorLocation());
 			return true;
+		}
+	}
+	else
+	{
+		ASmokeCharacter* smokeCharacter = Cast<ASmokeCharacter>(GetPawn());
+		if(smokeCharacter != nullptr && smokeCharacter->behavior != nullptr)
+		{
+			AProjectTapGameState* gamestate = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
+			if(gamestate != nullptr && gamestate->CurrentPawn != nullptr)
+			{
+				BlackboardComponent->SetValueAsObject(FName("Enemy"), gamestate->CurrentPawn);
+				BlackboardComponent->SetValueAsVector(FName("Destination"), gamestate->CurrentPawn->GetActorLocation());
+				return true;
+			}
 		}
 	}
 	return false;

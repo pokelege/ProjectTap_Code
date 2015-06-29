@@ -16,6 +16,7 @@ class PROJECTTAP_API AMagnetTile : public ATile
 	class ABallPawn* FindBallPawn();
 	void PullBall(class ABallPawn* ball, float DeltaTime);
 	class ABallPawn* lastBall = nullptr;
+	TScriptDelegate<FWeakObjectPtr> delegate;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float length = 99999.0f;
@@ -33,18 +34,11 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
 
-
-	virtual void ReceiveHit
-	(
-		class UPrimitiveComponent * MyComp,
-		AActor * Other,
-		class UPrimitiveComponent * OtherComp,
-		bool bSelfMoved,
-		FVector HitLocation,
-		FVector HitNormal,
-		FVector NormalImpulse,
-		const FHitResult & Hit
-	);
+	UFUNCTION()
+		void OnBeginHit( class AActor* OtherActor ,
+	class UPrimitiveComponent* OtherComp ,
+		FVector NormalImpulse ,
+		const FHitResult& Hit );
 
 	virtual void deactivate() override;
 	virtual void activate() override;

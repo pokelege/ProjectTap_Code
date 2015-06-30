@@ -6,6 +6,16 @@
 
 
 
+
+float AProjectTapGameState::getCameraSaturation() const
+{
+	return cameraSaturation;
+}
+
+void AProjectTapGameState::setCameraSaturation(float value)
+{
+	cameraSaturation = value;
+}
 void AProjectTapGameState::SetState(GameState NewState)
 {
 	CurrentState = NewState;

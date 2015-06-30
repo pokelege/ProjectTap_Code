@@ -27,4 +27,6 @@ public:
 	bool SetEnemy();
 
 	bool KillEnemy();
+
+	void UpdateCameraSaturation();
 };

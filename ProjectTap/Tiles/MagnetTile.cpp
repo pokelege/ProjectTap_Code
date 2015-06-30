@@ -24,6 +24,8 @@ AMagnetTile::AMagnetTile() : ATile()
 	distortionMesh->AttachTo(RootComponent);
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+	delegate.BindUFunction( this , TEXT( "OnBeginHit" ) );
+	BoxCollision->OnComponentHit.Add( delegate );
 }
 
 void AMagnetTile::BeginPlay()
@@ -57,20 +59,13 @@ void AMagnetTile::Tick( float DeltaTime )
 	}
 }
 
-void AMagnetTile::ReceiveHit
-(
-	class UPrimitiveComponent * MyComp,
-	AActor * Other,
-	class UPrimitiveComponent * OtherComp,
-	bool bSelfMoved,
-	FVector HitLocation,
-	FVector HitNormal,
-	FVector NormalImpulse,
-	const FHitResult & Hit
-)
+void AMagnetTile::OnBeginHit( class AActor* OtherActor ,
+class UPrimitiveComponent* OtherComp ,
+	FVector NormalImpulse ,
+	const FHitResult& Hit )
 {
 	ABallPawn* ball = nullptr;
-	if ( ( ball = Cast<ABallPawn>( Other ) ) != nullptr )
+	if ( ( ball = Cast<ABallPawn>( OtherActor ) ) != nullptr )
 	{
 		ball->Kill();
 	}
@@ -89,7 +84,7 @@ class ABallPawn* AMagnetTile::FindBallPawn()
 	auto rayStart = pos + GetActorForwardVector() * 2.0f;
 	auto laserVector = GetActorForwardVector() * length;
 
-	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
+	GetWorld()->LineTraceSingleByObjectType(hit,rayStart, pos + laserVector, objectParam,queryParam);
 	auto hitActor = hit.Actor.Get();
 	return Cast<ABallPawn>(hitActor);
 }
@@ -105,6 +100,7 @@ void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 		linear.Y = 0;
 		FVector angular = prim->GetPhysicsAngularVelocity();
 		angular.X = 0;
+		angular.Y = 0;
 		angular.Z = 0;
 		prim->SetPhysicsLinearVelocity(linear);
 		prim->SetPhysicsAngularVelocity(angular);

@@ -10,24 +10,23 @@ ASmokePawn::ASmokePawn()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	AIControllerClass = ASmokeAIController::StaticClass();
-	USphereComponent* collision = CreateDefaultSubobject<USphereComponent>(TEXT("SmokeCollision"));
+	collision = CreateDefaultSubobject<USphereComponent>(TEXT("SmokeCollision"));
 	SetRootComponent(collision);
 	collision->SetSimulatePhysics(true);
 	collision->SetEnableGravity(false);
 	collision->SetCollisionProfileName(FName("Pawn"));
 	collision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-	auto smokeParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SmokeParticle"));
+	smokeParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SmokeParticle"));
 	smokeParticleSystem->AttachTo(GetRootComponent());
 
 	ConstructorHelpers::FObjectFinder<UParticleSystem> particleAsset(TEXT("/Game/Particles/P_Smoke_AI"));
 	smokeParticleSystem->SetTemplate(particleAsset.Object);
 
 	movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("SmokeMovement"));
-	movement->UpdatedComponent = GetRootComponent();
+	movement->SetUpdatedComponent(GetRootComponent());
 	movement->MaxSpeed = 100.0f;
-	movement->Acceleration = 4000.0f;
+	movement->Acceleration = 100.0f;
 	movement->Deceleration = 0.0;
-
 	ConstructorHelpers::FObjectFinder<UBehaviorTree> behaviorAsset(TEXT("/Game/AI/SmokeBrain"));
 	behavior = behaviorAsset.Object;
 }

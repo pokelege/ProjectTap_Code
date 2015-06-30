@@ -19,7 +19,7 @@ ATurretPawn::ATurretPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> baseMeshSource(*BASE_MESH.ToString());
-	
+
 	UBoxComponent* collisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Turret Collision"));
 	collisionBox->SetBoxExtent(FVector(1,1,3));
 	this->SetRootComponent(collisionBox);
@@ -98,12 +98,12 @@ bool ATurretPawn::FoundPlayerToHit()
 	auto rayStart = pos + (player->GetActorLocation() - nozzleLocalUpdatable).GetSafeNormal();
 	auto laserVector = (player->GetActorLocation() - nozzleLocalUpdatable).GetSafeNormal() * maxDistance;
 
-	GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
+	GetWorld()->LineTraceSingleByObjectType(hit,rayStart, pos + laserVector, objectParam,queryParam);
 	while(hit.GetActor() != nullptr && Cast<ABullet>(hit.GetActor()) != nullptr)
 	{
 		queryParam.AddIgnoredComponent(hit.GetComponent());
 		hit = FHitResult();
-		GetWorld()->LineTraceSingle(hit,rayStart, pos + laserVector, queryParam, objectParam);
+		GetWorld()->LineTraceSingleByObjectType(hit,rayStart, pos + laserVector, objectParam,queryParam);
 	}
 	return Cast<ABallPawn>(hit.GetActor()) != nullptr;
 }
@@ -186,7 +186,7 @@ void ATurretPawn::UpdateLaserTag(float dt)
 		FCollisionObjectQueryParams objectParam;
 		objectParam.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic);
 		objectParam.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
-		GetWorld()->LineTraceSingle(hit, nozzleLocalUpdatable, direction, queryParam, objectParam);
+		GetWorld()->LineTraceSingleByObjectType(hit, nozzleLocalUpdatable, direction, objectParam,queryParam);
 
 		auto laserLength = maxDistance;
 

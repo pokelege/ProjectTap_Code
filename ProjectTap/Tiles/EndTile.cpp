@@ -51,7 +51,7 @@ void AEndTile::PlayTransport(const float &DeltaTime)
 	auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
 	pc->SetWorldLocation(ballPosition);
 	pc->SetWorldScale3D(ballScale);
-	pc->SetWorldRotation(FQuat());
+	pc->SetWorldRotation(FQuat(0,0,0,0));
 }
 
 AEndTile::AEndTile() : ATile()

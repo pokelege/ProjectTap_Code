@@ -11,7 +11,7 @@
 #define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
 AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer ): Super( initializer )
 {
-	UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
+	//UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
 	PlayerControllerClass = AMouseController::StaticClass();
 	DefaultPawnClass = 0;
 	GameStateClass = AProjectTapGameState::StaticClass();
@@ -70,7 +70,7 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 	if (GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_GAME_OVER )
 	{
 		//todo GameOver
-		printonscreen( "GameOver" );
+		//printonscreen( "GameOver" );
 		time += DeltaTime;
 		if(time >= restartCoolDown)
 		{
@@ -79,7 +79,7 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 	}
 	else if (GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_WIN)
 	{
-		printonscreen( "You win!" );
+		//printonscreen( "You win!" );
 		time += DeltaTime;
 		if(time >= restartCoolDown)
 		{

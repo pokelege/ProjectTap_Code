@@ -121,7 +121,7 @@ void AGVertex::connectTo(int32 v)
 UArrowComponent* AGVertex::makeArrowToVertex(int32 v)
 {
 	auto name = FString("debugArrow").Append(FString::FromInt(v));
-	auto arrow = ConstructObject<UArrowComponent>(UArrowComponent::StaticClass(), this, *name);
+	auto arrow = NewObject<UArrowComponent>(UArrowComponent::StaticClass(), *name);
 	arrow->RegisterComponent();
 	arrow->AttachTo(GetRootComponent());
 	if (debugArrows.Find(v) != nullptr)

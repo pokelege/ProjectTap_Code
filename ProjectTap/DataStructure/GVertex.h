@@ -49,6 +49,7 @@ public:
 
 	virtual void BeginDestroy() override;
 
+#if WITH_EDITOR
 	virtual void EditorKeyPressed(FKey Key,
 								  EInputEvent Event) override;
 
@@ -62,7 +63,7 @@ public:
 		bool bCtrlDown
 	) override;
 
-
+#endif
 	class AGraph* getGraph();
 
 	void renerateGraphArrows();

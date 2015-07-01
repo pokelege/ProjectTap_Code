@@ -12,6 +12,8 @@ ADraggableMoveTile::ADraggableMoveTile()
 	PrimaryActorTick.bCanEverTick = true;
 	arrowMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow mesh"));
 
+	RootComponent = TileMesh;
+
 	FName path("/Game/Models/ArrowPlane");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> arrowMesh(*path.ToString());
 	arrowMeshComponent->SetStaticMesh(arrowMesh.Object);
@@ -29,7 +31,8 @@ ADraggableMoveTile::ADraggableMoveTile()
 void ADraggableMoveTile::BeginPlay()
 {
 	Super::BeginPlay();
-	if (currentVertex != nullptr){
+	if (currentVertex != nullptr)
+	{
 		SetActorLocation(currentVertex->GetActorLocation());
 		currentVertex->SetOccupied(true);
 	}
@@ -76,7 +79,8 @@ void ADraggableMoveTile::UpdateIndicator()
 	arrowMaterial->SetScalarParameterValue(TEXT("IsDestinationValid"), canSnap && !destinationOccupied ? 1.0f : 0.0f);
 }
 
-bool ADraggableMoveTile::cameraRayIntersectWithTilePlane(const FVector& camlocation,
+bool ADraggableMoveTile::cameraRayIntersectWithTilePlane(
+									 const FVector& camlocation,
 									 const FVector& dir,
 									 FVector& hitPoint)
 
@@ -89,7 +93,8 @@ bool ADraggableMoveTile::cameraRayIntersectWithTilePlane(const FVector& camlocat
 	{
 		auto t = FVector::DotProduct(camlocation - GetActorLocation(), planeNormal) / demon;
 		hitPlane = t >= 0;
-		if (hitPlane) {
+		if (hitPlane) 
+		{
 			hitPoint = camlocation + dir * t;
 		}
 	}

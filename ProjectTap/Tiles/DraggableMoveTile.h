@@ -34,7 +34,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Indicator)
 	UStaticMeshComponent* arrowMeshComponent;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	class AGVertex* currentVertex = nullptr;
 
@@ -57,7 +56,6 @@ public:
 	void DragTo(const FHitResult& hit, 
 				const FVector& cameraLocation, 
 				const FVector& camRayDirection);
-
 
 	void RemoveFocus();
 	

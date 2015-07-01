@@ -13,6 +13,7 @@ AMovingTile::AMovingTile()
 
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile mesh"));
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(TEXT("/Game/Models/MoveTile"));
+	
 	TileMesh->SetStaticMesh(mesh.Object);
 	BoxCollision->SetWorldScale3D(FVector(1));
 

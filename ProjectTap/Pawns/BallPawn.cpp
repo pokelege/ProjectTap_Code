@@ -187,7 +187,7 @@ void ABallPawn::setCamera(ABallPlayerStart* playerStart)
 		spring->lockZ = playerStart->lockZ;
 		cameraComponent->SetWorldTransform(playerStart->camera->GetTransform());
 		spring->TargetOffset = cameraComponent->GetRelativeTransform().GetLocation();
-		cameraComponent->SetRelativeLocation(FVector());
+		cameraComponent->SetRelativeLocation(FVector(0,0,0));
 
 		spring->bEnableCameraLag = playerStart->lagCamera;
 		spring->CameraLagSpeed = playerStart->lagSpeed;

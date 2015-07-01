@@ -4,6 +4,7 @@
 #include "SmokePawn.h"
 #include "Controllers/SmokeAIController.h"
 #include "Pawns/BallPawn.h"
+#include "ProjectTapGameState.h"
 // Sets default values
 ASmokePawn::ASmokePawn()
 {
@@ -35,21 +36,18 @@ ASmokePawn::ASmokePawn()
 void ASmokePawn::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
 void ASmokePawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-
 }
 
 // Called to bind functionality to input
 void ASmokePawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
-
 }
 
 UPawnMovementComponent *ASmokePawn::GetMovementComponent() const

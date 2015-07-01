@@ -12,7 +12,6 @@ AGraph::AGraph()
 
 	edgeStaticMesh = edgeMesh.Object;
 	vertexStaticMesh = vertexMesh.Object;
-
 }
 
 void AGraph::Init()
@@ -33,7 +32,6 @@ void AGraph::Init()
 				edgeMatrix[i].vertex[j] = NONEDGE;
 			}
 		}
-
 	}
 
 	if (mark.Num() == 0)
@@ -48,15 +46,13 @@ void AGraph::PostLoad()
 {
 	Super::PostLoad();
 	Init();
-
 }
 
 void AGraph::BeginPlay()
 {
 	Super::BeginPlay();
 }
-
-
+#if WITH_EDITOR
 void AGraph::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -74,7 +70,7 @@ void AGraph::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent
 		}
 	}
 }
-
+#endif
 void AGraph::clearRouteVisuals()
 {
 	for (auto mesh : edgeMeshes)
@@ -316,8 +312,9 @@ void AGraph::generateGraphRouteVisualization()
 	{
 		DFS_makeVisualizers(stack, i);
 	}
-	
+#if WITH_EDITOR
 	Super::PostEditChange();
+#endif
 }
 
 

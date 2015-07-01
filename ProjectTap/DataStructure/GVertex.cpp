@@ -22,7 +22,7 @@ AGVertex::AGVertex()
 }
 
 #define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
-
+#if WITH_EDITOR
 void AGVertex::EditorKeyPressed(FKey Key,
 	EInputEvent Event)
 {
@@ -68,7 +68,7 @@ void AGVertex::EditorKeyPressed(FKey Key,
 
 	}
 }
-
+#endif
 void AGVertex::connectTo(int32 v)
 {
 	auto g = getGraph();
@@ -156,8 +156,9 @@ void AGVertex::disconnectTo(int32 v)
 			break;
 		}
 	}
-
+#if WITH_EDITOR
 	Super::PostEditChange();
+#endif
 }
 
 void AGVertex::regenerateDebugArrows()
@@ -209,7 +210,7 @@ bool AGVertex::IsVertexOccupied()
 {
 	return hasTile;
 }
-
+#if WITH_EDITOR
 void AGVertex::EditorApplyTranslation
 (
 const FVector & DeltaTranslation,
@@ -263,7 +264,7 @@ void AGVertex::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEve
 		}
 	}
 }
-
+#endif
 void AGVertex::PostLoad()
 {
 	Super::PostLoad();
@@ -296,4 +297,3 @@ AGVertex::~AGVertex()
 {
 
 }
-

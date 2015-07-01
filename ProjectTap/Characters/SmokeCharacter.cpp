@@ -29,14 +29,12 @@ ASmokeCharacter::ASmokeCharacter()
 void ASmokeCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
 void ASmokeCharacter::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-
 }
 
 // Called to bind functionality to input
@@ -44,4 +42,3 @@ void ASmokeCharacter::SetupPlayerInputComponent(class UInputComponent* InputComp
 {
 	Super::SetupPlayerInputComponent(InputComponent);
 }
-

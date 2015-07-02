@@ -159,11 +159,7 @@ void UConstrainingSpringArmComponent::SetLockPosition(const FVector& lockPositio
 void UConstrainingSpringArmComponent::SetTargetOffsetCustom( const FVector& newTargetOffset )
 {
 	TargetOffset = newTargetOffset;
-	FVector toLock = GetComponentLocation();
-	if ( lockX ) toLock.X = lastLockPosition.X;
-	if ( lockY ) toLock.Y = lastLockPosition.Y;
-	if ( lockZ ) toLock.Z = lastLockPosition.Z;
-	FVector ArmOrigin = toLock + TargetOffset;
+	FVector ArmOrigin = TargetOffset + GetComponentLocation();
 	PreviousArmOrigin = ArmOrigin;
 	PreviousDesiredLoc = ArmOrigin;
 }

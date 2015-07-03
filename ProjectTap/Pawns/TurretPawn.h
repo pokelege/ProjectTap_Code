@@ -47,7 +47,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	float bulletForce = 2000.0f;
 
-
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+	UAudioComponent* explosionSound = nullptr;
 	// Sets default values for this pawn's properties
 	ATurretPawn();
 

@@ -56,6 +56,11 @@ ATurretPawn::ATurretPawn()
 	auto explosionPrimitive = Cast<UPrimitiveComponent>(explosionParticle);
 	FTransform explosionWorldTransform = explosionPrimitive->GetComponentTransform();
 
+	ConstructorHelpers::FObjectFinder<USoundWave> explosionSoundFile( TEXT( "/Game/Sound/S_Small-Explosion" ) );
+	explosionSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Explosion Sound" ) );
+	explosionSound->SetSound( explosionSoundFile.Object );
+	explosionSound->bAutoActivate = false;
+	explosionSound->AttachTo( explosionParticle );
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
 	laserPrimitive->SetWorldScale3D(laserWorldTransform.GetScale3D());
@@ -223,4 +228,6 @@ void ATurretPawn::Kill()
 	died = true;
 	explosionParticle->Activate(true);
 	TurretGunMesh->SetStaticMesh(nullptr);
+	explosionSound->Activate();
+	explosionSound->Play();
 }

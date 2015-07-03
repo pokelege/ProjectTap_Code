@@ -75,8 +75,8 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 		if ( cameraToChange )
 		{
 			float fadeValue = FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
-			cameraToChange->PostProcessSettings.bOverride_ColorGamma = true;
-			cameraToChange->PostProcessSettings.ColorGamma = FVector( fadeValue , fadeValue , fadeValue );
+			cameraToChange->PostProcessSettings.bOverride_ColorGain = true;
+			cameraToChange->PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
 		}
 		if ( time >= restartCoolDown )
 		{
@@ -95,8 +95,8 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 		if ( cameraToChange )
 		{
 			float fadeValue = 1 - FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
-			cameraToChange->PostProcessSettings.bOverride_ColorGamma = true;
-			cameraToChange->PostProcessSettings.ColorGamma = FVector( fadeValue , fadeValue , fadeValue );
+			cameraToChange->PostProcessSettings.bOverride_ColorGain = true;
+			cameraToChange->PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
 		}
 		if(time >= restartCoolDown)
 		{
@@ -112,8 +112,8 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 		if ( cameraToChange )
 		{
 			float fadeValue = 1 - FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
-			cameraToChange->PostProcessSettings.bOverride_ColorGamma = true;
-			cameraToChange->PostProcessSettings.ColorGamma = FVector( fadeValue , fadeValue , fadeValue );
+			cameraToChange->PostProcessSettings.bOverride_ColorGain = true;
+			cameraToChange->PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
 		}
 		if(time >= restartCoolDown)
 		{

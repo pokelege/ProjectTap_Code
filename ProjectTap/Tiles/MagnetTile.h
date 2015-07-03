@@ -30,6 +30,8 @@ public:
 	class UParticleSystemComponent* magnetParticle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	UStaticMeshComponent* distortionMesh;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+	UAudioComponent* magnetSound = nullptr;
 	AMagnetTile();
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;

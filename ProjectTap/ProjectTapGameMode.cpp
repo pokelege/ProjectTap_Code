@@ -60,18 +60,44 @@ void AProjectTapGameMode::BeginPlay()
 		GetGameState<AProjectTapGameState>()->CurrentPawn = ball;
 	}
 	GetGameState<AProjectTapGameState>()->CurrentCamera = camera;
-	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::GAME_STATE_PLAYING);
+	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::GAME_STATE_STARTING);
 
 }
 
 void AProjectTapGameMode::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-	if (GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_GAME_OVER )
+	if ( GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_STARTING )
 	{
+		time += DeltaTime;
+		auto cameraToChangeTest = GetGameState<AProjectTapGameState>()->CurrentCamera->GetComponentByClass( UCameraComponent::StaticClass() );
+		auto cameraToChange = Cast<UCameraComponent>( cameraToChangeTest );
+		if ( cameraToChange )
+		{
+			float fadeValue = FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
+			cameraToChange->PostProcessSettings.bOverride_ColorGamma = true;
+			cameraToChange->PostProcessSettings.ColorGamma = FVector( fadeValue , fadeValue , fadeValue );
+		}
+		if ( time >= restartCoolDown )
+		{
+			time = 0;
+			GetGameState<AProjectTapGameState>()->SetState( AProjectTapGameState::GAME_STATE_PLAYING );
+		}
+	}
+	else if (GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_GAME_OVER )
+	{
+
 		//todo GameOver
 		//printonscreen( "GameOver" );
 		time += DeltaTime;
+		auto cameraToChangeTest = GetGameState<AProjectTapGameState>()->CurrentCamera->GetComponentByClass( UCameraComponent::StaticClass() );
+		auto cameraToChange = Cast<UCameraComponent>( cameraToChangeTest );
+		if ( cameraToChange )
+		{
+			float fadeValue = 1 - FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
+			cameraToChange->PostProcessSettings.bOverride_ColorGamma = true;
+			cameraToChange->PostProcessSettings.ColorGamma = FVector( fadeValue , fadeValue , fadeValue );
+		}
 		if(time >= restartCoolDown)
 		{
 			Respawn();
@@ -81,6 +107,14 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 	{
 		//printonscreen( "You win!" );
 		time += DeltaTime;
+		auto cameraToChangeTest = GetGameState<AProjectTapGameState>()->CurrentCamera->GetComponentByClass( UCameraComponent::StaticClass() );
+		auto cameraToChange = Cast<UCameraComponent>( cameraToChangeTest );
+		if ( cameraToChange )
+		{
+			float fadeValue = 1 - FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
+			cameraToChange->PostProcessSettings.bOverride_ColorGamma = true;
+			cameraToChange->PostProcessSettings.ColorGamma = FVector( fadeValue , fadeValue , fadeValue );
+		}
 		if(time >= restartCoolDown)
 		{
 			LoadNextLevel();

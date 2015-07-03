@@ -3,13 +3,14 @@
 #pragma once
 
 #include "Tile.h"
+#include "ICarriable.h"
 #include "PortalTile.generated.h"
 
 /**
  * blue portal faces positive X axis
  */
 UCLASS()
-class PROJECTTAP_API APortalTile : public ATile
+class PROJECTTAP_API APortalTile : public ATile, public ICarriable
 {
 	GENERATED_BODY()
 
@@ -39,7 +40,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-
+	OffsetInfo getOffsetInfo() override;
 
 	UFUNCTION()
 	void OnBlueBeginTriggerOverlap(class AActor* OtherActor,

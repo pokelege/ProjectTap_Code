@@ -2,6 +2,7 @@
 
 #include "ProjectTap.h"
 #include "MovingTile.h"
+#include "ICarriable.h"
 #include "../OffensiveTiles/Laser.h"
 
 
@@ -137,15 +138,18 @@ void AMovingTile::UpdateCarryOn(float dt)
 {
 	auto pos = GetActorLocation();
 
-	if (auto laser = Cast<ALaser>(carryOn))
+	if (carryOn != nullptr)
 	{
-		pos.Z += 20.0f;
-		laser->SetLaserLocationWithDefaultHitLocation(pos);
-	}
-	else if (carryOn != nullptr)
-	{
-		pos.Z += 20.0f;
-		carryOn->SetActorLocation(pos);
+		if (auto laser = Cast<ALaser>(carryOn))
+		{
+			laser->SetLaserLocationWithDefaultHitLocation(pos);
+		}
+
+		if (auto actor = Cast<ICarriable>(carryOn))
+		{
+			auto info = actor->getOffsetInfo();
+			carryOn->SetActorLocation(GetActorLocation() + info.offsetForCarryOn);
+		}
 	}
 }
 

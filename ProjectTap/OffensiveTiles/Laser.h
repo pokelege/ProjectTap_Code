@@ -4,10 +4,11 @@
 
 #include "GameFramework/Actor.h"
 #include "../EmptyComponent.h"
+#include "../Tiles/ICarriable.h"
 #include "Laser.generated.h"
 
 UCLASS()
-class PROJECTTAP_API ALaser : public AActor
+class PROJECTTAP_API ALaser : public AActor, public ICarriable
 {
 	GENERATED_BODY()
 
@@ -54,6 +55,8 @@ public:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	OffsetInfo getOffsetInfo() override;
 	
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;

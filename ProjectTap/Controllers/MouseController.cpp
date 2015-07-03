@@ -86,7 +86,6 @@ void AMouseController::NotifyMousePressed()
 	SendBlockingTile(hit);
 	SendGroupedBlockingTile(hit);
 	EnableSwipeCheck(hit);
-
 }
 
 
@@ -100,33 +99,6 @@ void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 		tile->activate();
 		found = true;
 	}
-
-	//auto ramp = Cast<ABaseRampTile>(hit.Actor.Get());
-	//if (ramp != nullptr)
-	//{
-	//	ramp->activate();
-	//	found = true;
-	//}
-
-	//if (!found)
-	//{
-	//	auto mag = Cast<AMagnetTile>(hit.Actor.Get());
-	//	if (mag != nullptr)
-	//	{
-	//		mag->activate();
-	//		found = true;
-	//	}
-	//}
-
-	//if (!found)
-	//{
-	//	auto def = Cast<ADeflectiveTile>(hit.Actor.Get());
-	//	if (def != nullptr)
-	//	{
-	//		def->activate();
-	//		found = true;
-	//	}
-	//}
 }
 
 

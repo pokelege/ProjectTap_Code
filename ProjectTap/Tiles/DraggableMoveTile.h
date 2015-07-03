@@ -14,9 +14,12 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 	FVector anchorHitPoint;
 	FVector newGoalPos;
 	float cameraRayLength;
+	float mousePressTimer = 0.0f;
 	bool isMoving = false;
 	bool canSnap = false;
 	bool destinationOccupied = false;
+
+	void Initialize();
 		
 	void UpdateDragMove(float dt);
 
@@ -27,6 +30,10 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 	bool cameraRayIntersectWithTilePlane(const FVector& camlocation,
 										 const FVector& dir,
 										 FVector& hitPoint);
+
+	void processMouseEvents();
+
+	void click();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Indicator)
 	UParticleSystemComponent* indicatorParticle;
@@ -52,7 +59,12 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	//if camera ray hits this actor then give a new camera ray projected from mouse position for new position
+	virtual void HighlightTile() override;
+	virtual void HighlightEdge() override;
+	virtual void CancelHighlightTile() override;
+	virtual void CancelHighlightEdge() override;
+
+	//give a new camera ray projected from mouse position for new goal position
 	void DragTo(const FHitResult& hit, 
 				const FVector& cameraLocation, 
 				const FVector& camRayDirection);

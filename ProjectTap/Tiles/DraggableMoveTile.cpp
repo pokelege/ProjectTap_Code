@@ -2,6 +2,7 @@
 
 #include "ProjectTap.h"
 #include "DraggableMoveTile.h"
+#include "PortalTile.h"
 #include "../DataStructure/GVertex.h"
 #include "../DataStructure/Graph.h"
 #include "Classes/Particles/ParticleEmitter.h"
@@ -11,8 +12,13 @@ ADraggableMoveTile::ADraggableMoveTile()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	arrowMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow mesh"));
-
-	RootComponent = TileMesh;
+	
+	SetRootComponent(TileMesh);
+	TileMesh->DetachFromParent();
+	BoxCollision->AttachChildren.Remove(TileMesh);
+	BoxCollision->AttachTo(TileMesh);
+	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
 	FName path("/Game/Models/ArrowPlane");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> arrowMesh(*path.ToString());
@@ -31,12 +37,29 @@ ADraggableMoveTile::ADraggableMoveTile()
 void ADraggableMoveTile::BeginPlay()
 {
 	Super::BeginPlay();
+	Initialize();
+}
+
+void ADraggableMoveTile::Initialize()
+{
 	if (currentVertex != nullptr)
 	{
 		SetActorLocation(currentVertex->GetActorLocation());
-		currentVertex->SetOccupied(true);
+		currentVertex->SetOccupied(true);		
+	}
+
+	if (carryOn != nullptr)
+	{		
+		if (auto actor = Cast<ICarriable>(carryOn))
+		{
+			auto scale = actor->getOffsetInfo().scaleForCollision;
+			auto offset = actor->getOffsetInfo().offsetForCollision;
+			BoxCollision->SetRelativeScale3D(scale);
+			BoxCollision->AddLocalOffset(offset);
+		}
 	}
 }
+
 
 void ADraggableMoveTile::Tick( float DeltaTime )
 {
@@ -102,6 +125,65 @@ bool ADraggableMoveTile::cameraRayIntersectWithTilePlane(
 	return hitPlane;
 }
 
+void ADraggableMoveTile::HighlightTile()
+{
+	Super::HighlightTile();
+	auto actor = Cast<ATile>(carryOn);
+	if (actor != nullptr && !isSelected)
+	{
+		actor->HighlightTile();
+	}
+}
+
+void ADraggableMoveTile::HighlightEdge()
+{
+	Super::HighlightEdge();
+	auto actor = Cast<ATile>(carryOn);
+	if (actor != nullptr && !isSelected)
+	{
+		actor->HighlightEdge();
+	}
+}
+
+void ADraggableMoveTile::CancelHighlightTile()
+{
+	Super::CancelHighlightTile();
+	auto actor = Cast<ATile>(carryOn);
+	if (actor != nullptr && !isSelected)
+	{
+		actor->CancelHighlightTile();
+	}
+}
+
+void ADraggableMoveTile::CancelHighlightEdge()
+{
+	Super::CancelHighlightEdge();
+	auto actor = Cast<ATile>(carryOn);
+	if (actor != nullptr && !isSelected)
+	{
+		actor->CancelHighlightEdge();
+	}
+}
+
+void ADraggableMoveTile::processMouseEvents()
+{
+	auto dt = GetWorld()->GetDeltaSeconds();	
+	mousePressTimer += dt;
+	
+	if (mousePressTimer >= 0.5f)
+	{
+		isSelected = true;
+		mousePressTimer = 0.0f;
+	}
+	else
+	{
+		anchorHitPoint = GetActorLocation();
+		newGoalPos = GetActorLocation();
+		canSnap = false;
+		isMoving = false;
+	}
+}
+
 void ADraggableMoveTile::DragTo(const FHitResult& hit, 
 								const FVector& cameraLocation,
 								const FVector& camRayDirection)
@@ -159,11 +241,7 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 	}
 	else
 	{
-		anchorHitPoint = GetActorLocation();		
-		newGoalPos = GetActorLocation();
-		isSelected = true;
-		canSnap = false;
-		isMoving = false;
+		processMouseEvents();
 	}
 }
 
@@ -193,8 +271,24 @@ FVector ADraggableMoveTile::calculateCurrentDir()
 	return FVector();
 }
 
+void ADraggableMoveTile::click()
+{
+	if (auto tile = Cast<ATile>(carryOn))
+	{
+		tile->activate();
+	}
+
+	mousePressTimer = 0.0f;
+}
+
 void ADraggableMoveTile::RemoveFocus()
 {
+	//if this mouse release results in a click event
+	if (!isSelected)
+	{
+		click();
+	}
+
 	isSelected = false;
 
 	bool canMove = canSnap && !destinationOccupied && goalVertex != nullptr;
@@ -206,4 +300,5 @@ void ADraggableMoveTile::RemoveFocus()
 		currentVertex = goalVertex;
 		goalVertex = nullptr;
 	}
+
 }

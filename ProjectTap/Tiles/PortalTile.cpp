@@ -122,6 +122,15 @@ void APortalTile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+OffsetInfo APortalTile::getOffsetInfo()
+{
+	OffsetInfo data;
+	data.offsetForCollision = FVector(0.0f, 0.0f, 40.0f);
+	data.scaleForCollision = FVector(1.2f, 1.2f, 5.0f);
+	data.offsetForCarryOn = FVector(0.0f, 0.0f, 50.0f);
+	return data;
+}
+
 void APortalTile::OnBlueBeginTriggerOverlap(AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex,

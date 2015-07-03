@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Tiles/Tile.h"
+#include "ICarriable.h"
 #include "DeflectiveTile.generated.h"
 
 UENUM(BlueprintType)
@@ -17,7 +18,7 @@ enum class DeflectiveTileType : uint8
  *
  */
 UCLASS()
-class PROJECTTAP_API ADeflectiveTile : public ATile
+class PROJECTTAP_API ADeflectiveTile : public ATile, public ICarriable
 {
 	GENERATED_BODY()
 	float timer = 0.0f; 
@@ -50,6 +51,8 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual OffsetInfo getOffsetInfo() override;
+
 
 	void HighlightEdgeForDuration(float duration);
 

@@ -32,6 +32,10 @@ public:
 		FVector initialVelocity = FVector(0.0f, 0.0f, 0.0f);
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	class UConstrainingSpringArmComponent* spring;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+	UAudioComponent* dieSound = nullptr;
+
 	// Sets default values for this actor's properties
 	ABallPawn();
 

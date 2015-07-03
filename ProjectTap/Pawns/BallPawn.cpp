@@ -64,6 +64,12 @@ ABallPawn::ABallPawn()
 
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("/Game/Curves/BallDeath"));
 	if(curve.Object != nullptr) dieSequence = curve.Object;
+
+	ConstructorHelpers::FObjectFinder<USoundWave> dieSoundFile( TEXT( "/Game/Sound/S_Sizzle" ) );
+	dieSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Die Sound" ) );
+	dieSound->SetSound( dieSoundFile.Object );
+	dieSound->bAutoActivate = false;
+	dieSound->AttachTo( GetRootComponent() );
 }
 
 // Called when the game starts or when spawned
@@ -163,6 +169,7 @@ void ABallPawn::Kill()
 	if (gameState && !bInvincible && gameState->GetState() == AProjectTapGameState::GAME_STATE_PLAYING)
 	{
 		gameState->SetState(AProjectTapGameState::GAME_STATE_DYING);
+		dieSound->Play();
 		dying = true;
 	}
 }

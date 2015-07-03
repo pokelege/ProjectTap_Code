@@ -26,6 +26,12 @@ AMagnetTile::AMagnetTile() : ATile()
 	pc->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 	delegate.BindUFunction( this , TEXT( "OnBeginHit" ) );
 	BoxCollision->OnComponentHit.Add( delegate );
+
+	ConstructorHelpers::FObjectFinder<USoundWave> magnetSoundFile( TEXT( "/Game/Sound/S_LaserLoop" ) );
+	magnetSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Magnet Sound" ) );
+	magnetSound->SetSound( magnetSoundFile.Object );
+	magnetSound->bAutoActivate = false;
+	magnetSound->AttachTo( BoxCollision );
 }
 
 void AMagnetTile::BeginPlay()
@@ -127,6 +133,7 @@ void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 	 magnetParticle->DeactivateSystem();
 	 magnetParticle->Deactivate();
 	 distortionMesh->SetRelativeScale3D(FVector(0,1,1));
+	 magnetSound->Stop();
  }
 
  void AMagnetTile::activate()
@@ -135,4 +142,5 @@ void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 	 magnetParticle->Activate(true);
 	 magnetParticle->ActivateSystem();
 	 distortionMesh->SetRelativeScale3D(FVector(length,1,1));
+	 magnetSound->Play();
  }

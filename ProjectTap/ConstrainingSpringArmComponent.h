@@ -18,7 +18,7 @@ class PROJECTTAP_API UConstrainingSpringArmComponent : public USpringArmComponen
 	  /** Updates the desired arm location, calling BlendLocations to do the actual blending if a trace is done */
 	  virtual void UpdateDesiredArmLocation(bool bDoTrace, bool bDoLocationLag, bool bDoRotationLag, float DeltaTime);
 public:
-
+	void SetTargetOffsetCustom(const FVector& newTargetOffset);
 	void SetLockPosition(const FVector& lastLockPosition);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Constraint)

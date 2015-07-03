@@ -64,6 +64,12 @@ ABallPawn::ABallPawn()
 
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("/Game/Curves/BallDeath"));
 	if(curve.Object != nullptr) dieSequence = curve.Object;
+
+	ConstructorHelpers::FObjectFinder<USoundWave> dieSoundFile( TEXT( "/Game/Sound/S_Sizzle" ) );
+	dieSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Die Sound" ) );
+	dieSound->SetSound( dieSoundFile.Object );
+	dieSound->bAutoActivate = false;
+	dieSound->AttachTo( GetRootComponent() );
 }
 
 // Called when the game starts or when spawned
@@ -163,6 +169,7 @@ void ABallPawn::Kill()
 	if (gameState && !bInvincible && gameState->GetState() == AProjectTapGameState::GAME_STATE_PLAYING)
 	{
 		gameState->SetState(AProjectTapGameState::GAME_STATE_DYING);
+		dieSound->Play();
 		dying = true;
 	}
 }
@@ -185,9 +192,10 @@ void ABallPawn::setCamera(ABallPlayerStart* playerStart)
 		spring->lockX = playerStart->lockX;
 		spring->lockY = playerStart->lockY;
 		spring->lockZ = playerStart->lockZ;
-		cameraComponent->SetWorldTransform(playerStart->camera->GetTransform());
-		spring->TargetOffset = cameraComponent->GetRelativeTransform().GetLocation();
-		cameraComponent->SetRelativeLocation(FVector(0,0,0));
+		cameraComponent->SetWorldRotation( playerStart->camera->GetActorRotation() );
+		cameraComponent->SetWorldLocation( playerStart->camera->GetActorLocation() );
+		spring->SetTargetOffsetCustom( cameraComponent->RelativeLocation );
+		cameraComponent->SetRelativeLocation( FVector( 0 , 0 , 0 ) );
 
 		spring->bEnableCameraLag = playerStart->lagCamera;
 		spring->CameraLagSpeed = playerStart->lagSpeed;

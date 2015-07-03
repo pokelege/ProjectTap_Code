@@ -42,6 +42,14 @@ void ASmokePawn::BeginPlay()
 void ASmokePawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+	auto ai = Cast<AAIController>( GetController() );
+	if ( ai != nullptr )
+	{
+		FAIMoveRequest aim;
+		AProjectTapGameState* gamestate = Cast<AProjectTapGameState>( GetWorld()->GetGameState() );
+		aim.SetGoalActor(gamestate->CurrentPawn);
+		ai->MoveTo(aim);
+	}
 }
 
 // Called to bind functionality to input

@@ -20,18 +20,18 @@ class PROJECTTAP_API ALaser : public AActor, public ICarriable
 	const int MAX_DEPTH = 8;
 
 	void checkLaserCollisions(float dt);
-	
+
 	void SpawnSubLaser(const FVector& start, const FVector& normal);
-	
+
 	FVector reflect(const FVector& v1, const FVector& v2);
-	
+
 	void SetLaserDepth(unsigned i);
-	
+
 	bool CanSpawnSubLaser();
 
 	void KillSubLaser();
 
-public:	
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
 		UEmptyComponent* root;
 
@@ -40,6 +40,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
 		UParticleSystemComponent* laserParticle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
+		UParticleSystemComponent* laserSparkParticle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
 		UArrowComponent* debugArrow;
@@ -57,7 +60,7 @@ public:
 	virtual void BeginPlay() override;
 
 	OffsetInfo getOffsetInfo() override;
-	
+
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 

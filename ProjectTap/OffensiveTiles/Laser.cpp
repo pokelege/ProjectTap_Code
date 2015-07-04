@@ -24,10 +24,15 @@ ALaser::ALaser()
 	ConstructorHelpers::FObjectFinder<UParticleSystem> particleAssets(TEXT("/Game/Particles/P_NewLaser"));
 	laserParticle->SetTemplate(particleAssets.Object);
 
+	laserSparkParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("LaserSparkParticle"));
+	laserSparkParticle->AttachTo(RootComponent);
+
+	ConstructorHelpers::FObjectFinder<UParticleSystem> particleSparkAssets(TEXT("/Game/Particles/P_LaserSparks"));
+	laserSparkParticle->SetTemplate(particleSparkAssets.Object);
+
 	debugArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("arrow"));
 	debugArrow->AttachTo(RootComponent);
-	/*laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
-	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);*/
+
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("laser emitter"));
 	mesh->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> laserEmitterMesh(TEXT("/Game/Models/TurretGun"));
@@ -84,7 +89,7 @@ void ALaser::checkLaserCollisions(float dt)
 	if (hitActor != nullptr)
 	{
 		currHitPoint = hit.ImpactPoint;
-
+		//if(laserSparkParticle->bIsActive) laserSparkParticle->ActivateSystem();
 		//kills ball if laser hits it
 		auto ball = Cast<ABallPawn>(hitActor);
 
@@ -186,11 +191,16 @@ void ALaser::checkLaserCollisions(float dt)
 			if (notHitDeflectiveTile && notHitPortal)
 			{
 				KillSubLaser();
+				//laserSparkParticle->DeactivateSystem();
 			}
 		}
+			laserSparkParticle->SetWorldLocation(currHitPoint);
+			laserSparkParticle->SetWorldRotation(FVector(currHitPoint -
+												 GetActorLocation()).GetSafeNormal().Rotation().Quaternion());
 	}
 	else
 	{
+		//laserSparkParticle->DeactivateSystem();
 		currHitPoint = laserVector;
 
 		laserEmitter->SetBeamTargetPoint(pos + currHitPoint, 0);
@@ -204,8 +214,6 @@ void ALaser::checkLaserCollisions(float dt)
 		mesh->SetWorldScale3D(FVector(10.0f));
 		mesh->SetWorldRotation(dir.Rotation());
 	}
-
-	
 }
 
 void ALaser::SpawnSubLaser(const FVector& start, const FVector& normal)

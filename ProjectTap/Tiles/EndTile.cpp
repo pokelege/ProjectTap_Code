@@ -71,7 +71,7 @@ AEndTile::AEndTile() : ATile()
 	spiralComponent->SetRelativeLocation(FVector(0,0,85));
 
 	auto particleComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particle"));
-	ConstructorHelpers::FObjectFinder<UParticleSystem> particle(TEXT("/Game/Particles/P_Portal"));
+	ConstructorHelpers::FObjectFinder<UParticleSystem> particle(TEXT("/Game/Particles/P_EndTile"));
 	particleComponent->SetTemplate(particle.Object);
 	particleComponent->AttachTo(BoxCollision);
 	particleComponent->SetRelativeLocation(FVector(0,0,80));

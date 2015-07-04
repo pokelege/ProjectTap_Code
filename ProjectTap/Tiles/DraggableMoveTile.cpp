@@ -189,7 +189,7 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 								const FVector& camRayDirection)
 {	
 	if (isMoving) return;
-	if (isSelected)
+	if (isSelected && currentVertex != nullptr)
 	{
 		//use hit point as a camera ray
 		auto camRay = FVector();

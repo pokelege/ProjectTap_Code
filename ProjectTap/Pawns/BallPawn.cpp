@@ -160,7 +160,6 @@ void ABallPawn::ResetBallXYPosition(const FVector& position)
 	FVector newPosition(position.X, position.Y, GetActorLocation().Z);
 
 	SetActorLocation(newPosition);
-
 }
 
 void ABallPawn::Kill()

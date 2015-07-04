@@ -42,6 +42,15 @@ void AMagnetTile::BeginPlay()
 	magnetParticle->Deactivate();
 }
 
+OffsetInfo AMagnetTile::getOffsetInfo()
+{
+	OffsetInfo data;
+	data.offsetForCollision = FVector(0.0f, 0.0f, 40.0f);
+	data.scaleForCollision = FVector(1.0f, 1.0f, 5.0f);
+	data.offsetForCarryOn = FVector(0.0f, 0.0f, 40.0f);
+	return data;
+}
+
 void AMagnetTile::Tick( float DeltaTime )
 {
 	Super::Tick(DeltaTime);

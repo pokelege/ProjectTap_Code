@@ -29,6 +29,9 @@ class PROJECTTAP_API ADeflectiveTile : public ATile, public ICarriable
 	bool ballCanTouch = true;
 
 	void UpdateEdgeHighlight(float dt);
+	//only keep the axis with biggest value
+	//others will be set to 0
+	FVector clampShortAxis(const FVector& vec);
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		float rotationDuration = 2.0f;

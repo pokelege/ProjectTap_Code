@@ -32,6 +32,7 @@ ALaser::ALaser()
 	mesh->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> laserEmitterMesh(TEXT("/Game/Models/TurretGun"));
 	mesh->SetStaticMesh(laserEmitterMesh.Object);
+	mesh->SetCastShadow(false);
 }
 
 // Called when the game starts or when spawned
@@ -204,6 +205,7 @@ void ALaser::checkLaserCollisions(float dt)
 		mesh->SetWorldRotation(dir.Rotation());
 	}
 
+	
 }
 
 void ALaser::SpawnSubLaser(const FVector& start, const FVector& normal)

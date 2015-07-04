@@ -3,13 +3,14 @@
 #pragma once
 
 #include "Tiles/Tile.h"
+#include "ICarriable.h"
 #include "MagnetTile.generated.h"
 
 /**
  *
  */
 UCLASS()
-class PROJECTTAP_API AMagnetTile : public ATile
+class PROJECTTAP_API AMagnetTile : public ATile, public ICarriable
 {
 	GENERATED_BODY()
 
@@ -35,6 +36,7 @@ public:
 	AMagnetTile();
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
+	OffsetInfo getOffsetInfo() override;
 
 	UFUNCTION()
 		void OnBeginHit( class AActor* OtherActor ,

@@ -89,7 +89,7 @@ void ALaser::checkLaserCollisions(float dt)
 	if (hitActor != nullptr)
 	{
 		currHitPoint = hit.ImpactPoint;
-		//if(laserSparkParticle->bIsActive) laserSparkParticle->ActivateSystem();
+		if(!laserSparkParticle->bIsActive) laserSparkParticle->ActivateSystem();
 		//kills ball if laser hits it
 		auto ball = Cast<ABallPawn>(hitActor);
 
@@ -191,7 +191,10 @@ void ALaser::checkLaserCollisions(float dt)
 			if (notHitDeflectiveTile && notHitPortal)
 			{
 				KillSubLaser();
-				//laserSparkParticle->DeactivateSystem();
+			}
+			else
+			{
+				laserSparkParticle->DeactivateSystem();
 			}
 		}
 			laserSparkParticle->SetWorldLocation(currHitPoint);
@@ -200,7 +203,7 @@ void ALaser::checkLaserCollisions(float dt)
 	}
 	else
 	{
-		//laserSparkParticle->DeactivateSystem();
+		laserSparkParticle->DeactivateSystem();
 		currHitPoint = laserVector;
 
 		laserEmitter->SetBeamTargetPoint(pos + currHitPoint, 0);

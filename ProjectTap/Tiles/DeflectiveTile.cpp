@@ -194,26 +194,30 @@ void ADeflectiveTile::HighlightEdgeForDuration(float duration)
 }
 
 
-FVector ClampNormalAxis(FVector dir)
+FVector ADeflectiveTile::clampShortAxis(const FVector& vec)
 {
-	float x = dir.X;
-	float y = dir.Y;
-	FVector normal;
+	float abs_x = FMath::Abs(vec.X);
+	float abs_y = FMath::Abs(vec.Y);
+	float abs_z = FMath::Abs(vec.Z);
+	
+	auto abs_longest = FMath::Max3(abs_x, abs_y, abs_z);
 
-	if (FMath::Abs(x) > FMath::Abs(y))
+	FVector newVec;
+
+	if (abs_longest - abs_x <= FLT_EPSILON)
 	{
-		normal.X = x > 0.0f ? 1.0f : -1.0f;
-		normal.Y = 0.0f;
-		normal.Z = 0.0f;
+		newVec = FVector(vec.X, 0.0f, 0.0f);
+	}
+	else if (abs_longest - abs_y <= FLT_EPSILON)
+	{
+		newVec = FVector(0.0f, vec.Y, 0.0f);
 	}
 	else
 	{
-		normal.Y = y > 0.0f ? 1.0f : -1.0f;
-		normal.X = 0.0f;
-		normal.Z = 0.0f;
+		newVec = FVector(0.0f, 0.0f, vec.Z);
 	}
 
-	return normal;
+	return newVec;
 }
 
 void ADeflectiveTile::OnHit(class AActor* OtherActor,
@@ -226,13 +230,12 @@ void ADeflectiveTile::OnHit(class AActor* OtherActor,
 	{
 		if (ballCanTouch)
 		{
-			auto incomingVector = GetActorLocation() - ball->GetActorLocation();
-			incomingVector.Z = 0.0f;
-			auto newDir = FMath::GetReflectionVector(incomingVector, NormalImpulse);
-			auto newVel = 500 * ClampNormalAxis(newDir.GetSafeNormal());
+			auto incomingVector = clampShortAxis(GetActorLocation() - ball->GetActorLocation());
+			auto newDir = FMath::GetReflectionVector(incomingVector, NormalImpulse).GetSafeNormal();
+			auto newVel = 500 * clampShortAxis(newDir);
 			ball->ballCollision->SetPhysicsAngularVelocity(FVector::ZeroVector);
 			ball->ballCollision->SetPhysicsLinearVelocity(newVel);
- 			ball->ResetBallXYPosition(GetActorLocation());
+			ball->ResetBallXYPosition(GetActorLocation() + newDir * 50);
 			HighlightEdgeForDuration(0.3f);
 		}
 		else

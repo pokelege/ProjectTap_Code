@@ -150,10 +150,11 @@ void ATurretPawn::Tick( float DeltaTime )
 	}
 	currentFireCooldown += DeltaTime;
 	laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocalUpdatable, 0);
+
+	UpdateLaserTag(DeltaTime);
+
 	if(FoundPlayerToHit())
 	{
-
-		UpdateLaserTag(DeltaTime);
 		AttemptToFire(DeltaTime);
 	}
 	else
@@ -161,9 +162,8 @@ void ATurretPawn::Tick( float DeltaTime )
 		currentTime+= DeltaTime;
 		TurretGunMesh->SetRelativeRotation(FRotator(0,FMath::Sin(currentTime) * (FOV * 0.5f),0));
 		nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
-		laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocalUpdatable, 0);
-		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable + TurretGunMesh->GetForwardVector() * maxDistance, 0);
 	}
+
 }
 
 // Called to bind functionality to input
@@ -174,33 +174,32 @@ void ATurretPawn::SetupPlayerInputComponent(class UInputComponent* InputComponen
 
 void ATurretPawn::UpdateLaserTag(float dt)
 {
-		auto state = GetWorld()->GetGameState<AProjectTapGameState>();
-		auto pawn = state->CurrentPawn;
+	auto state = GetWorld()->GetGameState<AProjectTapGameState>();
+	auto pawn = state->CurrentPawn;
 
-		auto l = pawn->GetActorLocation();
-		direction = (pawn->GetActorLocation() - TurretGunMesh->GetComponentLocation()).GetSafeNormal();
+	auto l = pawn->GetActorLocation();
+	direction = FoundPlayerToHit() ? (pawn->GetActorLocation() - TurretGunMesh->GetComponentLocation()).GetSafeNormal() : TurretGunMesh->GetForwardVector();
 
-		auto gunPrimitive = Cast<UPrimitiveComponent>(TurretGunMesh);
-		gunPrimitive->SetWorldRotation(direction.Rotation());
-		nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
-		//change laser length
-		FHitResult hit;
-		FCollisionQueryParams queryParam;
-		queryParam.bFindInitialOverlaps = false;
-		queryParam.AddIgnoredActor(this);
-		FCollisionObjectQueryParams objectParam;
-		objectParam.AddObjectTypesToQuery(ECollisionChannel::ECC_WorldStatic);
-		objectParam.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
-		GetWorld()->LineTraceSingleByObjectType(hit, nozzleLocalUpdatable, direction, objectParam,queryParam);
+	auto gunPrimitive = Cast<UPrimitiveComponent>(TurretGunMesh);
+	gunPrimitive->SetWorldRotation(direction.Rotation());
+	nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
 
-		auto laserLength = maxDistance;
+	FCollisionQueryParams queryParams;
+	queryParams.bFindInitialOverlaps = true;
+	FCollisionObjectQueryParams objParams;
+	//change laser length
+	FHitResult hit;
+	auto end = nozzleLocalUpdatable + direction * maxDistance;
+	GetWorld()->LineTraceSingleByObjectType(hit, nozzleLocalUpdatable, end, objParams);
 
-		if (hit.bBlockingHit)
-		{
-			laserLength = (pawn->GetActorLocation() - nozzleLocalUpdatable).Size();
-		}
-		laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocalUpdatable, 0);
-		laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable + direction * laserLength, 0);
+	auto laserLength = maxDistance;
+
+	if (hit.Actor != nullptr)
+	{
+		laserLength = (hit.Actor.Get()->GetActorLocation() - nozzleLocalUpdatable).Size();
+	}
+	laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocalUpdatable, 0);
+	laserTag->EmitterInstances[0]->SetBeamTargetPoint(nozzleLocalUpdatable + direction * laserLength, 0);
 }
 
 void ATurretPawn::Damage(float deathDuration)

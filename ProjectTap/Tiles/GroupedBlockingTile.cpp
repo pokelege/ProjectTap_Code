@@ -9,7 +9,7 @@ AGroupedBlockingTile::AGroupedBlockingTile()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	FName path("/Game/Models/GroupedBlockingTile");
+	FName path("/Game/Models/SM_GroupedBlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
 

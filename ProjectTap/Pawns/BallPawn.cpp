@@ -83,6 +83,7 @@ void ABallPawn::BeginPlay()
 	bInvincible = false;
 	spring->SetLockPosition(GetActorLocation());
 	material = ballMesh->CreateDynamicMaterialInstance(0);
+	material->SetVectorParameterValue(TEXT("Color"), FVector((float)FMath::Rand() / RAND_MAX, (float)FMath::Rand() / RAND_MAX, (float)FMath::Rand() / RAND_MAX));
 }
 
 // Called every frame

@@ -56,6 +56,11 @@ ADeflectiveTile::ADeflectiveTile()
 
 	glowPowerHighlighted = 70.0f;
 
+	ConstructorHelpers::FObjectFinder<USoundWave> ballDeflectSoundFile( TEXT( "/Game/Sound/S_Hit" ) );
+	ballDeflectSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Ball Deflect Sound" ) );
+	ballDeflectSound->SetSound( ballDeflectSoundFile.Object );
+	ballDeflectSound->bAutoActivate = false;
+	ballDeflectSound->AttachTo( BoxCollision );
 }
 
 
@@ -237,6 +242,7 @@ void ADeflectiveTile::OnHit(class AActor* OtherActor,
 			ball->ballCollision->SetPhysicsLinearVelocity(newVel);
 			ball->ResetBallXYPosition(GetActorLocation() + newDir * 50);
 			HighlightEdgeForDuration(0.3f);
+			ballDeflectSound->Play();
 		}
 		else
 		{

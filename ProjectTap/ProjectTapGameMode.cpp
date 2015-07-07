@@ -67,7 +67,7 @@ void AProjectTapGameMode::BeginPlay()
 void AProjectTapGameMode::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-	if ( GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_STARTING )
+	if ( GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_STARTING && GetGameState<AProjectTapGameState>()->CurrentCamera != nullptr )
 	{
 		time += DeltaTime;
 		auto cameraToChangeTest = GetGameState<AProjectTapGameState>()->CurrentCamera->GetComponentByClass( UCameraComponent::StaticClass() );

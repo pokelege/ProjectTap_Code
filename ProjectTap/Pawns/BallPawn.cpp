@@ -207,3 +207,8 @@ AActor *ABallPawn::getCamera()
 {
 	return cameraComponent == nullptr ? nullptr : cameraComponent->GetAttachmentRootActor();
 }
+
+bool ABallPawn::isDying()
+{
+	return dying;
+}

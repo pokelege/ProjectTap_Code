@@ -21,3 +21,28 @@ void AMainMenuContainer::StartNewGame()
 	}
 }
 
+void AMainMenuContainer::ContinueGame()
+{
+	
+}
+
+void AMainMenuContainer::ToMainMenu()
+{
+
+}
+
+void AMainMenuContainer::ToOptions()
+{
+
+}
+
+void AMainMenuContainer::ToLevelSelect()
+{
+
+}
+
+void AMainMenuContainer::ToCredits()
+{
+
+}
+

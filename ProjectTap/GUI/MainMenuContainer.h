@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Object.h"
-#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+//#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "MainMenuContainer.generated.h"
 
 UENUM(BlueprintType)
@@ -27,18 +27,20 @@ class PROJECTTAP_API AMainMenuContainer : public AActor
 	GENERATED_BODY()
 	
 public:
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Menu)
+	//	UUserWidget* currentMenu;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
-		UUserWidget* mainMenuPlacable;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
+	//	UUserWidget* mainMenuPlacable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
-		UUserWidget* levelSelectPlacable;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
+	//	UUserWidget* levelSelectPlacable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
-		UUserWidget* optionsPlacable;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
+	//	UUserWidget* optionsPlacable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
-		UUserWidget* creditsPlacable;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
+	//	UUserWidget* creditsPlacable;
 
 	UFUNCTION(BluePrintCallable, Category = MainMenu)
 		void StartNewGame();

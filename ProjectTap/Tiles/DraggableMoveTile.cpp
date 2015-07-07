@@ -21,6 +21,8 @@ ADraggableMoveTile::ADraggableMoveTile()
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 
+	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh( TEXT( "/Game/Models/SM_DragTile" ) );
+	TileMesh->SetStaticMesh( mesh.Object );
 	FName path("/Game/Models/ArrowPlane");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> arrowMesh(*path.ToString());
 	arrowMeshComponent->SetStaticMesh(arrowMesh.Object);

@@ -44,6 +44,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		USceneComponent* frameCollisionsComponent;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+		UAudioComponent* ballDeflectSound = nullptr;
 	ADeflectiveTile();
 
 	UFUNCTION()

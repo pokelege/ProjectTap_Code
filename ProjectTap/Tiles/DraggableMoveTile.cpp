@@ -19,6 +19,7 @@ ADraggableMoveTile::ADraggableMoveTile()
 	BoxCollision->AttachTo(TileMesh);
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh( TEXT( "/Game/Models/SM_DragTile" ) );
 	TileMesh->SetStaticMesh( mesh.Object );
@@ -286,7 +287,7 @@ void ADraggableMoveTile::click()
 void ADraggableMoveTile::RemoveFocus()
 {
 	//if this mouse release results in a click event
-	if (!isSelected)
+	if (!isSelected) 
 	{
 		click();
 	}

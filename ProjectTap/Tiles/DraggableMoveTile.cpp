@@ -19,6 +19,7 @@ ADraggableMoveTile::ADraggableMoveTile()
 	BoxCollision->AttachTo(TileMesh);
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 
 	FName path("/Game/Models/ArrowPlane");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> arrowMesh(*path.ToString());
@@ -284,7 +285,7 @@ void ADraggableMoveTile::click()
 void ADraggableMoveTile::RemoveFocus()
 {
 	//if this mouse release results in a click event
-	if (!isSelected)
+	if (!isSelected) 
 	{
 		click();
 	}

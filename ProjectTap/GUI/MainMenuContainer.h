@@ -3,7 +3,20 @@
 #pragma once
 
 #include "Object.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "MainMenuContainer.generated.h"
+
+UENUM(BlueprintType)
+enum class MenuState : uint8
+{
+	MAIN_MENU,
+	NEW_GAME,
+	CONTINUE,
+	LEVEL_SELECT,
+	OPTIONS,
+	CREDITS,
+	QUIT
+};
 
 /**
  * 
@@ -15,8 +28,35 @@ class PROJECTTAP_API AMainMenuContainer : public AActor
 	
 public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
+		UUserWidget* mainMenuPlacable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
+		UUserWidget* levelSelectPlacable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
+		UUserWidget* optionsPlacable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
+		UUserWidget* creditsPlacable;
+
 	UFUNCTION(BluePrintCallable, Category = MainMenu)
-	void PrintMessageProjectTap();
-	
+		void StartNewGame();
+
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
+		void ContinueGame();
+
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
+		void ToMainMenu();
+
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
+		void ToOptions();
+
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
+		void ToLevelSelect();
+
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
+		void ToCredits();
+
 	AMainMenuContainer();
 };

@@ -83,6 +83,10 @@ class UPrimitiveComponent* OtherComp ,
 	if ( ( ball = Cast<ABallPawn>( OtherActor ) ) != nullptr )
 	{
 		ball->Kill();
+		if ( ball->isDying() )
+		{
+			material->SetScalarParameterValue( TEXT( "KilledBall" ) , 1 );
+		}
 	}
 }
 

@@ -60,9 +60,10 @@ public:
 
 	void Kill();
 
+	bool isDying();
+
 	void setInvincibility(bool invincible);
 
 	void setCamera(class ABallPlayerStart* playerStart);
-
 	AActor* getCamera();
 };

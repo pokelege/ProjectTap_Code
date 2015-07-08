@@ -27,7 +27,7 @@ AMagnetTile::AMagnetTile() : ATile()
 	delegate.BindUFunction( this , TEXT( "OnBeginHit" ) );
 	BoxCollision->OnComponentHit.Add( delegate );
 
-	ConstructorHelpers::FObjectFinder<USoundWave> magnetSoundFile( TEXT( "/Game/Sound/S_LaserLoop" ) );
+	ConstructorHelpers::FObjectFinder<USoundWave> magnetSoundFile( TEXT( "/Game/Sound/S_MagnetLoop" ) );
 	magnetSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Magnet Sound" ) );
 	magnetSound->SetSound( magnetSoundFile.Object );
 	magnetSound->bAutoActivate = false;

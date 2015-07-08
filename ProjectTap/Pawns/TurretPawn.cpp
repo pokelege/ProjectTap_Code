@@ -61,6 +61,13 @@ ATurretPawn::ATurretPawn()
 	explosionSound->SetSound( explosionSoundFile.Object );
 	explosionSound->bAutoActivate = false;
 	explosionSound->AttachTo( explosionParticle );
+
+	ConstructorHelpers::FObjectFinder<USoundWave> fireSoundFile( TEXT( "/Game/Sound/S_Gunshot" ) );
+	fireSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Fire Sound" ) );
+	fireSound->SetSound( fireSoundFile.Object );
+	fireSound->bAutoActivate = false;
+	fireSound->AttachTo( TurretGunMesh );
+
 	auto pc = Cast<UPrimitiveComponent>(RootComponent);
 	pc->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
 	laserPrimitive->SetWorldScale3D(laserWorldTransform.GetScale3D());
@@ -74,6 +81,7 @@ void ATurretPawn::BeginPlay()
 	nozzleLocal = TurretGunMesh->GetSocketLocation("Nozzle");
 	nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
 	laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocal, 0);
+	fireSound->SetWorldLocation( nozzleLocal );
 	direction = this->GetActorForwardVector();
 	explosionParticle->Deactivate();
 }
@@ -126,6 +134,7 @@ void ATurretPawn::Fire()
 
 	UPrimitiveComponent* comp = Cast<UPrimitiveComponent>(bullet->GetRootComponent());
 	comp->AddImpulse(turretToBallNormal * bulletForce);
+	fireSound->Play();
 }
 
 
@@ -150,7 +159,7 @@ void ATurretPawn::Tick( float DeltaTime )
 	}
 	currentFireCooldown += DeltaTime;
 	laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocalUpdatable, 0);
-
+	fireSound->SetWorldLocation( nozzleLocalUpdatable );
 	UpdateLaserTag(DeltaTime);
 
 	if(FoundPlayerToHit())

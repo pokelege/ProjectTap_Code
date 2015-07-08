@@ -21,6 +21,9 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 	float restartCoolDown = 1.0f;
 public:
 
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+	UAudioComponent* musicPlayer = nullptr;
+
 	AProjectTapGameMode ( const FObjectInitializer& initializer );
 
 	virtual void BeginPlay() override;

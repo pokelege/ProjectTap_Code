@@ -28,6 +28,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	UCurveFloat* rotationSequence;
 
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+	UAudioComponent* flipSound = nullptr;
+
 	ABaseRampTile();
 
 	virtual void Tick( float DeltaTime ) override;

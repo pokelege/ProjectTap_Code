@@ -52,7 +52,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
 		float length = 1000000.0f;
-
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+	UAudioComponent* laserEmitSound = nullptr;
 	// Sets default values for this actor's properties
 	ALaser();
 

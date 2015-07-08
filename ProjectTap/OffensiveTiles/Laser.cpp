@@ -38,6 +38,11 @@ ALaser::ALaser()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> laserEmitterMesh(TEXT("/Game/Models/TurretGun"));
 	mesh->SetStaticMesh(laserEmitterMesh.Object);
 	mesh->SetCastShadow(false);
+
+	ConstructorHelpers::FObjectFinder<USoundWave> laserEmitSoundFile( TEXT( "/Game/Sound/S_LaserLoop" ) );
+	laserEmitSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Laser Emit Sound" ) );
+	laserEmitSound->SetSound( laserEmitSoundFile.Object );
+	laserEmitSound->AttachTo( GetRootComponent() );
 }
 
 // Called when the game starts or when spawned
@@ -46,6 +51,7 @@ void ALaser::BeginPlay()
 	Super::BeginPlay();
 	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
 	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);
+	laserEmitSound->Play();
 }
 
 void ALaser::SetLaserDepth(unsigned i)

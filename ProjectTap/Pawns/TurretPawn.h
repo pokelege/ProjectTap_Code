@@ -49,6 +49,9 @@ public:
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 	UAudioComponent* explosionSound = nullptr;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+		UAudioComponent* fireSound = nullptr;
 	// Sets default values for this pawn's properties
 	ATurretPawn();
 

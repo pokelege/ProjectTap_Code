@@ -16,6 +16,12 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 	DefaultPawnClass = 0;
 	GameStateClass = AProjectTapGameState::StaticClass();
 	PrimaryActorTick.bCanEverTick = true;
+
+	ConstructorHelpers::FObjectFinder<USoundWave> defaultMusicFile( TEXT( "/Game/Sound/S_DefaultMusic" ) );
+	musicPlayer = CreateDefaultSubobject<UAudioComponent>( TEXT( "Music" ) );
+	musicPlayer->SetSound( defaultMusicFile.Object );
+	musicPlayer->bAutoActivate = false;
+	musicPlayer->AttachTo( GetRootComponent() );
 }
 
 void AProjectTapGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -50,6 +56,7 @@ void AProjectTapGameMode::BeginPlay()
 					camera = ball->getCamera();
 				}
 			}
+			if ( realPlayerStart->music != nullptr )musicPlayer->SetSound( realPlayerStart->music );
 		}
 		else
 		{
@@ -61,7 +68,8 @@ void AProjectTapGameMode::BeginPlay()
 	}
 	GetGameState<AProjectTapGameState>()->CurrentCamera = camera;
 	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::GAME_STATE_STARTING);
-
+	musicPlayer->Play();
+	musicPlayer->SetVolumeMultiplier( 0 );
 }
 
 void AProjectTapGameMode::Tick( float DeltaTime )
@@ -77,6 +85,7 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 			float fadeValue = FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
 			cameraToChange->PostProcessSettings.bOverride_ColorGain = true;
 			cameraToChange->PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
+			musicPlayer->SetVolumeMultiplier( fadeValue );
 		}
 		if ( time >= restartCoolDown )
 		{
@@ -97,6 +106,7 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 			float fadeValue = 1 - FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
 			cameraToChange->PostProcessSettings.bOverride_ColorGain = true;
 			cameraToChange->PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
+			musicPlayer->SetVolumeMultiplier( fadeValue );
 		}
 		if(time >= restartCoolDown)
 		{
@@ -114,6 +124,7 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 			float fadeValue = 1 - FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
 			cameraToChange->PostProcessSettings.bOverride_ColorGain = true;
 			cameraToChange->PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
+			musicPlayer->SetVolumeMultiplier( fadeValue );
 		}
 		if(time >= restartCoolDown)
 		{

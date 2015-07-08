@@ -35,4 +35,7 @@ public:
 	bool lockY = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	bool lockZ = true;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+	USoundBase* music = nullptr;
 };

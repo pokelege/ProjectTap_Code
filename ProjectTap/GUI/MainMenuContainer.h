@@ -25,22 +25,38 @@ UCLASS()
 class PROJECTTAP_API AMainMenuContainer : public AActor
 {
 	GENERATED_BODY()
-	
+private:
+
+	UUserWidget* levelSelection;
+	AActor* currentMenu;
+
+	MenuState currentMenuState = MenuState::MAIN_MENU;
+	bool bMoveMenu = false;
+	bool bBackToMenu = false;
+
+	void TransitionToMenu(AActor* menuPlaceable);
+	void UpdateMenuTransition(float dt);
 public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Menu)
-		UUserWidget* currentMenu;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
+		FVector menuSlideEndPos = FVector(770.0f, -260.0f, 430.0f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
-		UUserWidget* mainMenuPlacable;
+		FVector menuSlideStartPos = FVector(770.0f, -1070.0f, 430.0f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
-		UUserWidget* levelSelectPlacable;
+		float transitionSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
-		UUserWidget* optionsPlacable;
+		AActor* mainMenuPlacable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
-		UUserWidget* creditsPlacable;
+		AActor* levelSelectPlacable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
+		AActor* optionsPlacable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
+		AActor* creditsPlacable;
 
 	UFUNCTION(BluePrintCallable, Category = MainMenu)
 		void StartNewGame();
@@ -59,6 +75,9 @@ public:
 
 	UFUNCTION(BluePrintCallable, Category = MainMenu)
 		void ToCredits();
+
+	virtual void Tick(float dt) override;
+	virtual void BeginPlay() override;
 
 	AMainMenuContainer();
 };

@@ -17,6 +17,12 @@ ABlockingTileBase::ABlockingTileBase()
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	ConstructorHelpers::FObjectFinder<USoundWave> activateSoundFile( TEXT( "/Game/Sound/S_Swoosh" ) );
+	activateSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Activate Sound" ) );
+	activateSound->SetSound( activateSoundFile.Object );
+	activateSound->bAutoActivate = false;
+	activateSound->AttachTo( BoxCollision );
 }
 
 // Called when the game starts or when spawned
@@ -70,4 +76,9 @@ void ABlockingTileBase::deactivate()
 	Super::deactivate();
 	time_counter = 0.0f;
 	lerpMaterialColorForCoolDown(1.0f);
+}
+void ABlockingTileBase::activate()
+{
+	Super::activate();
+	activateSound->Play();
 }

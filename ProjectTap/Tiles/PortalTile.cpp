@@ -42,6 +42,12 @@ APortalTile::APortalTile()
 
 	GeneratePortalCollision();
 	AdjustOrientationAndTriggerBoxes();
+
+	ConstructorHelpers::FObjectFinder<USoundWave> teleportSoundFile( TEXT( "/Game/Sound/S_Teleport" ) );
+	teleportSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Activate Sound" ) );
+	teleportSound->SetSound( teleportSoundFile.Object );
+	teleportSound->bAutoActivate = false;
+	teleportSound->AttachTo( BoxCollision );
 }
 
 void APortalTile::AdjustOrientationAndTriggerBoxes()
@@ -245,6 +251,7 @@ void APortalTile::TransportBallToOrange(ABallPawn* pawn)
 		auto newVel = newVelMag * velocityMultiplier * otherPortal->GetActorForwardVector();
 		pawn->ballCollision->SetPhysicsLinearVelocity(newVel);
 		pawn->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f));
+		teleportSound->Play();
 	}
 }
 
@@ -260,6 +267,7 @@ void APortalTile::TransportBallToBlue(ABallPawn* pawn)
 		auto newVel = newVelMag * velocityMultiplier * -otherPortal->GetActorForwardVector();
 		pawn->ballCollision->SetPhysicsLinearVelocity(newVel);
 		pawn->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f));
+		teleportSound->Play();
 	}
 }
 

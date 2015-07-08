@@ -34,7 +34,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
 	UBoxComponent* orangePortalTrigger;
-
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+	UAudioComponent* teleportSound = nullptr;
 	APortalTile();
 
 	virtual void BeginPlay() override;

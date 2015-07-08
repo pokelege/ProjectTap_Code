@@ -19,6 +19,13 @@ ABaseRampTile::ABaseRampTile() : ATile()
 	offset->AttachTo(GetRootComponent());
 	offset->SetRelativeLocation(FVector(40,0,0));
 	TileMesh->AttachTo(offset,NAME_None,EAttachLocation::KeepWorldPosition);
+
+	ConstructorHelpers::FObjectFinder<USoundWave> flipSoundFile( TEXT( "/Game/Sound/S_Click" ) );
+	flipSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Flip Sound" ) );
+	flipSound->SetSound( flipSoundFile.Object );
+	flipSound->bAutoActivate = false;
+	flipSound->AttachTo( BoxCollision );
+
 	CancelHighlight();
 	Disable();
 }
@@ -46,6 +53,7 @@ void ABaseRampTile::activate()
 	if(rotationSequence == nullptr || ball == nullptr || !IsEnabled() || activated) return;
 	Super::activate();
 	time = 0.0f;
+	flipSound->Play();
 }
 
 

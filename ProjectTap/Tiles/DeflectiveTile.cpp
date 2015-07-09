@@ -237,7 +237,7 @@ void ADeflectiveTile::OnHit(class AActor* OtherActor,
 		{
 			auto incomingVector = clampShortAxis(GetActorLocation() - ball->GetActorLocation());
 			auto newDir = FMath::GetReflectionVector(incomingVector, NormalImpulse).GetSafeNormal();
-			auto newVel = 500 * clampShortAxis(newDir);
+			auto newVel = deflectingSpeed * clampShortAxis(newDir);
 			ball->ballCollision->SetPhysicsAngularVelocity(FVector::ZeroVector);
 			ball->ballCollision->SetPhysicsLinearVelocity(newVel);
 			ball->ResetBallXYPosition(GetActorLocation() + newDir * 50);

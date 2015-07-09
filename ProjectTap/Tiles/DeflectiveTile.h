@@ -37,6 +37,9 @@ public:
 		float rotationDuration = 2.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+		float deflectingSpeed = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		DeflectiveTileType type;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)

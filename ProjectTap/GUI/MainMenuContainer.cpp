@@ -26,19 +26,23 @@ void AMainMenuContainer::BeginPlay()
 		if (actorName.StartsWith("OptionsPlaceable"))
 		{
 			optionsPlacable = *v_itr;
+			v_itr->SetActorLocation(hiddenLocation);
 		}
 		else if (actorName.StartsWith("LevelSelectPlaceable"))
 		{
 			levelSelectPlacable = *v_itr;
+			v_itr->SetActorLocation(hiddenLocation);
 		}
 		else if (actorName.StartsWith("CreditsPlaceable"))
 		{
 			creditsPlacable = *v_itr;
+			v_itr->SetActorLocation(hiddenLocation);
+
 		}
 		else if (actorName.StartsWith("MainMenu"))
 		{
 			mainMenuPlacable = *v_itr;
-			currentMenu = *v_itr;
+			currentMenu = mainMenuPlacable;
 		}
 	}
 
@@ -65,47 +69,61 @@ void AMainMenuContainer::ContinueGame()
 void AMainMenuContainer::ToMainMenu()
 {
 	//currentMenuState = MenuState::MAIN_MENU;
-	TransitionToMenu(mainMenuPlacable);
+	TransitionToMenu(mainMenuPlacable, mainMenuShowLocation);
 }
 
 void AMainMenuContainer::ToOptions()
 {
 	//currentMenuState = MenuState::OPTIONS;
-	TransitionToMenu(optionsPlacable);
+	//TransitionToMenu(optionsPlacable, optionMenuShowLocation);
+	if (optionsPlacable != currentMenu)
+	{
+		optionsPlacable->SetActorLocation(optionMenuShowLocation);
+		currentMenu->SetActorLocation(hiddenLocation);
+		currentMenu = optionsPlacable;
+	}
 }
 
 void AMainMenuContainer::ToLevelSelect()
 {
 	//currentMenuState = MenuState::LEVEL_SELECT;
-	TransitionToMenu(levelSelectPlacable);
+	TransitionToMenu(levelSelectPlacable, levelSelectMenuShowLocation);
 }
 
 void AMainMenuContainer::ToCredits()
 {
 	//currentMenuState = MenuState::CREDITS;
-	TransitionToMenu(creditsPlacable);
+	TransitionToMenu(creditsPlacable, creditMenuShowLocation);
 }
 
-void AMainMenuContainer::TransitionToMenu(AActor* menuPlaceable)
+void AMainMenuContainer::TransitionToMenu(AActor* menuPlaceable, const FVector& pos)
 {
 	if (menuPlaceable != currentMenu)
 	{
-		SetWidgetVisibility(currentMenu, EVisibility::Collapsed);
-
-		SetWidgetVisibility(menuPlaceable, EVisibility::Visible);
-
+		menuPlaceable->SetActorLocation(pos);
+		currentMenu->SetActorLocation(hiddenLocation);
 		currentMenu = menuPlaceable;
 	}
 }
 
+UWidgetComponent* menuWidget;
 void AMainMenuContainer::SetWidgetVisibility(AActor* widget, EVisibility visibility)
 {
 	auto component = widget->GetRootComponent();
-	auto menuWidget = Cast<UWidgetComponent>(component);
+	menuWidget = Cast<UWidgetComponent>(component);
 	if (menuWidget != nullptr)
 	{
 		auto w = menuWidget->GetSlateWidget()->GetChildren()->GetChildAt(0);
-		w->SetVisibility(visibility);
+
+		if (visibility.IsVisible())
+		{
+			widget->SetActorScale3D(FVector(1.0f));
+		}
+		
+		if (!visibility.IsVisible())
+		{
+			widget->SetActorScale3D(FVector(0.0f));
+		}
 	}
 }
 

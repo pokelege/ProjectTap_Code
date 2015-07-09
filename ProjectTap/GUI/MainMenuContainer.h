@@ -16,7 +16,7 @@ class PROJECTTAP_API AMainMenuContainer : public AActor
 private:
 
 	AActor* currentMenu;
-	FVector hiddenLocation = FVector(0.0f, -2390.0f, 0.0f);
+	FVector hiddenLocation = FVector(810.0f, -2390.0f, 510.0f);
 	FVector mainMenuShowLocation = FVector(810.0f, -270.0f, 510.0f);
 	FVector optionMenuShowLocation = FVector(800.0f, -530.0f, 290.0f);
 	FVector levelSelectMenuShowLocation = FVector(820.0f, -570.0f, 260.0f);
@@ -26,7 +26,6 @@ private:
 	bool bBackToMenu = false;
 	bool enabled = true;
 	bool bReachedGoal = false;
-
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)

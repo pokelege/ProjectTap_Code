@@ -75,13 +75,7 @@ void AMainMenuContainer::ToMainMenu()
 void AMainMenuContainer::ToOptions()
 {
 	//currentMenuState = MenuState::OPTIONS;
-	//TransitionToMenu(optionsPlacable, optionMenuShowLocation);
-	if (optionsPlacable != currentMenu)
-	{
-		optionsPlacable->SetActorLocation(optionMenuShowLocation);
-		currentMenu->SetActorLocation(hiddenLocation);
-		currentMenu = optionsPlacable;
-	}
+	TransitionToMenu(optionsPlacable, optionMenuShowLocation);
 }
 
 void AMainMenuContainer::ToLevelSelect()

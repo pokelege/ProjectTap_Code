@@ -200,10 +200,6 @@ void ALaser::checkLaserCollisions(float dt)
 			{
 				KillSubLaser();
 			}
-			else
-			{
-				laserSparkParticle->DeactivateSystem();
-			}
 		}
 			laserSparkParticle->SetWorldLocation(currHitPoint);
 			laserSparkParticle->SetWorldRotation(FVector(currHitPoint -
@@ -211,10 +207,11 @@ void ALaser::checkLaserCollisions(float dt)
 	}
 	else
 	{
-		laserSparkParticle->DeactivateSystem();
 		currHitPoint = laserVector;
-
 		laserEmitter->SetBeamTargetPoint(pos + currHitPoint, 0);
+		laserSparkParticle->SetWorldLocation( pos + currHitPoint );
+		laserSparkParticle->SetWorldRotation( FVector( (pos + currHitPoint) -
+			GetActorLocation() ).GetSafeNormal().Rotation().Quaternion() );
 		KillSubLaser();
 	}
 

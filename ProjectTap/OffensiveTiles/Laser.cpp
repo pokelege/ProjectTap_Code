@@ -102,6 +102,8 @@ void ALaser::checkLaserCollisions(float dt)
 		if (ball != nullptr)
 		{
 			ball->Kill();
+			laserEmitter->SetBeamTargetPoint(hit.ImpactPoint, 0);
+			KillSubLaser();
 		}
 		else
 		{

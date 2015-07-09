@@ -3,20 +3,8 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
-#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+#include "Runtime/UMG/Public/Components/WidgetComponent.h"
 #include "MainMenuContainer.generated.h"
-
-UENUM(BlueprintType)
-enum class MenuState : uint8
-{
-	MAIN_MENU,
-	NEW_GAME,
-	CONTINUE,
-	LEVEL_SELECT,
-	OPTIONS,
-	CREDITS,
-	QUIT
-};
 
 /**
  * 
@@ -27,25 +15,15 @@ class PROJECTTAP_API AMainMenuContainer : public AActor
 	GENERATED_BODY()
 private:
 
-	UUserWidget* levelSelection;
 	AActor* currentMenu;
 
-	MenuState currentMenuState = MenuState::MAIN_MENU;
 	bool bMoveMenu = false;
 	bool bBackToMenu = false;
+	bool enabled = true;
+	bool bReachedGoal = false;
 
-	void TransitionToMenu(AActor* menuPlaceable);
-	void UpdateMenuTransition(float dt);
+
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
-		FVector menuSlideEndPos = FVector(770.0f, -260.0f, 430.0f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
-		FVector menuSlideStartPos = FVector(770.0f, -1070.0f, 430.0f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
-		float transitionSpeed;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
 		AActor* mainMenuPlacable;
 
@@ -58,26 +36,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Menu)
 		AActor* creditsPlacable;
 
-	UFUNCTION(BluePrintCallable, Category = MainMenu)
+	UFUNCTION(BluePrintCallable, Category = MainMenu1)
 		void StartNewGame();
 
-	UFUNCTION(BluePrintCallable, Category = MainMenu)
+	void SetWidgetVisibility(AActor* widget, EVisibility visibility);
+
+	void TransitionToMenu(AActor* menuPlaceable);
+	
+	UFUNCTION(BluePrintCallable, Category = MainMenu3)
 		void ContinueGame();
 
-	UFUNCTION(BluePrintCallable, Category = MainMenu)
+	UFUNCTION(BluePrintCallable, Category = MainMenu4)
 		void ToMainMenu();
 
-	UFUNCTION(BluePrintCallable, Category = MainMenu)
+	UFUNCTION(BluePrintCallable, Category = MainMenu5)
 		void ToOptions();
 
-	UFUNCTION(BluePrintCallable, Category = MainMenu)
+	UFUNCTION(BluePrintCallable, Category = MainMenu6)
 		void ToLevelSelect();
 
-	UFUNCTION(BluePrintCallable, Category = MainMenu)
+	UFUNCTION(BluePrintCallable, Category = MainMenu7)
 		void ToCredits();
 
-	virtual void Tick(float dt) override;
 	virtual void BeginPlay() override;
+	virtual void Tick(float dt) override;
 
 	AMainMenuContainer();
 };

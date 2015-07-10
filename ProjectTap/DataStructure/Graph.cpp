@@ -20,9 +20,9 @@ void AGraph::Init()
 	{
 		edgeMatrix.SetNum(MAX_SIZE);
 
-		for (size_t i = 0; i < MAX_SIZE; i++)
+		for (int32 i = 0; i < MAX_SIZE; i++)
 		{
-			for (size_t j = 0; j < MAX_SIZE; j++)
+			for (int32 j = 0; j < MAX_SIZE; j++)
 			{
 				if (j == 0)
 				{
@@ -101,12 +101,12 @@ void AGraph::BeginDestroy()
 
 	if (GetWorld() != nullptr)
 	{
-		for (size_t i = 0; i < mark.Num(); i++)
+		for (int32 i = 0; i < mark.Num(); i++)
 		{
 			if (mark[i] != nullptr)
 			{
 				auto cons = mark[i]->connections;
-				for (size_t j = 0; j < cons.Num(); j++)
+				for (int32 j = 0; j < cons.Num(); j++)
 				{
 					mark[i]->disconnectTo(cons[j]);
 				}
@@ -119,7 +119,7 @@ void AGraph::BeginDestroy()
 
 AGVertex* AGraph::next(int32 v, int32 v2)
 {
-	for (size_t i = v2 + 1; i < MAX_SIZE; ++i)
+	for (int32 i = v2 + 1; i < MAX_SIZE; ++i)
 	{
 		if (i != v && edgeMatrix[v].vertex[i] == EDGE)
 		{
@@ -141,7 +141,7 @@ AGVertex* AGraph::getConnectedVertexByIndex(int32 vertexIndex,
 
 AGVertex* AGraph::first(int32 v)
 {
-	for (size_t i = 0; i < MAX_SIZE; i++)
+	for (int32 i = 0; i < MAX_SIZE; i++)
 	{
 		if (i != v && edgeMatrix[v].vertex[i] == EDGE)
 		{
@@ -161,7 +161,7 @@ AGVertex* AGraph::FindNearestVertexTo(const FVector& dragRay,
 
 	//find the closest vertex from all verts that are connected to this vertex
 	auto goal = mark[vertex->vertexIndex];
-	for (size_t i = 0; 
+	for (int32 i = 0; 
 		 i < MAX_SIZE; 
 		 goal = getConnectedVertexByIndex(vertex->vertexIndex, i++))
 	{ 
@@ -215,7 +215,7 @@ bool AGraph::hasEdge(int32 v1, int32 v2)
 
 void AGraph::deleteAllVertsConnectionsToVert(int32 v, int32 connectIndex)
 {
-	for (size_t i = 0; i < mark.Num(); i++)
+	for (int32 i = 0; i < mark.Num(); i++)
 	{
 		bool canDelete = mark[i] != nullptr && mark[i]->connections[connectIndex] == mark[v]->vertexIndex;
 		if (canDelete)
@@ -227,13 +227,13 @@ void AGraph::deleteAllVertsConnectionsToVert(int32 v, int32 connectIndex)
 
 void AGraph::generateEdges()
 {
-	for (size_t v = 0; v < mark.Num(); v++)
+	for (int32 v = 0; v < mark.Num(); v++)
 	{
 		auto vertex = mark[v];
 
 		if (vertex != nullptr)
 		{
-			for (size_t i = 0; i < vertex->connections.Num(); i++)
+			for (int32 i = 0; i < vertex->connections.Num(); i++)
 			{
 				auto connectIndex = vertex->connections[i];
 				bool validIndex = connectIndex >= 0 && connectIndex < MAX_SIZE && getVertex(connectIndex) != nullptr;
@@ -284,13 +284,13 @@ void AGraph::addVertex(AGVertex* vertex)
 	bool containsVertex = false;
 
 	//check if contains vertex
-	for (size_t i = 0; i < mark.Num() && !containsVertex; i++)
+	for (int32 i = 0; i < mark.Num() && !containsVertex; i++)
 	{
 		containsVertex = mark[i] != nullptr && 
 			vertex->vertexIndex == mark[i]->vertexIndex;
 	}
 
-	for (size_t i = 0; i < mark.Num() && !containsVertex; i++)
+	for (int32 i = 0; i < mark.Num() && !containsVertex; i++)
 	{
 		if (mark[i] == nullptr)
 		{
@@ -308,7 +308,7 @@ void AGraph::generateGraphRouteVisualization()
 	unmarkAll();
 	TArray<int32> stack;
 
-	for (size_t i = 0; i < MAX_SIZE; i++)
+	for (int32 i = 0; i < MAX_SIZE; i++)
 	{
 		DFS_makeVisualizers(stack, i);
 	}
@@ -414,7 +414,7 @@ void AGraph::initializeEdgeMesh(UStaticMeshComponent* edgeMesh,
 
 void AGraph::unmarkAll()
 {
-	for (size_t i = 0; i < mark.Num(); i++)
+	for (int32 i = 0; i < mark.Num(); i++)
 	{
 		if (mark[i] != nullptr)
 		{
@@ -442,7 +442,7 @@ void AGraph::markVertex(AGVertex* vertex)
 
 void AGraph::removeVertex(AGVertex* vertex)
 {
-	for (size_t i = 0; i < mark.Num(); i++)
+	for (int32 i = 0; i < mark.Num(); i++)
 	{
 		if (mark[i] != nullptr && (mark[i]->vertexIndex == vertex->vertexIndex))
 		{
@@ -452,7 +452,7 @@ void AGraph::removeVertex(AGVertex* vertex)
 	}
 
 	//delete all edges involving this vertex
-	for (size_t i = 0; i < mark.Num(); i++)
+	for (int32 i = 0; i < mark.Num(); i++)
 	{
 		deleteUndirectedEdge(vertex->vertexIndex, i);
 	}

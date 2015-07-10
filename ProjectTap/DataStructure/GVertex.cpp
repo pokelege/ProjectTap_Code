@@ -141,7 +141,7 @@ void AGVertex::disconnectTo(int32 v)
 	static int count = 0;
 	auto g = getGraph();
 
-	for (size_t i = 0; i < connections.Num(); i++)
+	for (int32 i = 0; i < connections.Num(); i++)
 	{
 		if (connections[i] == v)
 		{
@@ -164,7 +164,7 @@ void AGVertex::disconnectTo(int32 v)
 
 void AGVertex::regenerateDebugArrows()
 {
-	for (size_t i = 0; i < connections.Num(); i++)
+	for (int32 i = 0; i < connections.Num(); i++)
 	{
 		auto vIndex = connections[i];
 		connectTo(vIndex);
@@ -232,7 +232,7 @@ bool bCtrlDown
 	{
 		vertexIndex = -1;
 
-		for (size_t i = 0; i < connections.Num(); i++)
+		for (int32 i = 0; i < connections.Num(); i++)
 		{
 			disconnectTo(connections[i]);
 		}
@@ -280,7 +280,7 @@ void AGVertex::BeginDestroy()
 	auto g = getGraph();
 	if (GetWorld() != nullptr && getGraph() != nullptr)
 	{
-		for (size_t i = 0; i < connections.Num(); i++)
+		for (int32 i = 0; i < connections.Num(); i++)
 		{
 			auto other = g->getVertex(connections[i]);
 			if (other != nullptr)

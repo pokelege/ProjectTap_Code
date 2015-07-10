@@ -168,7 +168,7 @@ void UTilesManager::SetCameraRay(const FHitResult& _hit,
 
 void UTilesManager::UpdateGroupedBlockingTiles()
 {
-	for (size_t i = 0; i < activatedGroupedBlocks.Num(); i++)
+	for (int32 i = 0; i < activatedGroupedBlocks.Num(); i++)
 	{
 		auto gbt = activatedGroupedBlocks[i];
 		if (!gbt->isActivated())
@@ -178,7 +178,7 @@ void UTilesManager::UpdateGroupedBlockingTiles()
 		}
 	}
 
-	for (size_t i = 0; i < activatedBlocks.Num(); i++)
+	for (int32 i = 0; i < activatedBlocks.Num(); i++)
 	{
 		auto bt = activatedBlocks[i];
 		if (!bt->isActivated())

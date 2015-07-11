@@ -2,7 +2,6 @@
 
 #pragma once
 #include <Array.h>
-#include "GVertex.h"
 #include "GameFramework/Actor.h"
 #include "Graph.generated.h"
 
@@ -58,17 +57,17 @@ private:
 							const AGVertex* v1,
 							const AGVertex* v2);
 	
-	AGVertex* next(int32 v, 
+	class AGVertex* next(int32 v, 
 		int32 v2);
 
-	AGVertex* first(int32 v);
+	class AGVertex* first(int32 v);
 
-	AGVertex* getConnectedVertexByIndex(int32 vertexIndex, 
+	class AGVertex* getConnectedVertexByIndex(int32 vertexIndex, 
 										int32 connectionIndex);
 
 	void unmarkAll();
 	void markVertex(int32 v_index);
-	void markVertex(AGVertex* vertex);
+	void markVertex(class AGVertex* vertex);
 
 	void clearRouteVisuals();
 public:
@@ -107,9 +106,9 @@ public:
 
 	inline int e(){ return numEdge; }
 
-	void addVertex(AGVertex* vertex);
+	void addVertex(class AGVertex* vertex);
 
-	void removeVertex(AGVertex* vertex);
+	void removeVertex(class AGVertex* vertex);
 
 	bool hasEdge(int32 v1, int32 v2);
 

@@ -1,8 +1,7 @@
 #include "ProjectTap.h"
 #include "Graph.h"
 #include "GVertex.h"
-#include <assert.h>
-
+//#include <assert.h>
 AGraph::AGraph()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -209,7 +208,7 @@ void AGraph::deleteUndirectedEdge(int32 v1, int32 v2)
 
 bool AGraph::hasEdge(int32 v1, int32 v2)
 {
-	assert(index >= 0 && index < MAX_SIZE);
+	//assert(index >= 0 && index < MAX_SIZE);
 	return edgeMatrix[v1].vertex[v2] == EDGE;
 }
 
@@ -275,7 +274,7 @@ bool AGraph::MoveTileFromTo(int32 from, int32 to)
 
 bool AGraph::IsVertexOccupied(int32 v)
 {
-	assert(index >= 0 && index < MAX_SIZE);
+	//assert(index >= 0 && index < MAX_SIZE);
 	return mark[v]->hasTile;
 }
 

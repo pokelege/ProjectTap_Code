@@ -2,7 +2,7 @@
 
 #include "ProjectTap.h"
 #include "DeflectiveTile.h"
-#include "../Pawns/BallPawn.h"
+#include "Pawns/BallPawn.h"
 
 
 ADeflectiveTile::ADeflectiveTile()

@@ -4,15 +4,14 @@
 #include "PawnCastingTrigger.h"
 #include "BallPawn.h"
 #include "Tiles/BlockingTileBase.h"
-#include "Tiles/Ramp.h"
-#include "Tiles/JumpTile.h"
+#include "Tiles/BaseRampTile.h"
 //#include "../Tiles/PortalTile.h"
 
 // Sets default values
 APawnCastingTrigger::APawnCastingTrigger()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	tileOverlapCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("TileOverlap"));
 	SetRootComponent(tileOverlapCollision);
 	tileOverlapCollision->bGenerateOverlapEvents = true;
@@ -41,26 +40,6 @@ APawnCastingTrigger::APawnCastingTrigger()
 void APawnCastingTrigger::SetBallPawn(ABallPawn* pawn)
 {
 	this->currentPawn = pawn;
-}
-
-
-// Called when the game starts or when spawned
-void APawnCastingTrigger::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
-// Called every frame
-void APawnCastingTrigger::Tick( float DeltaTime )
-{
-	Super::Tick( DeltaTime );
-
-	if (currentPawn != nullptr)
-	{
-
-	}
-
 }
 
 void APawnCastingTrigger::OnBeginTriggerOverlap(AActor* OtherActor,

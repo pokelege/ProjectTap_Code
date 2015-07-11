@@ -7,8 +7,6 @@
 // Sets default values
 ASmokeCharacter::ASmokeCharacter()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 	AIControllerClass = ASmokeAIController::StaticClass();
 	GetCapsuleComponent()->SetSimulatePhysics(true);
 	GetCapsuleComponent()->SetEnableGravity(false);
@@ -23,22 +21,4 @@ ASmokeCharacter::ASmokeCharacter()
 
 	ConstructorHelpers::FObjectFinder<UBehaviorTree> behaviorAsset(TEXT("/Game/AI/SmokeBrain"));
 	behavior = behaviorAsset.Object;
-}
-
-// Called when the game starts or when spawned
-void ASmokeCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-// Called every frame
-void ASmokeCharacter::Tick( float DeltaTime )
-{
-	Super::Tick( DeltaTime );
-}
-
-// Called to bind functionality to input
-void ASmokeCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
-{
-	Super::SetupPlayerInputComponent(InputComponent);
 }

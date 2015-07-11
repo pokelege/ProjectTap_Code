@@ -2,11 +2,12 @@
 
 #include "ProjectTap.h"
 #include "Laser.h"
-#include "../Pawns/BallPawn.h"
-#include "../Pawns/TurretPawn.h"
-#include "../Tiles/DeflectiveTile.h"
-#include "../Tiles/BlockingTile.h"
-#include "../Tiles/PortalTile.h"
+#include "EmptyComponent.h"
+#include "Pawns/BallPawn.h"
+#include "Pawns/TurretPawn.h"
+#include "Tiles/DeflectiveTile.h"
+#include "Tiles/BlockingTile.h"
+#include "Tiles/PortalTile.h"
 #include "Classes/Particles/ParticleEmitter.h"
 
 #define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)

@@ -5,7 +5,7 @@
 #include "BlockingTile.h"
 #include "StrongBlockingTile.h"
 #include "GroupedBlockingTile.h"
-#include "Ramp.h"
+#include "BaseRampTile.h"
 #include "DraggableMoveTile.h"
 
  //Sets default values

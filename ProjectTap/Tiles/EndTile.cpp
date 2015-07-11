@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectTap.h"
+#include "EndTile.h"
 #include "Pawns/BallPawn.h"
 #include "ProjectTapGameState.h"
 #include "Engine/GameInstance.h"
-#include "EndTile.h"
 
 const FName AEndTile::END_MESH = FName("/Game/Models/EndTile");
 

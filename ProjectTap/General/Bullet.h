@@ -16,12 +16,6 @@ public:
 	// Sets default values for this actor's properties
 	ABullet();
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	// Called every frame
-	virtual void Tick( float DeltaSeconds ) override;
-
 	UFUNCTION()
 	void OnBeginHit(class AActor* OtherActor,
 					class UPrimitiveComponent* OtherComp,

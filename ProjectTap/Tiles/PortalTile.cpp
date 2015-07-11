@@ -10,7 +10,7 @@ APortalTile::APortalTile()
 {
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(TEXT("/Game/Models/Portal"));
 	TileMesh->SetStaticMesh(mesh.Object);
-
+	TileMesh->SetMobility( EComponentMobility::Static );
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	BoxCollision->SetWorldScale3D(FVector(1.0f));

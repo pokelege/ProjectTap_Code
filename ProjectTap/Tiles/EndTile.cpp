@@ -58,7 +58,7 @@ AEndTile::AEndTile() : ATile()
 {
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*END_MESH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-
+	TileMesh->SetMobility( EComponentMobility::Static );
 	if(BoxCollision)
 	{
 		BoxCollision->SetBoxExtent(FVector(40,40,80), false);

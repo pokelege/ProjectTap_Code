@@ -57,6 +57,7 @@ void AMainMenuContainer::StartNewGame()
 	}
 	
 	SetWidgetVisibility(mainMenuPlacable, EVisibility::Hidden);
+	SetWidgetVisibility(currentMenu, EVisibility::Hidden);
 }
 
 void AMainMenuContainer::ContinueGame()

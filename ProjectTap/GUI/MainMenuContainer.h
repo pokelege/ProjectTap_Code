@@ -19,7 +19,7 @@ private:
 	FVector hiddenLocation = FVector(810.0f, -2390.0f, 510.0f);
 	FVector mainMenuShowLocation = FVector(810.0f, -270.0f, 510.0f);
 	FVector optionMenuShowLocation = FVector(800.0f, -530.0f, 290.0f);
-	FVector levelSelectMenuShowLocation = FVector(820.0f, -570.0f, 260.0f);
+	FVector levelSelectMenuShowLocation = FVector(820.0f, -530.0f, 250.0f);
 	FVector creditMenuShowLocation = FVector();
 
 	bool bMoveMenu = false;
@@ -47,19 +47,19 @@ public:
 
 	void TransitionToMenu(AActor* menuPlaceable, const FVector& pos);
 	
-	UFUNCTION(BluePrintCallable, Category = MainMenu3)
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
 		void ContinueGame();
 
-	UFUNCTION(BluePrintCallable, Category = MainMenu4)
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
 		void ToMainMenu();
 
-	UFUNCTION(BluePrintCallable, Category = MainMenu5)
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
 		void ToOptions();
 
-	UFUNCTION(BluePrintCallable, Category = MainMenu6)
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
 		void ToLevelSelect();
 
-	UFUNCTION(BluePrintCallable, Category = MainMenu7)
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
 		void ToCredits();
 
 	virtual void BeginPlay() override;

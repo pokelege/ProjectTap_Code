@@ -40,7 +40,7 @@ private:
 
 	void deleteUndirectedEdge(int32 v1, int32 v2);
 
-	void deleteAllVertsConnectionsToVert(int32 v, 
+	void deleteAllVertsConnectionsToVert(int32 v,
 										 int32 connectIndex);
 
 	//the following methods will only be excuted inside editor
@@ -54,15 +54,15 @@ private:
 	UStaticMeshComponent* makeVertexMeshForVertex(int32 j);
 
 	void initializeEdgeMesh(UStaticMeshComponent* edgeMesh,
-							const AGVertex* v1,
-							const AGVertex* v2);
-	
-	class AGVertex* next(int32 v, 
+							const class AGVertex* v1,
+							const class AGVertex* v2);
+
+	class AGVertex* next(int32 v,
 		int32 v2);
 
 	class AGVertex* first(int32 v);
 
-	class AGVertex* getConnectedVertexByIndex(int32 vertexIndex, 
+	class AGVertex* getConnectedVertexByIndex(int32 vertexIndex,
 										int32 connectionIndex);
 
 	void unmarkAll();
@@ -118,12 +118,12 @@ public:
 	//@return: will return nullptr if there no match
 	AGVertex* FindNearestVertexTo(const FVector& dragRay,
 								  const AGVertex* vertex,
-								  const float thresholdSquared = 9000.0f);	
+								  const float thresholdSquared = 9000.0f);
 
 	void MakeVertexOccupied(int32 v);
 
-	bool MoveTileFromTo(int32 from, 
-					    int32 to);
+	bool MoveTileFromTo(int32 from,
+						int32 to);
 
 	void generateGraphRouteVisualization();
 
@@ -139,5 +139,5 @@ public:
 	AGVertex* getVertex(int index);
 
 	void BeginDestroy() override;
-	
+
 };

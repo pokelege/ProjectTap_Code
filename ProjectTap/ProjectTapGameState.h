@@ -1,9 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
 #include "GameFramework/GameState.h"
-#include "Pawns/BallPawn.h"
 #include "ProjectTapGameState.generated.h"
 
 
@@ -27,7 +25,7 @@ public:
 	float aiMinDistance = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Player)
-	ABallPawn* CurrentPawn;
+	class ABallPawn* CurrentPawn;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	class AActor* CurrentCamera;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level)

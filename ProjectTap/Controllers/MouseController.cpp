@@ -2,18 +2,9 @@
 
 #include "ProjectTap.h"
 #include "MouseController.h"
-#include "AI/Navigation/NavigationSystem.h"
-#include "../Tiles/BlockingTile.h"
-#include "../Tiles/StrongBlockingTile.h"
-#include "../Tiles/GroupedBlockingTile.h"
-#include "../Tiles/BaseRampTile.h"
-#include "../Tiles/DeflectiveTile.h"
-#include "Tiles/MagnetTile.h"
-#include "Tiles/DraggableMoveTile.h"
 #include "ProjectTapGameState.h"
-
-
-
+#include "Tiles/Tile.h"
+#include "Pawns/BallPawn.h"
 AMouseController::AMouseController(const FObjectInitializer& initializer):Super(initializer)
 {
   UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
@@ -21,7 +12,6 @@ AMouseController::AMouseController(const FObjectInitializer& initializer):Super(
   this->bEnableClickEvents = true;
   this->bEnableTouchEvents = true;
   this->DefaultMouseCursor = EMouseCursor::Default;
-
 }
 
 
@@ -183,8 +173,8 @@ void AMouseController::NotifyMouseReleased()
 
 void AMouseController::RespawnPressed()
 {
-	AProjectTapGameMode* gameMode = Cast<AProjectTapGameMode>(GetWorld()->GetAuthGameMode());
-	ABallPawn* ball = gameMode->getBall();
+	AProjectTapGameState* gamestate = Cast<AProjectTapGameState>( GetWorld()->GetGameState() );
+	ABallPawn* ball = gamestate->CurrentPawn;
 	if(ball != nullptr) ball->Kill();
 }
 

@@ -6,7 +6,6 @@
 
 
 
-
 float AProjectTapGameState::getCameraSaturation() const
 {
 	return cameraSaturation;

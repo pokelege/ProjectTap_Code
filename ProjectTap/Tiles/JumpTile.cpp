@@ -45,3 +45,39 @@ void AJumpTile::calculateImpulse()
 	auto forceX = ball->ballCollision->GetMass() * horizontalAcceleration;
 	force = dir * forceX * 2 * duration + FVector(0.0f, 0.0f, forceZ) * duration;
 }
+
+void AJumpTile::HighlightEdge()
+{
+	Super::HighlightEdge();
+	if ( target != nullptr )
+	{
+		target->Super::HighlightEdge();
+	}
+}
+
+void AJumpTile::CancelHighlightEdge()
+{
+	Super::CancelHighlightEdge();
+	if ( target != nullptr )
+	{
+		target->Super::CancelHighlightEdge();
+	}
+}
+
+void AJumpTile::HighlightTile()
+{
+	Super::HighlightTile();
+	if ( target != nullptr )
+	{
+		target->Super::HighlightTile();
+	}
+}
+
+void AJumpTile::CancelHighlightTile()
+{
+	Super::CancelHighlightTile();
+	if ( target != nullptr )
+	{
+		target->Super::CancelHighlightTile();
+	}
+}

@@ -121,6 +121,20 @@ void APortalTile::SetMeshCollisionProperty(UBoxComponent* box)
 void APortalTile::BeginPlay()
 {
 	Super::BeginPlay();
+	if ( !colorSet )
+	{
+		FVector randomColor( ( float ) FMath::Rand() / RAND_MAX , ( float ) FMath::Rand() / RAND_MAX , ( float ) FMath::Rand() / RAND_MAX );
+		SetColor( randomColor );
+		if ( otherPortal != nullptr )
+		{
+			otherPortal->SetColor( randomColor );
+		}
+	}
+	if ( material != nullptr )
+	{
+		material->SetVectorParameterValue( TEXT( "BaseColor" ) , baseColor );
+		material->SetVectorParameterValue( TEXT( "BaseColorHighlighted" ) , baseColor );
+	}
 }
 
 void APortalTile::Tick(float DeltaTime)
@@ -290,3 +304,13 @@ void APortalTile::GetLaserPortalTransportedLocation(UPrimitiveComponent* hit4Ppo
 	}
 }
 
+void APortalTile::SetColor( const FVector& color )
+{
+	baseColor = color;
+	colorSet = true;
+}
+
+bool APortalTile::GetColorSet()
+{
+	return colorSet;
+}

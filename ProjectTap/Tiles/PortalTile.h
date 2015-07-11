@@ -22,7 +22,12 @@ class PROJECTTAP_API APortalTile : public ATile, public ICarriable
 
 	void SetMeshCollisionProperty(UBoxComponent* box);
 	void GeneratePortalCollision();
+	bool colorSet = false;
+	FVector baseColor;
 public:
+	void SetColor( const FVector& color );
+	bool GetColorSet();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
 	float velocityMultiplier = 1.0f;
 

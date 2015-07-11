@@ -23,7 +23,7 @@ public:
 	float height = 500;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
-	AActor* target = nullptr;
+	AJumpTile* target = nullptr;
 
 	AJumpTile();
 
@@ -31,4 +31,8 @@ public:
 
 	virtual void activate() override;
 	void calculateImpulse();
+	virtual void HighlightEdge() override;
+	virtual void CancelHighlightEdge() override;
+	virtual void HighlightTile() override;
+	virtual void CancelHighlightTile() override;
 };

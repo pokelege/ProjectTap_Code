@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectTap.h"
-#include "Pawns/BallPawn.h"
 #include "MagnetTile.h"
+#include "Pawns/BallPawn.h"
 
 
 AMagnetTile::AMagnetTile() : ATile()

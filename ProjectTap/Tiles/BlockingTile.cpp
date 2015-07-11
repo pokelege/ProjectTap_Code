@@ -2,7 +2,6 @@
 
 #include "ProjectTap.h"
 #include "BlockingTile.h"
-#include "../Utils/LoadAssetsHelper.h"
 
 // Sets default values
 ABlockingTile::ABlockingTile( )

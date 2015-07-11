@@ -3,8 +3,6 @@
 #pragma once
 
 #include "Tiles/Tile.h"
-#include "Pawns/BallPawn.h"
-#include "Pawns/PawnCastingTrigger.h"
 #include "Tiles/BaseRampTile.h"
 #include "Ramp.generated.h"
 

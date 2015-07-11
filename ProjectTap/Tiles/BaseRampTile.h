@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Tiles/Tile.h"
-#include "Pawns/BallPawn.h"
 #include "BaseRampTile.generated.h"
 
 /**
@@ -22,7 +21,7 @@ protected:
 	float time = 0;
 
 	friend class APawnCastingTrigger;
-	ABallPawn* ball = nullptr;
+	class ABallPawn* ball = nullptr;
 	USceneComponent* offset;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)

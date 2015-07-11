@@ -2,7 +2,6 @@
 
 #include "ProjectTap.h"
 #include "Tile.h"
-#include "EmptyComponent.h"
 // Sets default values
 ATile::ATile()
 {

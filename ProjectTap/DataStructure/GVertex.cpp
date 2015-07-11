@@ -3,9 +3,6 @@
 #include "ProjectTap.h"
 #include "GVertex.h"
 #include "Graph.h"
-#include "Engine/GameInstance.h"
-#include "ProjectTapGameState.h"
-
 AGVertex::AGVertex()
 {
 	PrimaryActorTick.bCanEverTick = false;

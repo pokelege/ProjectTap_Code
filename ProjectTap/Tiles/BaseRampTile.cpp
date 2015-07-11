@@ -2,6 +2,7 @@
 
 #include "ProjectTap.h"
 #include "BaseRampTile.h"
+#include "Pawns/BallPawn.h"
 
 const FName ABaseRampTile::BASE_RAMP_CURVE_PATH = FName("/Game/Curves/Ramp");
 

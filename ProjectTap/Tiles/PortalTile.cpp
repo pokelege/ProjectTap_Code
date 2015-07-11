@@ -2,9 +2,9 @@
 
 #include "ProjectTap.h"
 #include "PortalTile.h"
-#include "../OffensiveTiles/Laser.h"
-#include "../Pawns/BallPawn.h"
-#include "../Pawns/PawnCastingTrigger.h"
+#include "OffensiveTiles/Laser.h"
+#include "Pawns/BallPawn.h"
+#include "Pawns/PawnCastingTrigger.h"
 
 APortalTile::APortalTile()
 {

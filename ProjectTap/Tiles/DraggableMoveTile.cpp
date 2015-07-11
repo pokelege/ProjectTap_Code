@@ -2,11 +2,10 @@
 
 #include "ProjectTap.h"
 #include "DraggableMoveTile.h"
-#include "PortalTile.h"
-#include "../DataStructure/GVertex.h"
-#include "../DataStructure/Graph.h"
+#include "DataStructure/GVertex.h"
+#include "DataStructure/Graph.h"
 #include "Classes/Particles/ParticleEmitter.h"
-#include <cassert>
+//#include <cassert>
 
 ADraggableMoveTile::ADraggableMoveTile()
 {

@@ -3,7 +3,7 @@
 #include "ProjectTap.h"
 #include "MovingTile.h"
 #include "ICarriable.h"
-#include "../OffensiveTiles/Laser.h"
+#include "OffensiveTiles/Laser.h"
 
 
 // Sets default values

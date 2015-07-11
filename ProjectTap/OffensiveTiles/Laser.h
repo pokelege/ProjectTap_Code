@@ -3,8 +3,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
-#include "../EmptyComponent.h"
-#include "../Tiles/ICarriable.h"
+#include "Tiles/ICarriable.h"
 #include "Laser.generated.h"
 
 UCLASS()
@@ -33,7 +32,7 @@ class PROJECTTAP_API ALaser : public AActor, public ICarriable
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
-		UEmptyComponent* root;
+	class UEmptyComponent* root;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
 		UStaticMeshComponent* mesh = nullptr;

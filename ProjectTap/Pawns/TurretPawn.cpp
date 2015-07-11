@@ -1,13 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectTap.h"
+#include "TurretPawn.h"
 #include "Engine/GameInstance.h"
 #include "BallPawn.h"
 #include "ProjectTapGameState.h"
 #include "General/Bullet.h"
-#include "TurretPawn.h"
 #include "ParticleEmitterInstances.h"
-#include "../Tiles/BlockingTile.h"
 
 const FName ATurretPawn::BASE_MESH = FName("/Game/Models/TurretBase");
 const FName ATurretPawn::GUN_MESH = FName("/Game/Models/TurretGun");

@@ -2,6 +2,8 @@
 
 #include "ProjectTap.h"
 #include "Ramp.h"
+#include "Pawns/BallPawn.h"
+#include "Pawns/PawnCastingTrigger.h"
 
 const FName ARamp::RAMP_MESH_PATH = FName("/Game/Models/Ramp");
 

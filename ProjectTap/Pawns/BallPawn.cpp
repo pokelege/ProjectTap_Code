@@ -1,10 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectTap.h"
-#include "ProjectTapGameState.h"
-#include "Engine/GameInstance.h"
 #include "BallPawn.h"
-#include "Tiles/Tile.h"
+#include "Engine/GameInstance.h"
+#include "ProjectTapGameState.h"
 #include "PawnCastingTrigger.h"
 #include "BallPlayerStart.h"
 #include "ConstrainingSpringArmComponent.h"

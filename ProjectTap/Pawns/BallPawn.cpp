@@ -147,7 +147,7 @@ void ABallPawn::ResetBallXYPosition(const FVector& position, const FVector& newV
 	auto vel = ballCollision->GetPhysicsLinearVelocity();
 	auto clampedVel = newVel;
 	clampedVel.Z = 0.0f;
-	auto dp = FMath::Abs(FVector::DotProduct(vel, clampedVel.GetSafeNormal()));
+	auto dp = FMath::Abs(FVector::DotProduct(vel.GetSafeNormal(), clampedVel.GetSafeNormal()));
 	if (FMath::Acos(dp) * 180.0 / PI > 10.0f)
 	{
 		SetActorLocation(newPosition);

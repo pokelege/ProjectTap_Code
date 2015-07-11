@@ -13,6 +13,7 @@ AWhiteTile::AWhiteTile()
 	TileMesh->SetStaticMesh(mesh.Object);
 	TileMesh->AttachTo(BoxCollision);
 	TileMesh->SetMobility( EComponentMobility::Static );
+	BoxCollision->SetBoxExtent(FVector(40.0f, 40.0f, 80.0f));
 }
 
 // Called when the game starts or when spawned
@@ -34,7 +35,7 @@ OffsetInfo AWhiteTile::getOffsetInfo()
 	OffsetInfo data;
 	data.offsetForCollision = FVector(0.0f, 0.0f, 40.0f);
 	data.scaleForCollision = FVector(1.2f, 1.2f, 5.0f);
-	data.offsetForCarryOn = FVector(0.0f, 0.0f, 50.0f);
+	data.offsetForCarryOn = FVector(0.0f, 0.0f, 85.0f);
 	return data;
 }
 

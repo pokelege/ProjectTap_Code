@@ -22,7 +22,7 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 public:
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
-	UAudioComponent* musicPlayer = nullptr;
+	class UAudioComponent* musicPlayer = nullptr;
 
 	AProjectTapGameMode ( const FObjectInitializer& initializer );
 
@@ -30,11 +30,9 @@ public:
 
 	virtual void Tick ( float DeltaTime ) override;
 
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
 	void Respawn();
 
-	ABallPawn* getBall();
+	class ABallPawn* getBall();
 	UFUNCTION()
 	bool LoadNextLevel();
 };

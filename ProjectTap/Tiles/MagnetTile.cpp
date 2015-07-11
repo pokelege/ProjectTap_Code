@@ -10,6 +10,8 @@ AMagnetTile::AMagnetTile() : ATile()
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*FName("/Game/Models/Magnet").ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
+	TileMesh->SetMobility( EComponentMobility::Static );
+
 	BoxCollision->SetBoxExtent(FVector(40.0f));
 
 	ConstructorHelpers::FObjectFinder<UParticleSystem> particle(*FName("/Game/Particles/P_Magnet").ToString());

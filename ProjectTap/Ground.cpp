@@ -19,13 +19,13 @@ AGround::AGround()
 	collision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	collision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	collision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
+	collision->SetMobility( EComponentMobility::Static );
 }
 
 // Called when the game starts or when spawned
 void AGround::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

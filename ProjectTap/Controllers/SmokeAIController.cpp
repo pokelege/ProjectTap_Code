@@ -2,11 +2,11 @@
 
 #include "ProjectTap.h"
 #include "SmokeAIController.h"
-#include "Pawns/SmokePawn.h"
-#include "Characters/SmokeCharacter.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "Pawns/SmokePawn.h"
+#include "Characters/SmokeCharacter.h"
 #include "ProjectTapGameState.h"
 ASmokeAIController::ASmokeAIController(const FObjectInitializer& ObjectInitializer) : AAIController(ObjectInitializer)
 {

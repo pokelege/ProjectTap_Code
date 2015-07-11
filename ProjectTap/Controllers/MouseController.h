@@ -3,8 +3,7 @@
 #pragma once
 
 #include "GameFramework/PlayerController.h"
-#include "../Tiles/TilesManager.h"
-#include "ProjectTapGameMode.h"
+#include "Tiles/TilesManager.h"
 #include "MouseController.generated.h"
 
 /**

@@ -12,6 +12,7 @@ AWhiteTile::AWhiteTile()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*FName("/Game/Models/GroundTiles/1x1").ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
 	TileMesh->AttachTo(BoxCollision);
+	TileMesh->SetMobility( EComponentMobility::Static );
 }
 
 // Called when the game starts or when spawned

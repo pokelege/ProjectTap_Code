@@ -2,13 +2,12 @@
 
 #include "ProjectTap.h"
 #include "ProjectTapGameMode.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
 #include "Pawns/BallPawn.h"
 #include "ProjectTapGameState.h"
 #include "Controllers/MouseController.h"
-#include "Runtime/Engine/Classes/Engine/World.h"
 #include "Pawns/BallPlayerStart.h"
-#include "DataStructure/Graph.h"
-#define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
+
 AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer ): Super( initializer )
 {
 	//UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
@@ -23,12 +22,6 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 	musicPlayer->bAutoActivate = false;
 	musicPlayer->AttachTo( GetRootComponent() );
 }
-
-void AProjectTapGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-
-}
-
 
 void AProjectTapGameMode::BeginPlay()
 {
@@ -95,9 +88,6 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 	}
 	else if (GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_GAME_OVER )
 	{
-
-		//todo GameOver
-		//printonscreen( "GameOver" );
 		time += DeltaTime;
 		auto cameraToChangeTest = GetGameState<AProjectTapGameState>()->CurrentCamera->GetComponentByClass( UCameraComponent::StaticClass() );
 		auto cameraToChange = Cast<UCameraComponent>( cameraToChangeTest );

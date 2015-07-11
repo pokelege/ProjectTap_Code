@@ -31,6 +31,7 @@ ATurretPawn::ATurretPawn()
 	UStaticMeshComponent* baseMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Turret base mesh" ) );
 	baseMesh->SetStaticMesh(baseMeshSource.Object);
 	baseMesh->AttachTo(collisionBox);
+	baseMesh->SetMobility( EComponentMobility::Static );
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> gunMesh(*GUN_MESH.ToString());
 	TurretGunMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Turret gun mesh" ) );

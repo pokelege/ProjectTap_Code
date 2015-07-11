@@ -12,7 +12,7 @@ class PROJECTTAP_API AGround : public AActor
 	
 public:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		UBoxComponent* collision;
+	class UBoxComponent* collision;
 
 	// Sets default values for this actor's properties
 	AGround();

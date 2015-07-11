@@ -122,4 +122,10 @@ void AMainMenuContainer::SetWidgetVisibility(AActor* widget, EVisibility visibil
 	}
 }
 
+void AMainMenuContainer::ChangeSettings()
+{
+
+}
+
+
 

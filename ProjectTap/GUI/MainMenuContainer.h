@@ -62,6 +62,9 @@ public:
 	UFUNCTION(BluePrintCallable, Category = MainMenu)
 		void ToCredits();
 
+	UFUNCTION(BluePrintCallable, Category = MainMenu)
+		void ChangeSettings();
+
 	virtual void BeginPlay() override;
 	virtual void Tick(float dt) override;
 

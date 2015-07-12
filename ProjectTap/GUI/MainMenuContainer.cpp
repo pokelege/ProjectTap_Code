@@ -150,29 +150,35 @@ void AMainMenuContainer::Tick(float dt)
 void AMainMenuContainer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogWindows, Warning, TEXT("init menu container"));
 	for (TActorIterator<AActor> v_itr(GetWorld()); v_itr; ++v_itr)
 	{
 		auto actorName = v_itr->GetName();
+
 		if (actorName.StartsWith("OptionsPlaceable"))
 		{
 			optionsPlacable = *v_itr;
 			v_itr->SetActorLocation(hiddenLocation);
+			UE_LOG(LogWindows, Warning, TEXT("found option menu"));
 		}
 		else if (actorName.StartsWith("LevelSelectPlaceable"))
 		{
 			levelSelectPlacable = *v_itr;
 			v_itr->SetActorLocation(hiddenLocation);
+			UE_LOG(LogWindows, Warning, TEXT("found level select menu"));
 		}
 		else if (actorName.StartsWith("CreditsPlaceable"))
 		{
 			creditsPlacable = *v_itr;
 			v_itr->SetActorLocation(hiddenLocation);
-
+			UE_LOG(LogWindows, Warning, TEXT("found credits menu"));
 		}
 		else if (actorName.StartsWith("MainMenu"))
 		{
 			mainMenuPlacable = *v_itr;
 			currentMenu = mainMenuPlacable;
+			UE_LOG(LogWindows, Warning, TEXT("found main menu menu"));
 		}
 	}
 
@@ -287,7 +293,7 @@ void AMainMenuContainer::ChangeSettings(const FString& graphicsSetting,
 									    const FString& resolution,
 										bool fullScreen)
 {
-	auto screenMode = fullScreen ? EWindowMode::Fullscreen : EWindowMode::Windowed;
+	auto screenMode = fullScreen ? EWindowMode::Fullscreen : EWindowMode::Windowed ;
 	auto settings = GEngine->GameUserSettings;
 	settings->SetFullscreenMode(screenMode);
 

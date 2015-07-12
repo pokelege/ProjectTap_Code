@@ -12,12 +12,12 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
-	class ABallPawn* ball;
+	class ABallPawn* ball = nullptr;
 
-	FStreamLevelAction* levelStream;
+	FStreamLevelAction* levelStream = nullptr;
 	bool loadingLevel = false;
 	float time = 0;
-	class AActor* camera;
+	class AActor* camera = nullptr;
 	float restartCoolDown = 1.0f;
 public:
 

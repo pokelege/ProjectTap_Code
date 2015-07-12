@@ -15,7 +15,7 @@ class PROJECTTAP_API AEndTile : public ATile
 
 	static const FName END_MESH;
 	TScriptDelegate<FWeakObjectPtr> delegate;
-	class ABallPawn* targetBall;
+	class ABallPawn* targetBall = nullptr;
 
 	FVector targetBallLastPosition;
 	float currentAnimationTime = 0;
@@ -29,10 +29,10 @@ public:
 	FName loadLevelName = FName("MainMenu");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Transport)
-	UCurveVector* ballToSocketCurve;
+	UCurveVector* ballToSocketCurve = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Transport)
-	UCurveVector* transportScalingCurve;
+	UCurveVector* transportScalingCurve = nullptr;
 
 	AEndTile();
 

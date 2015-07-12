@@ -16,7 +16,7 @@ enum class Direction : uint8
 };
 
 /**
- * 
+ *
  */
 UCLASS()
 class PROJECTTAP_API ARamp : public ABaseRampTile
@@ -26,10 +26,10 @@ class PROJECTTAP_API ARamp : public ABaseRampTile
 	static const FName RAMP_MESH_PATH;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	Direction rotationDirection;
+	Direction rotationDirection = Direction::XPlus;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	float forceMultiplier;
+	float forceMultiplier= 2000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		float additionalZForce = 3000.0f;

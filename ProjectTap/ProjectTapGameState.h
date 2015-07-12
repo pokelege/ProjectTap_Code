@@ -25,9 +25,9 @@ public:
 	float aiMinDistance = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Player)
-	class ABallPawn* CurrentPawn;
+	class ABallPawn* CurrentPawn = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
-	class AActor* CurrentCamera;
+	class AActor* CurrentCamera = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level)
 	FName currentLevelToLoadWhenWin;
 	void SetState(GameState NewState);

@@ -30,11 +30,11 @@ protected:
 	int32 IncrementIndex();
 
 	void reset();
-public:	
+public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
-	UCurveFloat* moveCurve;
-	
+	UCurveFloat* moveCurve = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
 	TArray<FVector> path;
 
@@ -58,10 +58,10 @@ public:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
 	void UpdateCarryOn(float dt);
-	
+
 };

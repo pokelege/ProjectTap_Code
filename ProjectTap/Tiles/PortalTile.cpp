@@ -52,12 +52,12 @@ APortalTile::APortalTile()
 
 void APortalTile::AdjustOrientationAndTriggerBoxes()
 {
-	bluePortalTrigger->SetRelativeLocation(FVector(-10.000000,0.000000,0.000000));
-	orangePortalTrigger->SetRelativeLocation(FVector(10.000000,0.000000,0.000000));
+	bluePortalTrigger->SetRelativeLocation(FVector(-4.0f,0.f,0.f));
+	orangePortalTrigger->SetRelativeLocation(FVector(4.f,0.f,0.f));
 
-	bluePortalTrigger->SetBoxExtent(FVector(10.000000,30.000000,30.000000));
+	bluePortalTrigger->SetBoxExtent(FVector(5.f, 25.f, 30.f));
 
-	orangePortalTrigger->SetBoxExtent(FVector(10,30,30));
+	orangePortalTrigger->SetBoxExtent(FVector(5.f,25.f,30.f));
 
 	orangePortalTrigger->SetCollisionResponseToAllChannels(ECR_Ignore);
 	orangePortalTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);

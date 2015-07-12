@@ -76,7 +76,7 @@ void AMainMenuContainer::InitResolutionWidgets(UButton* resolutionButton,
 {
 	auto textBlock = Cast<UTextBlock>(resolutionButton->GetChildAt(0));
 	
-	for (size_t i = 0; i < resolutionStrings.Num(); i++)
+	for (int32 i = 0; i < resolutionStrings.Num(); i++)
 	{
 		auto& str = resolutionStrings[i];
 		if (str.Equals(textBlock->GetText().ToString()))
@@ -295,7 +295,7 @@ void AMainMenuContainer::ChangeSettings(const FString& graphicsSetting,
 	settings->SetScreenResolution(resoPoint);
 	SetGraphicsScalability(graphicsSetting, settings);
 
-	settings->ApplySettings(true);
+	settings->ApplySettings(false);
 }
 
 void AMainMenuContainer::SetGraphicsScalability(const FString& quality, UGameUserSettings* settings)

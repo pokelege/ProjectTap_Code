@@ -79,7 +79,8 @@ void AMainMenuContainer::InitResolutionWidgets(UButton* resolutionButton,
 	for (int32 i = 0; i < resolutionStrings.Num(); i++)
 	{
 		auto& str = resolutionStrings[i];
-		if (str.Equals(textBlock->GetText().ToString()))
+		auto textBlockStr = textBlock->GetText().ToString();
+		if (str.Equals(textBlockStr))
 		{
 			currResolutionIndex = i;
 			break;
@@ -89,9 +90,9 @@ void AMainMenuContainer::InitResolutionWidgets(UButton* resolutionButton,
 
 void AMainMenuContainer::InitFullScreenWidget(UCheckBox* checkBox)
 {
-	auto mode = GEngine->GameUserSettings->GetFullscreenMode();
-	auto fullScreen = mode == EWindowMode::Fullscreen;
-	checkBox->SetIsChecked(fullScreen);
+	//auto mode = GEngine->GameUserSettings->GetFullscreenMode();
+	//auto fullScreen = mode == EWindowMode::Fullscreen;
+	//checkBox->SetIsChecked(fullScreen);
 }
 
 void AMainMenuContainer::InitSoundWidget(USlider* slider)
@@ -295,10 +296,10 @@ void AMainMenuContainer::ChangeSettings(const FString& graphicsSetting,
 {
 	auto screenMode = fullScreen ? EWindowMode::Fullscreen : EWindowMode::Windowed ;
 	auto settings = GEngine->GameUserSettings;
-	settings->SetFullscreenMode(screenMode);
 
 	auto resoPoint = getPointByString(resolution);
 	settings->SetScreenResolution(resoPoint);
+	settings->SetFullscreenMode(EWindowMode::Fullscreen);
 	SetGraphicsScalability(graphicsSetting, settings);
 
 	settings->ApplySettings(false);

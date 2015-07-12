@@ -28,9 +28,9 @@ public:
 	float centerTolerance = 0.001f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
-	class UParticleSystemComponent* magnetParticle;
+	class UParticleSystemComponent* magnetParticle = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
-	UStaticMeshComponent* distortionMesh;
+	UStaticMeshComponent* distortionMesh = nullptr;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 	UAudioComponent* magnetSound = nullptr;
 	AMagnetTile();

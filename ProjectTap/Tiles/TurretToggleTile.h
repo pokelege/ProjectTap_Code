@@ -5,22 +5,22 @@
 #include "Tiles/Tile.h"
 #include "TurretToggleTile.generated.h"
 /**
- * 
+ *
  */
 UCLASS()
 class PROJECTTAP_API ATurretToggleTile : public ATile
 {
 	GENERATED_BODY()
-	
+
 	TScriptDelegate<FWeakObjectPtr> delegate;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	class ATurretPawn* targetTurret;
+	class ATurretPawn* targetTurret = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	UBoxComponent* boxTrigger;
+	UBoxComponent* boxTrigger = nullptr;
 
-    ATurretToggleTile();
+	ATurretToggleTile();
 
 	UFUNCTION()
 	void OnBeginTriggerOverlap(AActor* OtherActor,

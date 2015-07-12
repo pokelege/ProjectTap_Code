@@ -13,14 +13,14 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 	class AGVertex* goalVertex = nullptr;
 	FVector anchorHitPoint;
 	FVector newGoalPos;
-	float cameraRayLength;
+	float cameraRayLength = 0.0f;
 	float mousePressTimer = 0.0f;
 	bool isMoving = false;
 	bool canSnap = false;
 	bool destinationOccupied = false;
 
 	void Initialize();
-		
+
 	void UpdateDragMove(float dt);
 
 	FVector calculateCurrentDir();
@@ -36,10 +36,10 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 	void click();
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Indicator)
-	UParticleSystemComponent* indicatorParticle;
+	UParticleSystemComponent* indicatorParticle = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Indicator)
-	UStaticMeshComponent* arrowMeshComponent;
+	UStaticMeshComponent* arrowMeshComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	class AGVertex* currentVertex = nullptr;
@@ -55,7 +55,7 @@ public:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
@@ -65,12 +65,12 @@ public:
 	virtual void CancelHighlightEdge() override;
 
 	//give a new camera ray projected from mouse position for new goal position
-	void DragTo(const FHitResult& hit, 
-				const FVector& cameraLocation, 
+	void DragTo(const FHitResult& hit,
+				const FVector& cameraLocation,
 				const FVector& camRayDirection);
 
 	void RemoveFocus();
-	
+
 private:
 	bool isSelected = false;
 };

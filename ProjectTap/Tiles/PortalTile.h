@@ -32,13 +32,13 @@ public:
 	float velocityMultiplier = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
-	APortalTile* otherPortal;
+	APortalTile* otherPortal = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
-	UBoxComponent* bluePortalTrigger;
+	UBoxComponent* bluePortalTrigger = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
-	UBoxComponent* orangePortalTrigger;
+	UBoxComponent* orangePortalTrigger = nullptr;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 	UAudioComponent* teleportSound = nullptr;
 	APortalTile();

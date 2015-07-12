@@ -22,10 +22,10 @@ protected:
 
 	friend class APawnCastingTrigger;
 	class ABallPawn* ball = nullptr;
-	USceneComponent* offset;
+	USceneComponent* offset =nullptr;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UCurveFloat* rotationSequence;
+	UCurveFloat* rotationSequence = nullptr;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 	UAudioComponent* flipSound = nullptr;

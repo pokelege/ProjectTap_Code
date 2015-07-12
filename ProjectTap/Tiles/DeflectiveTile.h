@@ -21,7 +21,7 @@ UCLASS()
 class PROJECTTAP_API ADeflectiveTile : public ATile, public ICarriable
 {
 	GENERATED_BODY()
-	float timer = 0.0f; 
+	float timer = 0.0f;
 	float rotationDegreeLimit = 90;
 	float accum = 0;
 	float edgeHighlightTimer = 0.0f;
@@ -46,7 +46,7 @@ public:
 	float currentRotation = 45;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		USceneComponent* frameCollisionsComponent;
+		USceneComponent* frameCollisionsComponent = nullptr;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 		UAudioComponent* ballDeflectSound = nullptr;

@@ -10,7 +10,7 @@ enum class CurrentTileType : char
 	GROUPED_BLOCKING_TILE,
 	DRAGGABLE_TILE
 };
-  
+
 class UTilesManager
 {
 	TArray<class ABlockingTile*> activatedBlocks;
@@ -18,10 +18,10 @@ class UTilesManager
 	FHitResult hit;
 	FVector worldOrigin;
 	FVector worldDirection;
-	class AStrongBlockingTile* prevStrongBlockingTile;
+	class AStrongBlockingTile* prevStrongBlockingTile = nullptr;
 	class ATile* prevHighlighted = nullptr;
 	class ADraggableMoveTile* currDraggableTile = nullptr;
-	class AMouseController* controller;
+	class AMouseController* controller = nullptr;
 
 
 	bool isMousePressed = false;
@@ -40,7 +40,7 @@ class UTilesManager
 	void DeactivateBlockingTiles();
 	void DeactivateGroupedBlockingTiles();
 public:
-	
+
 	void AddTile(ABlockingTile* tile);
 	void AddTile(AStrongBlockingTile* tile);
 	void AddTile(AGroupedBlockingTile* tile);
@@ -49,7 +49,7 @@ public:
 	void SetEnableSwipeCheck(bool b);
 	void HighLightTile(ATile* tile);
 	void SetCameraRay(const FHitResult& hit,
-					  const FVector& worldOrigin, 
+					  const FVector& worldOrigin,
 					  const FVector& worldDirection);
 
 	void MouseRelease();

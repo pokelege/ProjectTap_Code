@@ -3,5 +3,3 @@
 #pragma once
 
 #include "Engine.h"
-#define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
-

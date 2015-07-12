@@ -9,8 +9,8 @@ UCLASS()
 class PROJECTTAP_API AGround : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	class UBoxComponent* collision;
 
@@ -19,10 +19,7 @@ public:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
-
-	
-	
 };

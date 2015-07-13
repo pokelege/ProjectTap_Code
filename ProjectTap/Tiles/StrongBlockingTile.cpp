@@ -16,6 +16,7 @@ AStrongBlockingTile::AStrongBlockingTile()
 	BoxCollision->SetWorldScale3D(FVector(1));
 	BoxCollision->SetBoxExtent(FVector(80.0f, 80.0f, 80.0f));
 	move_speed = 400.0f;
+	move_distance_tolerance = 150.0f;
 
 }
 

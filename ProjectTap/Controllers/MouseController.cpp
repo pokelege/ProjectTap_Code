@@ -5,6 +5,8 @@
 #include "ProjectTapGameState.h"
 #include "Tiles/Tile.h"
 #include "Pawns/BallPawn.h"
+#include "ProjectTapGameMode.h"
+
 AMouseController::AMouseController(const FObjectInitializer& initializer):Super(initializer)
 {
   UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
@@ -23,6 +25,7 @@ void AMouseController::SetupInputComponent()
 	InputComponent->BindAction("ActivateCube", IE_Pressed, this, &AMouseController::NotifyMousePressed);
 	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::NotifyMouseReleased);
 	InputComponent->BindAction("ActivateCube", IE_Released, this, &AMouseController::DisnableSwipeCheck);
+
 }
 
 
@@ -36,6 +39,7 @@ void AMouseController::PlayerTick(float DeltaTime)
 		SetViewTarget(currentCamera);
 	}
 	FHitResult hit;
+	auto gameMode = Cast<AProjectTapGameMode>(GetWorld()->GetAuthGameMode());
 
 	//cast a ray for every 1/10 of a second
 	if (raycastElapseTimeCounter < raycastElapseTime)
@@ -63,6 +67,7 @@ void AMouseController::PlayerTick(float DeltaTime)
 void AMouseController::checkObjectHighlight(const FHitResult& hit)
 {
 	auto tile = Cast<ATile>(hit.Actor.Get());
+
 	btManager.HighLightTile(tile);
 }
 
@@ -174,8 +179,9 @@ void AMouseController::NotifyMouseReleased()
 void AMouseController::RespawnPressed()
 {
 	AProjectTapGameState* gamestate = Cast<AProjectTapGameState>( GetWorld()->GetGameState() );
+	auto currentState = gamestate->GetState();
 	ABallPawn* ball = gamestate->CurrentPawn;
-	if(ball != nullptr) ball->Kill();
+	if (ball != nullptr) ball->Kill();
 }
 
 

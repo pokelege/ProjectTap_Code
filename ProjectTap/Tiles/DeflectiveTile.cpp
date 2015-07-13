@@ -94,7 +94,7 @@ OffsetInfo ADeflectiveTile::getOffsetInfo()
 {
 	OffsetInfo data;
 	data.offsetForCollision = FVector(0.0f, 0.0f, 40.0f);
-	data.scaleForCollision = FVector(1.2f, 1.2f, 5.5f);
+	data.scaleForCollision = FVector(1.2f, 1.2f, 6.5f);
 	data.offsetForCarryOn = FVector(0.0f, 0.0f, 50.0f);
 	return data;
 }
@@ -240,7 +240,7 @@ void ADeflectiveTile::OnHit(class AActor* OtherActor,
 			auto newVel = deflectingSpeed * clampShortAxis(newDir);
 			ball->ballCollision->SetPhysicsAngularVelocity(FVector::ZeroVector);
 			ball->ballCollision->SetPhysicsLinearVelocity(newVel);
-			ball->ResetBallXYPosition(GetActorLocation() + newDir * 30);
+			ball->ResetBallXYPosition(GetActorLocation() + newDir * 40);
 			HighlightEdgeForDuration(0.3f);
 			ballDeflectSound->Play();
 		}

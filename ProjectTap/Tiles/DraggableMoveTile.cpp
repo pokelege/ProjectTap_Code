@@ -26,7 +26,7 @@ ADraggableMoveTile::ADraggableMoveTile()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> arrowMesh(*path.ToString());
 	arrowMeshComponent->SetStaticMesh(arrowMesh.Object);
 	arrowMeshComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	arrowMeshComponent->SetWorldScale3D(FVector(30.0f, 40.0f, 1.0f));
+	arrowMeshComponent->SetWorldScale3D(FVector(30.0f, 33.0f, 1.0f));
 	arrowMeshComponent->SetHiddenInGame(true);
 	arrowMeshComponent->AttachTo(RootComponent);
 
@@ -172,7 +172,7 @@ void ADraggableMoveTile::processMouseEvents()
 	auto dt = GetWorld()->GetDeltaSeconds();	
 	mousePressTimer += dt;
 	
-	if (mousePressTimer >= 0.5f)
+	if (mousePressTimer >= 0.2f)
 	{
 		isSelected = true;
 		mousePressTimer = 0.0f;
@@ -184,6 +184,8 @@ void ADraggableMoveTile::processMouseEvents()
 		canSnap = false;
 		isMoving = false;
 	}
+
+	deactivate();
 }
 
 void ADraggableMoveTile::DragTo(const FHitResult& hit, 
@@ -275,11 +277,11 @@ FVector ADraggableMoveTile::calculateCurrentDir()
 
 void ADraggableMoveTile::click()
 {
-	if (auto tile = Cast<ATile>(carryOn))
+	if (auto carry = Cast<ATile>(carryOn))
 	{
-		tile->activate();
+		carry->activate();
 	}
-
+	deactivate();
 	mousePressTimer = 0.0f;
 }
 

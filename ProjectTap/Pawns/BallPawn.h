@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "BallPawn.generated.h"
 
 UCLASS()
@@ -16,6 +17,7 @@ class PROJECTTAP_API ABallPawn : public APawn
 
 	UCameraComponent* cameraComponent = nullptr;
 	UMaterialInstanceDynamic* material = nullptr;
+	UUserWidget* pauseMenu = nullptr;
 	bool dying = false;
 	float currentDieTime = 0;
 
@@ -63,6 +65,9 @@ public:
 	bool isDying();
 
 	void setInvincibility(bool invincible);
+
+	void togglePauseMenu();
+
 
 	void setCamera(class ABallPlayerStart* playerStart);
 	AActor* getCamera();

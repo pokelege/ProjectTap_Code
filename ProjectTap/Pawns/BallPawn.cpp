@@ -7,6 +7,8 @@
 #include "PawnCastingTrigger.h"
 #include "BallPlayerStart.h"
 #include "ConstrainingSpringArmComponent.h"
+#include "Runtime/UMG/Public/Blueprint/WidgetBlueprintLibrary.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 // Sets default values
 ABallPawn::ABallPawn()
@@ -69,6 +71,11 @@ ABallPawn::ABallPawn()
 	dieSound->SetSound( dieSoundFile.Object );
 	dieSound->bAutoActivate = false;
 	dieSound->AttachTo( GetRootComponent() );
+
+	ConstructorHelpers::FObjectFinder<UBlueprint> pauseMenuAssewt(TEXT("/Game/GUI/Pause"));
+	pauseMenu = Cast<UUserWidget>(pauseMenuAssewt.Object);
+
+	
 }
 
 // Called when the game starts or when spawned
@@ -83,13 +90,21 @@ void ABallPawn::BeginPlay()
 	spring->SetLockPosition(GetActorLocation());
 	material = ballMesh->CreateDynamicMaterialInstance(0);
 	material->SetVectorParameterValue(TEXT("Color"), FVector((float)FMath::Rand() / RAND_MAX, (float)FMath::Rand() / RAND_MAX, (float)FMath::Rand() / RAND_MAX));
+	auto ctrl = GetWorld()->GetFirstPlayerController();
+	if (ctrl != nullptr)
+	{
+		ctrl->InputComponent->BindAction("Pause", IE_Pressed, this, &ABallPawn::togglePauseMenu);
+	}
 }
 
 // Called every frame
 void ABallPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-
+	if (Controller != nullptr)
+	{
+		Controller->InputComponent->BindAction("Pause", IE_Pressed, this, &ABallPawn::togglePauseMenu);
+	}
 	//udpate trigger position
 	if (trigger != nullptr)
 	{
@@ -124,6 +139,29 @@ void ABallPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
 }
+
+void ABallPawn::togglePauseMenu()
+{
+	auto state = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
+	auto ctrl = Cast<APlayerController>(Controller);
+
+	if (state->GetState() == AProjectTapGameState::GameState::GAME_STATE_PAUSE)
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+		pauseMenu->RemoveFromParent();
+		ctrl->SetInputMode(FInputModeGameOnly::FInputModeGameOnly());
+		state->SetState(AProjectTapGameState::GameState::GAME_STATE_PLAYING);
+
+	}
+	else if (state->GetState() != AProjectTapGameState::GameState::UNKNOWN)
+	{
+		//pauseMenu = UWidgetBlueprintLibrary::Create(GetWorld(), pauseMenu->GetClass(), ctrl);
+		//ctrl->SetInputMode(FInputModeUIOnly::FInputModeUIOnly());
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		state->SetState(AProjectTapGameState::GameState::GAME_STATE_PAUSE);
+	}
+}
+
 
 void ABallPawn::AddVelocity(const FVector& vel, const FVector& resetPos, bool clearForce)
 {

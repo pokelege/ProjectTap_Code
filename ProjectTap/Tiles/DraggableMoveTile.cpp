@@ -185,7 +185,10 @@ void ADraggableMoveTile::processMouseEvents()
 		isMoving = false;
 	}
 
-	deactivate();
+	if (!isMoving)
+	{
+		deactivate();
+	}
 }
 
 void ADraggableMoveTile::DragTo(const FHitResult& hit, 
@@ -254,6 +257,7 @@ void ADraggableMoveTile::UpdateDragMove(float dt)
 {
 	if (isMoving)
 	{		
+		activate();
 		auto moveDir = (newGoalPos - GetActorLocation()).GetSafeNormal();
 		auto reachedPos = FVector::DistSquared(newGoalPos, GetActorLocation()) < 10.0f;
 	
@@ -281,7 +285,11 @@ void ADraggableMoveTile::click()
 	{
 		carry->activate();
 	}
-	deactivate();
+
+	if (!isMoving)
+	{
+		deactivate();
+	}
 	mousePressTimer = 0.0f;
 }
 

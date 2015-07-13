@@ -8,6 +8,7 @@
 #include "BallPlayerStart.h"
 #include "ConstrainingSpringArmComponent.h"
 #include "Runtime/UMG/Public/Blueprint/WidgetBlueprintLibrary.h"
+#include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -72,10 +73,9 @@ ABallPawn::ABallPawn()
 	dieSound->bAutoActivate = false;
 	dieSound->AttachTo( GetRootComponent() );
 
-	ConstructorHelpers::FObjectFinder<UBlueprint> pauseMenuAssewt(TEXT("/Game/GUI/Pause"));
-	pauseMenu = Cast<UUserWidget>(pauseMenuAssewt.Object);
+	ConstructorHelpers::FObjectFinder<UWidgetBlueprint> pauseMenuAssewt(TEXT("/Game/GUI/Pause"));
+	pauseMenuInstance = Cast<UUserWidget>(pauseMenuAssewt.Object);
 
-	
 }
 
 // Called when the game starts or when spawned
@@ -142,8 +142,8 @@ void ABallPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 
 void ABallPawn::togglePauseMenu()
 {
-	auto state = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
-	auto ctrl = Cast<APlayerController>(Controller);
+	/*auto state = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
+	auto ctrl = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 
 	if (state->GetState() == AProjectTapGameState::GameState::GAME_STATE_PAUSE)
 	{
@@ -155,11 +155,13 @@ void ABallPawn::togglePauseMenu()
 	}
 	else if (state->GetState() != AProjectTapGameState::GameState::UNKNOWN)
 	{
-		//pauseMenu = UWidgetBlueprintLibrary::Create(GetWorld(), pauseMenu->GetClass(), ctrl);
-		//ctrl->SetInputMode(FInputModeUIOnly::FInputModeUIOnly());
+		pauseMenu = CreateWidget<UUserWidget>(GetWorld()->GetFirstPlayerController(), EBlueprintType::);
+		auto inputMode = FInputModeUIOnly::FInputModeUIOnly();
+		ctrl->SetInputMode(inputMode);
+		pauseMenu->AddToViewport(1);		
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
 		state->SetState(AProjectTapGameState::GameState::GAME_STATE_PAUSE);
-	}
+	}*/
 }
 
 

@@ -6,7 +6,7 @@ public class ProjectTap : ModuleRules
 {
 	public ProjectTap(TargetInfo Target)
 	{
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore","AIModule", "UMG" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore","AIModule", "UMG", "UMGEditor","MovieSceneCore" });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 

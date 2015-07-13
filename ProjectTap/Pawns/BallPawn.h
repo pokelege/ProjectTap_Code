@@ -4,6 +4,7 @@
 
 #include "GameFramework/Pawn.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+#include "Editor/UMGEditor/Public/WidgetBlueprint.h"
 #include "BallPawn.generated.h"
 
 UCLASS()
@@ -17,10 +18,11 @@ class PROJECTTAP_API ABallPawn : public APawn
 
 	UCameraComponent* cameraComponent = nullptr;
 	UMaterialInstanceDynamic* material = nullptr;
-	UUserWidget* pauseMenu = nullptr;
+	UUserWidget* pauseMenuInstance = nullptr;
+	TSubclassOf<UUserWidget> pauseMenuBlueprint = nullptr;
 	bool dying = false;
 	float currentDieTime = 0;
-
+	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	UCurveFloat* dieSequence;

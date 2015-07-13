@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Tile.h"
+#include "ICarriable.h"
 #include "MovingTile.generated.h"
 
 UCLASS()

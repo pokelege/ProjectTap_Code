@@ -2,8 +2,8 @@
 
 #pragma once
 #include "GameFramework/GameState.h"
+#include "GameState.h"
 #include "ProjectTapGameState.generated.h"
-
 
 /**
  *
@@ -14,16 +14,7 @@ class PROJECTTAP_API AProjectTapGameState : public AGameState
 	GENERATED_BODY()
 
 public:
-	enum GameState {
-		UNKNOWN, 
-		GAME_STATE_MAIN_MENU,
-		GAME_STATE_PAUSE,
-		GAME_STATE_STARTING,
-		GAME_STATE_PLAYING, 
-		GAME_STATE_GAME_OVER, 
-		GAME_STATE_DYING, 
-		GAME_STATE_WIN, 
-		GAME_STATE_WINNING};
+	DECLARE_EVENT_OneParam( AProjectTapGameState , FGameStateChanged , const uint8 )
 protected:
 	GameState CurrentState = UNKNOWN;
 	float cameraSaturation = 1.0f;
@@ -39,7 +30,10 @@ public:
 	class AActor* CurrentCamera = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level)
 	FName currentLevelToLoadWhenWin;
-	void SetState(GameState NewState);
+
+	FGameStateChanged GameStateChanged;
+
+	void SetState(GameState NewState, bool notifyListeners = true);
 	GameState GetState();
 	float getCameraSaturation() const;
 	void setCameraSaturation(float value);

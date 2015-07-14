@@ -46,7 +46,7 @@ void AEndTile::PlayTransport(const float &DeltaTime)
 		UWorld* world = GetWorld();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
 		gameState->currentLevelToLoadWhenWin = loadLevelName;
-		gameState->SetState(AProjectTapGameState::GAME_STATE_WIN);
+		gameState->SetState( GameState::GAME_STATE_WIN );
 	}
 	auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
 	pc->SetWorldLocation(ballPosition);
@@ -101,9 +101,9 @@ void AEndTile::OnBeginHit(class AActor* OtherActor,
 	{
 		UWorld* world = GetWorld();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-		if (gameState && gameState->GetState() == AProjectTapGameState::GAME_STATE_PLAYING)
+		if ( gameState && gameState->GetState() == GameState::GAME_STATE_PLAYING )
 		{
-			gameState->SetState(AProjectTapGameState::GAME_STATE_WINNING);
+			gameState->SetState( GameState::GAME_STATE_WINNING );
 			targetBall = Cast<ABallPawn>(OtherActor);
 			auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
 			pc->SetSimulatePhysics(false);

@@ -2,6 +2,7 @@
 
 #pragma once
 #include "GameFramework/GameMode.h"
+#include "GameState.h"
 #include "ProjectTapGameMode.generated.h"
 
 /**
@@ -18,6 +19,7 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 	float time = 0;
 	class AActor* camera = nullptr;
 	float restartCoolDown = 1.0f;
+	int lastReportedState = GameState::UNKNOWN;
 public:
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
@@ -30,8 +32,9 @@ public:
 	virtual void Tick ( float DeltaTime ) override;
 
 	void Respawn();
-
 	class ABallPawn* getBall();
 	UFUNCTION()
 	bool LoadNextLevel();
+	UFUNCTION()
+	void OnStateChanged( const uint8 newState );
 };

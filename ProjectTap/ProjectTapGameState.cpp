@@ -15,12 +15,13 @@ void AProjectTapGameState::setCameraSaturation(float value)
 {
 	cameraSaturation = value;
 }
-void AProjectTapGameState::SetState(GameState NewState)
+void AProjectTapGameState::SetState( GameState NewState , bool notifyListeners )
 {
 	CurrentState = NewState;
+	if ( notifyListeners ) GameStateChanged.Broadcast( CurrentState );
 }
 
-AProjectTapGameState::GameState AProjectTapGameState::GetState()
+GameState AProjectTapGameState::GetState()
 {
 	return CurrentState;
 }

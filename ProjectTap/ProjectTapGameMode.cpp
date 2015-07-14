@@ -2,6 +2,7 @@
 
 #include "ProjectTap.h"
 #include "ProjectTapGameMode.h"
+#include "ProjectTapGameState.h"
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "Pawns/BallPawn.h"
 #include "ProjectTapGameState.h"
@@ -25,6 +26,7 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 
 void AProjectTapGameMode::BeginPlay()
 {
+	GetGameState<AProjectTapGameState>()->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
 	if ( UWorld* world = GetWorld() )
 	{
 		AActor* playerStart = FindPlayerStart( 0, FString( "Player" ) );
@@ -33,7 +35,6 @@ void AProjectTapGameMode::BeginPlay()
 		{
 			camera = realPlayerStart->camera;
 			FActorSpawnParameters params;
-			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
 			ball = world->SpawnActor<ABallPawn>(
 				ABallPawn::StaticClass(),
 				playerTransform.GetTranslation(),
@@ -60,7 +61,7 @@ void AProjectTapGameMode::BeginPlay()
 		GetGameState<AProjectTapGameState>()->CurrentPawn = ball;
 	}
 	GetGameState<AProjectTapGameState>()->CurrentCamera = camera;
-	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::GAME_STATE_STARTING);
+	GetGameState<AProjectTapGameState>()->SetState( GameState::GAME_STATE_STARTING );
 	musicPlayer->Play();
 	musicPlayer->SetVolumeMultiplier( 0 );
 }
@@ -68,7 +69,7 @@ void AProjectTapGameMode::BeginPlay()
 void AProjectTapGameMode::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-	if ( GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_STARTING && GetGameState<AProjectTapGameState>()->CurrentCamera != nullptr )
+	if ( lastReportedState == GameState::GAME_STATE_STARTING && GetGameState<AProjectTapGameState>()->CurrentCamera != nullptr )
 	{
 		time += DeltaTime;
 		auto cameraToChangeTest = GetGameState<AProjectTapGameState>()->CurrentCamera->GetComponentByClass( UCameraComponent::StaticClass() );
@@ -83,10 +84,10 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 		if ( time >= restartCoolDown )
 		{
 			time = 0;
-			GetGameState<AProjectTapGameState>()->SetState( AProjectTapGameState::GAME_STATE_PLAYING );
+			GetGameState<AProjectTapGameState>()->SetState( GameState::GAME_STATE_PLAYING );
 		}
 	}
-	else if (GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_GAME_OVER )
+	else if ( lastReportedState == GameState::GAME_STATE_GAME_OVER )
 	{
 		time += DeltaTime;
 		auto cameraToChangeTest = GetGameState<AProjectTapGameState>()->CurrentCamera->GetComponentByClass( UCameraComponent::StaticClass() );
@@ -103,9 +104,8 @@ void AProjectTapGameMode::Tick( float DeltaTime )
 			Respawn();
 		}
 	}
-	else if (GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_WIN)
+	else if (lastReportedState == GameState::GAME_STATE_WIN)
 	{
-		//printonscreen( "You win!" );
 		time += DeltaTime;
 		auto cameraToChangeTest = GetGameState<AProjectTapGameState>()->CurrentCamera->GetComponentByClass( UCameraComponent::StaticClass() );
 		auto cameraToChange = Cast<UCameraComponent>( cameraToChangeTest );
@@ -138,4 +138,8 @@ bool AProjectTapGameMode::LoadNextLevel()
 	if(loadingLevel) return false;
 	UGameplayStatics::OpenLevel(GetWorld(),GetGameState<AProjectTapGameState>()->currentLevelToLoadWhenWin);
 	return loadingLevel = true;
+}
+void AProjectTapGameMode::OnStateChanged(const uint8 newState )
+{
+	lastReportedState = newState;
 }

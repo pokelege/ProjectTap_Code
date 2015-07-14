@@ -19,7 +19,7 @@ class PROJECTTAP_API ABallPawn : public APawn
 	UCameraComponent* cameraComponent = nullptr;
 	UMaterialInstanceDynamic* material = nullptr;
 	UUserWidget* pauseMenuInstance = nullptr;
-	TSubclassOf<UUserWidget> pauseMenuBlueprint = nullptr;
+	UWidgetBlueprint* pauseMenuBlueprint = nullptr;
 	bool dying = false;
 	float currentDieTime = 0;
 	
@@ -68,6 +68,7 @@ public:
 
 	void setInvincibility(bool invincible);
 
+	UFUNCTION(BlueprintCallable, Category=ToggleMenu)
 	void togglePauseMenu();
 
 

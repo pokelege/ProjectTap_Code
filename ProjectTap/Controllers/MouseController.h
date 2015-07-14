@@ -38,12 +38,14 @@ class PROJECTTAP_API AMouseController : public APlayerController
 
 	void GetCameraRay(FVector& WorldOrigin, FVector& WorldDirection);
 
-	AActor* currentCamera = nullptr;
+	class UProjectTapCameraComponent* currentCamera = nullptr;
 public:
   AMouseController(const FObjectInitializer& initializer);
+  virtual void BeginPlay() override;
   // Begin PlayerController interface
   virtual void PlayerTick(float DeltaTime) override;
   virtual void SetupInputComponent() override;
-
+  UFUNCTION()
+  void OnCameraChanged(UProjectTapCameraComponent* newCamera);
 
 };

@@ -21,6 +21,12 @@ void AProjectTapGameState::SetState( GameState NewState , bool notifyListeners )
 	if ( notifyListeners ) GameStateChanged.Broadcast( CurrentState );
 }
 
+void AProjectTapGameState::SetCurrentCamera(UProjectTapCameraComponent* currentCamera, bool notifyListeners)
+{
+	CurrentCamera = currentCamera;
+	if(notifyListeners) CameraChanged.Broadcast(CurrentCamera);
+}
+
 GameState AProjectTapGameState::GetState()
 {
 	return CurrentState;

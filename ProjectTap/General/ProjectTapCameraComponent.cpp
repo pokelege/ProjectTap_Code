@@ -4,7 +4,10 @@
 #include "ProjectTapCameraComponent.h"
 
 
-
+UProjectTapCameraComponent::UProjectTapCameraComponent()
+{
+	bConstrainAspectRatio = true;
+}
 
 bool UProjectTapCameraComponent::FadeIn()
 {
@@ -40,12 +43,14 @@ void UProjectTapCameraComponent::PlayOut( float DeltaSeconds )
 	float fadeValue = 1 - FMath::Clamp<float>( time / 1 , 0 , 1 );
 	PostProcessSettings.bOverride_ColorGain = true;
 	PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
+	OnFadeUpdate.Broadcast(fadeValue);
 	if ( time >= 1 )
 	{
 		time = 0;
 		OnFadeOut.Broadcast();
 		currentFade = FadeType::None;
 	}
+
 }
 
 void UProjectTapCameraComponent::ReceiveTick( float DeltaSeconds )

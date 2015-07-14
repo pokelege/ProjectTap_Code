@@ -11,6 +11,7 @@
 #include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameState.h"
+#include "General/ProjectTapCameraComponent.h"
 
 // Sets default values
 ABallPawn::ABallPawn()
@@ -62,7 +63,7 @@ ABallPawn::ABallPawn()
 	spring->bInheritPitch = false;
 	spring->bInheritYaw = false;
 	spring->bInheritRoll = false;
-	cameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	cameraComponent = CreateDefaultSubobject<UProjectTapCameraComponent>(TEXT("Camera"));
 	cameraComponent->AttachTo(spring);
 
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("/Game/Curves/BallDeath"));
@@ -246,9 +247,9 @@ void ABallPawn::setCamera(ABallPlayerStart* playerStart)
 	}
 }
 
-AActor *ABallPawn::getCamera()
+UProjectTapCameraComponent* ABallPawn::GetCamera()
 {
-	return cameraComponent == nullptr ? nullptr : cameraComponent->GetAttachmentRootActor();
+	return cameraComponent;
 }
 
 bool ABallPawn::isDying()

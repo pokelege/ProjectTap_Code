@@ -17,7 +17,7 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 	FStreamLevelAction* levelStream = nullptr;
 	bool loadingLevel = false;
 	float time = 0;
-	class AActor* camera = nullptr;
+	class UProjectTapCameraComponent* camera = nullptr;
 	float restartCoolDown = 1.0f;
 	int lastReportedState = GameState::UNKNOWN;
 public:
@@ -29,12 +29,16 @@ public:
 
 	virtual void BeginPlay() override;
 
-	virtual void Tick ( float DeltaTime ) override;
-
 	void Respawn();
 	class ABallPawn* getBall();
 	UFUNCTION()
 	bool LoadNextLevel();
 	UFUNCTION()
 	void OnStateChanged( const uint8 newState );
+	UFUNCTION()
+	void OnCameraFaded();
+	UFUNCTION()
+	void OnCameraChanged(UProjectTapCameraComponent* newCamera);
+	UFUNCTION()
+	void OnCameraFadeUpdate(const float percent);
 };

@@ -6,7 +6,7 @@
 #include "ProjectTapCameraComponent.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class PROJECTTAP_API UProjectTapCameraComponent : public UCameraComponent
@@ -19,10 +19,13 @@ private:
 	void PlayIn( float DeltaSeconds );
 	void PlayOut( float DeltaSeconds );
 public:
+	UProjectTapCameraComponent();
 	DECLARE_EVENT( AProjectTapCameraActor , FCameraFadedIn)
 	FCameraFadedIn OnFadeIn;
 	DECLARE_EVENT( AProjectTapCameraActor , FCameraFadedOut )
 	FCameraFadedOut OnFadeOut;
+	DECLARE_EVENT_OneParam( AProjectTapCameraActor , FCameraFadeUpdate, const float )
+	FCameraFadeUpdate OnFadeUpdate;
 	UFUNCTION()
 	bool FadeIn();
 	UFUNCTION()

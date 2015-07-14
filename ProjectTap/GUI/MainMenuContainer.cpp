@@ -299,7 +299,6 @@ void AMainMenuContainer::ChangeSettings(const FString& graphicsSetting,
 
 	auto resoPoint = getPointByString(resolution);
 	settings->SetScreenResolution(resoPoint);
-	settings->SetFullscreenMode(EWindowMode::Fullscreen);
 	SetGraphicsScalability(graphicsSetting, settings);
 
 	settings->ApplySettings(false);

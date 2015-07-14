@@ -74,7 +74,7 @@ ABallPawn::ABallPawn()
 	dieSound->AttachTo( GetRootComponent() );
 
 	ConstructorHelpers::FObjectFinder<UWidgetBlueprint> pauseMenuAssewt(TEXT("/Game/GUI/Pause"));
-	pauseMenuInstance = Cast<UUserWidget>(pauseMenuAssewt.Object);
+	pauseMenuBlueprint = pauseMenuAssewt.Object;
 
 }
 
@@ -94,6 +94,7 @@ void ABallPawn::BeginPlay()
 	if (ctrl != nullptr)
 	{
 		ctrl->InputComponent->BindAction("Pause", IE_Pressed, this, &ABallPawn::togglePauseMenu);
+		pauseMenuInstance = CreateWidget<UUserWidget>(ctrl, pauseMenuBlueprint->GeneratedClass);
 	}
 }
 
@@ -142,26 +143,28 @@ void ABallPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 
 void ABallPawn::togglePauseMenu()
 {
-	/*auto state = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
+	auto state = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
 	auto ctrl = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 
 	if (state->GetState() == AProjectTapGameState::GameState::GAME_STATE_PAUSE)
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), false);
-		pauseMenu->RemoveFromParent();
-		ctrl->SetInputMode(FInputModeGameOnly::FInputModeGameOnly());
+		pauseMenuInstance->RemoveFromParent();
+		auto inputMode = FInputModeGameOnly::FInputModeGameOnly();
+		ctrl->SetInputMode(inputMode);
 		state->SetState(AProjectTapGameState::GameState::GAME_STATE_PLAYING);
 
 	}
-	else if (state->GetState() != AProjectTapGameState::GameState::UNKNOWN)
+	else if (state->GetState() != AProjectTapGameState::GameState::UNKNOWN
+		&& state->GetState() != AProjectTapGameState::GameState::GAME_STATE_MAIN_MENU)
 	{
-		pauseMenu = CreateWidget<UUserWidget>(GetWorld()->GetFirstPlayerController(), EBlueprintType::);
 		auto inputMode = FInputModeUIOnly::FInputModeUIOnly();
+		inputMode.SetWidgetToFocus(pauseMenuInstance->GetCachedWidget());
 		ctrl->SetInputMode(inputMode);
-		pauseMenu->AddToViewport(1);		
+		pauseMenuInstance->AddToViewport(1);
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
 		state->SetState(AProjectTapGameState::GameState::GAME_STATE_PAUSE);
-	}*/
+	}
 }
 
 

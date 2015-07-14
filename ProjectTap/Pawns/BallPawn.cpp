@@ -10,6 +10,7 @@
 #include "Runtime/UMG/Public/Blueprint/WidgetBlueprintLibrary.h"
 #include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "GameState.h"
 
 // Sets default values
 ABallPawn::ABallPawn()
@@ -114,13 +115,13 @@ void ABallPawn::Tick( float DeltaTime )
 		trigger->SetActorLocation(pos);
 	}
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	if(dying && gameState->GetState() == AProjectTapGameState::GAME_STATE_DYING)
+	if(dying && gameState->GetState() == GameState::GAME_STATE_DYING)
 	{
 		currentDieTime += DeltaTime;
 		if(dieSequence == nullptr)
 		{
 			material->SetScalarParameterValue(TEXT("DeathMask"), 1);
-			gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
+			gameState->SetState( GameState::GAME_STATE_GAME_OVER );
 		}
 		else
 		{
@@ -129,7 +130,7 @@ void ABallPawn::Tick( float DeltaTime )
 			dieSequence->GetValueRange(min,max);
 			if(currentDieTime >= max)
 			{
-				gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
+				gameState->SetState( GameState::GAME_STATE_GAME_OVER );
 			}
 		}
 	}
@@ -208,9 +209,9 @@ void ABallPawn::ResetBallXYPosition(const FVector& position)
 void ABallPawn::Kill()
 {
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	if (gameState && !bInvincible && gameState->GetState() == AProjectTapGameState::GAME_STATE_PLAYING)
+	if ( gameState && !bInvincible && gameState->GetState() == GameState::GAME_STATE_PLAYING )
 	{
-		gameState->SetState(AProjectTapGameState::GAME_STATE_DYING);
+		gameState->SetState( GameState::GAME_STATE_DYING );
 		dieSound->Play();
 		dying = true;
 	}

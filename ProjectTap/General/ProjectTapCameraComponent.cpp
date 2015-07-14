@@ -55,7 +55,7 @@ void UProjectTapCameraComponent::ReceiveTick( float DeltaSeconds )
 		case FadeType::In :
 			PlayIn( DeltaSeconds );
 			break;
-		case FadeType:Out:
+		case FadeType::Out:
 			PlayOut(DeltaSeconds);
 			break;
 	}

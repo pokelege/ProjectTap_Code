@@ -147,17 +147,17 @@ void ABallPawn::togglePauseMenu()
 	auto state = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
 	auto ctrl = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 
-	if ( state->GetState() == GameState::GAME_STATE_PAUSE )
+	if (state->GetState() == GameState::GAME_STATE_PAUSE)
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), false);
 		pauseMenuInstance->RemoveFromParent();
 		auto inputMode = FInputModeGameOnly::FInputModeGameOnly();
 		ctrl->SetInputMode(inputMode);
-		state->SetState( GameState::GAME_STATE_PLAYING );
+		state->SetState(GameState::GAME_STATE_PLAYING);
 
 	}
-	else if ( state->GetState() != GameState::UNKNOWN
-			  && state->GetState() != GameState::GAME_STATE_MAIN_MENU )
+	else if (state->GetState() != GameState::UNKNOWN
+		&& state->GetState() != GameState::GAME_STATE_MAIN_MENU)
 	{
 		auto inputMode = FInputModeUIOnly::FInputModeUIOnly();
 		inputMode.SetWidgetToFocus(pauseMenuInstance->GetCachedWidget());

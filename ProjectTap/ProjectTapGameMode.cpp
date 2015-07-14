@@ -27,8 +27,9 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 
 void AProjectTapGameMode::BeginPlay()
 {
-	GetGameState<AProjectTapGameState>()->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
-	GetGameState<AProjectTapGameState>()->CameraChanged.AddUFunction( this , TEXT( "OnCameraChanged" ) );
+	auto gameState = GetGameState<AProjectTapGameState>();
+	gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
+	gameState->CameraChanged.AddUFunction( this , TEXT( "OnCameraChanged" ) );
 	if ( UWorld* world = GetWorld() )
 	{
 		AActor* playerStart = FindPlayerStart( 0, FString( "Player" ) );
@@ -52,7 +53,7 @@ void AProjectTapGameMode::BeginPlay()
 					possibleCamera = ball->GetCamera();
 				}
 			}
-			GetGameState<AProjectTapGameState>()->SetCurrentCamera(possibleCamera);
+			gameState->SetCurrentCamera( possibleCamera );
 			if ( realPlayerStart->music != nullptr )musicPlayer->SetSound( realPlayerStart->music );
 		}
 		else
@@ -61,9 +62,9 @@ void AProjectTapGameMode::BeginPlay()
 			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
 		}
 
-		GetGameState<AProjectTapGameState>()->CurrentPawn = ball;
+		gameState->CurrentPawn = ball;
 	}
-	GetGameState<AProjectTapGameState>()->SetState( GameState::GAME_STATE_STARTING );
+	gameState->SetState( GameState::GAME_STATE_STARTING );
 	musicPlayer->Play();
 	musicPlayer->SetVolumeMultiplier( 0 );
 }

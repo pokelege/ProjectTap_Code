@@ -13,14 +13,13 @@ class PROJECTTAP_API AProjectTapGameState : public AGameState
 {
 	GENERATED_BODY()
 
-public:
-
 protected:
 	GameState CurrentState = UNKNOWN;
 	float cameraSaturation = 1.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	class UProjectTapCameraComponent* CurrentCamera = nullptr;
 public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	float aiMaxDistance = 500.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
@@ -31,10 +30,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level)
 	FName currentLevelToLoadWhenWin;
 
-	DECLARE_EVENT_OneParam( AProjectTapGameState , FGameStateChanged , const uint8 )
+	DECLARE_MULTICAST_DELEGATE_OneParam( FGameStateChanged , const uint8 )
 	FGameStateChanged GameStateChanged;
 
-	DECLARE_EVENT_OneParam( AProjectTapGameState , FCameraChanged , UProjectTapCameraComponent* )
+	DECLARE_MULTICAST_DELEGATE_OneParam( FCameraChanged , UProjectTapCameraComponent* )
 	FCameraChanged CameraChanged;
 
 	void SetState(GameState NewState, bool notifyListeners = true);

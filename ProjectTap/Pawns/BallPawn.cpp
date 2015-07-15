@@ -7,9 +7,6 @@
 #include "PawnCastingTrigger.h"
 #include "BallPlayerStart.h"
 #include "ConstrainingSpringArmComponent.h"
-#include "Runtime/UMG/Public/Blueprint/WidgetBlueprintLibrary.h"
-#include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
-#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "GameState.h"
 #include "General/ProjectTapCameraComponent.h"
 
@@ -75,7 +72,7 @@ ABallPawn::ABallPawn()
 	dieSound->bAutoActivate = false;
 	dieSound->AttachTo( GetRootComponent() );
 
-	ConstructorHelpers::FObjectFinder<UWidgetBlueprint> pauseMenuAssewt(TEXT("/Game/GUI/Pause"));
+	ConstructorHelpers::FObjectFinder<UBlueprint> pauseMenuAssewt(TEXT("Class'/Game/GUI/Pause'"));
 	pauseMenuBlueprint = pauseMenuAssewt.Object;
 
 }

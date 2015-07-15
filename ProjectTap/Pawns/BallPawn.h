@@ -3,13 +3,8 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
-#include "Blueprint/WidgetBlueprintGeneratedClass.h"
-#include "Editor/UMGEditor/Public/WidgetBlueprint.h"
-#include "Runtime/UMG/Public/UMG.h"
-#include "Runtime/UMG/Public/UMGStyle.h"
-#include "Runtime/UMG/Public/Slate/SObjectWidget.h"
-#include "Runtime/UMG/Public/IUMGModule.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+#include "Runtime/Engine/Classes/Engine/Blueprint.h"
 #include "BallPawn.generated.h"
 
 UCLASS()
@@ -31,7 +26,7 @@ public:
 	UUserWidget* pauseMenuInstance = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
-	UWidgetBlueprint* pauseMenuBlueprint = nullptr;
+	UBlueprint* pauseMenuBlueprint = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	UCurveFloat* dieSequence;

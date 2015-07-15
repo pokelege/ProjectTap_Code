@@ -12,7 +12,6 @@ public class ProjectTap : ModuleRules
                                                             "InputCore",
                                                             "AIModule", 
                                                             "UMG",
-                                                            "UMGEditor",
                                                             "MovieSceneCore" });
 
         PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

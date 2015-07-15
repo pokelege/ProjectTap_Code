@@ -20,11 +20,11 @@ private:
 	void PlayOut( float DeltaSeconds );
 public:
 	UProjectTapCameraComponent();
-	DECLARE_EVENT( AProjectTapCameraActor , FCameraFadedIn)
+	DECLARE_MULTICAST_DELEGATE( FCameraFadedIn )
 	FCameraFadedIn OnFadeIn;
-	DECLARE_EVENT( AProjectTapCameraActor , FCameraFadedOut )
+	DECLARE_MULTICAST_DELEGATE( FCameraFadedOut )
 	FCameraFadedOut OnFadeOut;
-	DECLARE_EVENT_OneParam( AProjectTapCameraActor , FCameraFadeUpdate, const float )
+	DECLARE_MULTICAST_DELEGATE_OneParam( FCameraFadeUpdate , const float )
 	FCameraFadeUpdate OnFadeUpdate;
 	UFUNCTION()
 	bool FadeIn();

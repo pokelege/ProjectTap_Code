@@ -9,6 +9,7 @@
 #include "Controllers/MouseController.h"
 #include "Pawns/BallPlayerStart.h"
 #include "General/ProjectTapCameraComponent.h"
+#include "General/ProjectTapCamera.h"
 
 AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer ): Super( initializer )
 {
@@ -122,14 +123,19 @@ void AProjectTapGameMode::OnCameraChanged(UProjectTapCameraComponent* newCamera)
 {
 	if(camera != nullptr)
 	{
-		//todo remove ufunctions
+		camera->OnFadeIn.Remove( OnCameraFadeInDelegateHandle );
+		OnCameraFadeInDelegateHandle.Reset();
+		camera->OnFadeOut.Remove( OnCameraFadeOutDelegateHandle );
+		OnCameraFadeOutDelegateHandle.Reset();
+		camera->OnFadeUpdate.Remove( OnCameraFadeUpdateDelegateHandle );
+		OnCameraFadeUpdateDelegateHandle.Reset();
 	}
 	camera = newCamera;
 	if(camera != nullptr)
 	{
-		camera->OnFadeIn.AddUFunction( this , TEXT( "OnCameraFaded" ) );
-		camera->OnFadeOut.AddUFunction( this , TEXT( "OnCameraFaded" ) );
-		camera->OnFadeUpdate.AddUFunction( this , TEXT( "OnCameraFadeUpdate" ) );
+		OnCameraFadeInDelegateHandle = camera->OnFadeIn.AddUFunction( this , TEXT( "OnCameraFaded" ) );
+		OnCameraFadeOutDelegateHandle = camera->OnFadeOut.AddUFunction( this , TEXT( "OnCameraFaded" ) );
+		OnCameraFadeUpdateDelegateHandle = camera->OnFadeUpdate.AddUFunction( this , TEXT( "OnCameraFadeUpdate" ) );
 	}
 }
 void AProjectTapGameMode::OnCameraFadeUpdate(const float percent)

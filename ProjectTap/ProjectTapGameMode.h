@@ -20,6 +20,9 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 	class UProjectTapCameraComponent* camera = nullptr;
 	float restartCoolDown = 1.0f;
 	int lastReportedState = GameState::UNKNOWN;
+	FDelegateHandle OnCameraFadeInDelegateHandle;
+	FDelegateHandle OnCameraFadeOutDelegateHandle;
+	FDelegateHandle OnCameraFadeUpdateDelegateHandle;
 public:
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )

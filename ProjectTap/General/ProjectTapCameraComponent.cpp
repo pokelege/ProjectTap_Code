@@ -31,6 +31,7 @@ void UProjectTapCameraComponent::PlayIn( float DeltaSeconds )
 	float fadeValue = FMath::Clamp<float>( time / 1 , 0 , 1 );
 	PostProcessSettings.bOverride_ColorGain = true;
 	PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
+	OnFadeUpdate.Broadcast( fadeValue );
 	if ( time >= 1 )
 	{
 		time = 0;

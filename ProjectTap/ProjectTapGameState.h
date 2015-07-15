@@ -14,7 +14,7 @@ class PROJECTTAP_API AProjectTapGameState : public AGameState
 	GENERATED_BODY()
 
 protected:
-	GameState CurrentState = UNKNOWN;
+	GameState CurrentState = GAME_STATE_PLAYING;
 	float cameraSaturation = 1.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	class UProjectTapCameraComponent* CurrentCamera = nullptr;
@@ -38,9 +38,9 @@ public:
 	UPROPERTY( BlueprintAssignable , Category = "Camera" )
 	FCameraChanged CameraChanged;
 
-	UFUNCTION()
+	UFUNCTION( BlueprintCallable , Category = GameState )
 	void SetGameState(uint8 NewState, bool notifyListeners = true);
-	UFUNCTION()
+	UFUNCTION( BlueprintCallable , Category = Camera)
 	void SetCamera(class UProjectTapCameraComponent* camera,  bool notifyListeners = true);
 	GameState GetState();
 	float getCameraSaturation() const;

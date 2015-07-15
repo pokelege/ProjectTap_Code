@@ -101,7 +101,7 @@ void AEndTile::OnBeginHit(class AActor* OtherActor,
 	{
 		UWorld* world = GetWorld();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-		if ( gameState && gameState->GetState() == GameState::GAME_STATE_PLAYING )
+		if ( gameState && ( gameState->GetState() == GameState::GAME_STATE_PLAYING || gameState->GetState() == GameState::GAME_STATE_MAIN_MENU ) )
 		{
 			gameState->SetGameState( GameState::GAME_STATE_WINNING );
 			targetBall = Cast<ABallPawn>(OtherActor);

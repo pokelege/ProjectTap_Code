@@ -30,6 +30,7 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 void AProjectTapGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
 	auto gameState = GetGameState<AProjectTapGameState>();
 	gameState->CameraChanged.AddUFunction( this , TEXT( "OnCameraChanged" ) );
 	if ( UWorld* world = GetWorld() )

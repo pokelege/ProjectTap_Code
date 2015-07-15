@@ -32,7 +32,7 @@ public:
 
 	DECLARE_MULTICAST_DELEGATE_OneParam( FGameStateChanged , const uint8 )
 	UPROPERTY( BlueprintAssignable , Category = "GameState" )
-	FGameStateChanged GameStateChanged;
+	static FGameStateChanged GameStateChanged;
 
 	DECLARE_MULTICAST_DELEGATE_OneParam( FCameraChanged , UProjectTapCameraComponent* )
 	UPROPERTY( BlueprintAssignable , Category = "Camera" )

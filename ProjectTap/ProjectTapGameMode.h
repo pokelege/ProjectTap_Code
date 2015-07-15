@@ -23,14 +23,15 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 	FDelegateHandle OnCameraFadeInDelegateHandle;
 	FDelegateHandle OnCameraFadeOutDelegateHandle;
 	FDelegateHandle OnCameraFadeUpdateDelegateHandle;
+	FDelegateHandle OnGameStateChangedDelegateHandle;
 public:
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 	class UAudioComponent* musicPlayer = nullptr;
 
 	AProjectTapGameMode ( const FObjectInitializer& initializer );
-
 	virtual void BeginPlay() override;
+	virtual void BeginDestroy() override;
 
 	void Respawn();
 	class ABallPawn* getBall();

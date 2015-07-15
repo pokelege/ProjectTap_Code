@@ -82,13 +82,35 @@ AEndTile::AEndTile() : ATile()
 	transportScalingCurve = transportScalingCurveAsset.Object;
 	delegate.BindUFunction(this, TEXT("OnBeginHit"));
 	BoxCollision->OnComponentHit.Add(delegate);
+	OnGameStateChangedDelegateHandle = AProjectTapGameState::GameStateChanged.AddUFunction( this , TEXT( "OnGameStateChanged" ) );
+}
+
+void AEndTile::BeginDestroy()
+{
+	AProjectTapGameState::GameStateChanged.Remove(OnGameStateChangedDelegateHandle);
+	OnGameStateChangedDelegateHandle.Reset();
+	Super::BeginDestroy();
 }
 
 void AEndTile::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
 	if(transporting)
 	{
 		PlayTransport(DeltaTime);
+	}
+}
+
+void AEndTile::OnGameStateChanged(const uint8 gameState)
+{
+	switch(gameState)
+	{
+		case GAME_STATE_MAIN_MENU:
+		case GAME_STATE_PLAYING:
+			CanTransport = true;
+			break;
+		default:
+			CanTransport = false;
 	}
 }
 
@@ -101,7 +123,7 @@ void AEndTile::OnBeginHit(class AActor* OtherActor,
 	{
 		UWorld* world = GetWorld();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-		if ( gameState && ( gameState->GetState() == GameState::GAME_STATE_PLAYING || gameState->GetState() == GameState::GAME_STATE_MAIN_MENU ) )
+		if ( gameState && CanTransport )
 		{
 			gameState->SetGameState( GameState::GAME_STATE_WINNING );
 			targetBall = Cast<ABallPawn>(OtherActor);

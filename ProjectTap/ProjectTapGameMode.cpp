@@ -24,12 +24,13 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 	musicPlayer->SetSound( defaultMusicFile.Object );
 	musicPlayer->bAutoActivate = false;
 	musicPlayer->AttachTo( GetRootComponent() );
+	OnGameStateChangedDelegateHandle = AProjectTapGameState::GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
 }
 
 void AProjectTapGameMode::BeginPlay()
 {
+	Super::BeginPlay();
 	auto gameState = GetGameState<AProjectTapGameState>();
-	gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
 	gameState->CameraChanged.AddUFunction( this , TEXT( "OnCameraChanged" ) );
 	if ( UWorld* world = GetWorld() )
 	{
@@ -65,9 +66,16 @@ void AProjectTapGameMode::BeginPlay()
 
 		gameState->CurrentPawn = ball;
 	}
-	if ( camera != nullptr ) camera->FadeIn();
 	musicPlayer->Play();
 	musicPlayer->SetVolumeMultiplier( 0 );
+	gameState->SetGameState(GAME_STATE_PLAYING);
+}
+
+void AProjectTapGameMode::BeginDestroy()
+{
+	AProjectTapGameState::GameStateChanged.Remove(OnGameStateChangedDelegateHandle);
+	OnGameStateChangedDelegateHandle.Reset();
+	Super::BeginDestroy();
 }
 
 void AProjectTapGameMode::Respawn()
@@ -94,6 +102,9 @@ void AProjectTapGameMode::OnStateChanged(const uint8 newState )
 	{
 		switch(lastReportedState)
 		{
+			case GAME_STATE_PLAYING:
+				camera->FadeIn();
+				break;
 			case GameState::GAME_STATE_GAME_OVER:
 			case GameState::GAME_STATE_WIN:
 				camera->FadeOut();

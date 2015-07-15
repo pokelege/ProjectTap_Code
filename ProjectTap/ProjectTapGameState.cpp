@@ -4,7 +4,7 @@
 #include "ProjectTapGameState.h"
 
 
-
+AProjectTapGameState::FGameStateChanged AProjectTapGameState::GameStateChanged = FGameStateChanged();
 
 float AProjectTapGameState::getCameraSaturation() const
 {

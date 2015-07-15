@@ -2,15 +2,10 @@
 
 #include "ProjectTap.h"
 #include "BallPawn.h"
-#include "Engine/GameInstance.h"
 #include "ProjectTapGameState.h"
 #include "PawnCastingTrigger.h"
 #include "BallPlayerStart.h"
 #include "ConstrainingSpringArmComponent.h"
-#include "Runtime/UMG/Public/Blueprint/WidgetBlueprintLibrary.h"
-#include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
-#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
-#include "GameState.h"
 
 // Sets default values
 ABallPawn::ABallPawn()

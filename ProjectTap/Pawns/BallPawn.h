@@ -26,7 +26,7 @@ public:
 	UUserWidget* pauseMenuInstance = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
-	UBlueprint* pauseMenuBlueprint = nullptr;
+	UClass* pauseMenuBlueprint = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	UCurveFloat* dieSequence;

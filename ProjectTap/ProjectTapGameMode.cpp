@@ -8,6 +8,8 @@
 #include "ProjectTapGameState.h"
 #include "Controllers/MouseController.h"
 #include "Pawns/BallPlayerStart.h"
+#include "General/ProjectTapCameraComponent.h"
+#include "General/ProjectTapCamera.h"
 
 AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer ): Super( initializer )
 {
@@ -15,7 +17,7 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 	PlayerControllerClass = AMouseController::StaticClass();
 	DefaultPawnClass = nullptr;
 	GameStateClass = AProjectTapGameState::StaticClass();
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	ConstructorHelpers::FObjectFinder<USoundWave> defaultMusicFile( TEXT( "/Game/Sound/S_DefaultMusic" ) );
 	musicPlayer = CreateDefaultSubobject<UAudioComponent>( TEXT( "Music" ) );
@@ -26,14 +28,16 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 
 void AProjectTapGameMode::BeginPlay()
 {
-	GetGameState<AProjectTapGameState>()->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
+	auto gameState = GetGameState<AProjectTapGameState>();
+	gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
+	gameState->CameraChanged.AddUFunction( this , TEXT( "OnCameraChanged" ) );
 	if ( UWorld* world = GetWorld() )
 	{
 		AActor* playerStart = FindPlayerStart( 0, FString( "Player" ) );
 		FTransform playerTransform = playerStart->GetTransform();
 		if ( ABallPlayerStart* realPlayerStart = Cast<ABallPlayerStart>( playerStart ) )
 		{
-			camera = realPlayerStart->camera;
+			auto possibleCamera = Cast<UProjectTapCameraComponent>(realPlayerStart->camera->GetComponentByClass(UProjectTapCameraComponent::StaticClass()));
 			FActorSpawnParameters params;
 			ball = world->SpawnActor<ABallPawn>(
 				ABallPawn::StaticClass(),
@@ -44,12 +48,13 @@ void AProjectTapGameMode::BeginPlay()
 			if (ball != nullptr)
 			{
 				ball->AddVelocity(realPlayerStart->initialVelocity, realPlayerStart->GetActorLocation());
-				if(camera != nullptr && realPlayerStart->followPlayer)
+				if(possibleCamera != nullptr && realPlayerStart->followPlayer)
 				{
 					ball->setCamera(realPlayerStart);
-					camera = ball->getCamera();
+					possibleCamera = ball->GetCamera();
 				}
 			}
+			gameState->SetCamera( possibleCamera );
 			if ( realPlayerStart->music != nullptr )musicPlayer->SetSound( realPlayerStart->music );
 		}
 		else
@@ -58,69 +63,11 @@ void AProjectTapGameMode::BeginPlay()
 			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
 		}
 
-		GetGameState<AProjectTapGameState>()->CurrentPawn = ball;
+		gameState->CurrentPawn = ball;
 	}
-	GetGameState<AProjectTapGameState>()->CurrentCamera = camera;
-	GetGameState<AProjectTapGameState>()->SetState( GameState::GAME_STATE_STARTING );
+	gameState->SetGameState( GameState::GAME_STATE_STARTING );
 	musicPlayer->Play();
 	musicPlayer->SetVolumeMultiplier( 0 );
-}
-
-void AProjectTapGameMode::Tick( float DeltaTime )
-{
-	Super::Tick( DeltaTime );
-	if ( lastReportedState == GameState::GAME_STATE_STARTING && GetGameState<AProjectTapGameState>()->CurrentCamera != nullptr )
-	{
-		time += DeltaTime;
-		auto cameraToChangeTest = GetGameState<AProjectTapGameState>()->CurrentCamera->GetComponentByClass( UCameraComponent::StaticClass() );
-		auto cameraToChange = Cast<UCameraComponent>( cameraToChangeTest );
-		if ( cameraToChange )
-		{
-			float fadeValue = FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
-			cameraToChange->PostProcessSettings.bOverride_ColorGain = true;
-			cameraToChange->PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
-			musicPlayer->SetVolumeMultiplier( fadeValue );
-		}
-		if ( time >= restartCoolDown )
-		{
-			time = 0;
-			GetGameState<AProjectTapGameState>()->SetState( GameState::GAME_STATE_PLAYING );
-		}
-	}
-	else if ( lastReportedState == GameState::GAME_STATE_GAME_OVER )
-	{
-		time += DeltaTime;
-		auto cameraToChangeTest = GetGameState<AProjectTapGameState>()->CurrentCamera->GetComponentByClass( UCameraComponent::StaticClass() );
-		auto cameraToChange = Cast<UCameraComponent>( cameraToChangeTest );
-		if ( cameraToChange )
-		{
-			float fadeValue = 1 - FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
-			cameraToChange->PostProcessSettings.bOverride_ColorGain = true;
-			cameraToChange->PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
-			musicPlayer->SetVolumeMultiplier( fadeValue );
-		}
-		if(time >= restartCoolDown)
-		{
-			Respawn();
-		}
-	}
-	else if (lastReportedState == GameState::GAME_STATE_WIN)
-	{
-		time += DeltaTime;
-		auto cameraToChangeTest = GetGameState<AProjectTapGameState>()->CurrentCamera->GetComponentByClass( UCameraComponent::StaticClass() );
-		auto cameraToChange = Cast<UCameraComponent>( cameraToChangeTest );
-		if ( cameraToChange )
-		{
-			float fadeValue = 1 - FMath::Clamp<float>( time / restartCoolDown , 0 , 1 );
-			cameraToChange->PostProcessSettings.bOverride_ColorGain = true;
-			cameraToChange->PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
-			musicPlayer->SetVolumeMultiplier( fadeValue );
-		}
-		if(time >= restartCoolDown)
-		{
-			LoadNextLevel();
-		}
-	}
 }
 
 void AProjectTapGameMode::Respawn()
@@ -141,5 +88,57 @@ bool AProjectTapGameMode::LoadNextLevel()
 }
 void AProjectTapGameMode::OnStateChanged(const uint8 newState )
 {
+	if(lastReportedState == newState) return;
 	lastReportedState = newState;
+	if(camera != nullptr)
+	{
+		switch(lastReportedState)
+		{
+			case GameState::GAME_STATE_STARTING:
+				camera->FadeIn();
+				break;
+			case GameState::GAME_STATE_GAME_OVER:
+			case GameState::GAME_STATE_WIN:
+				camera->FadeOut();
+		}
+	}
+}
+
+void AProjectTapGameMode::OnCameraFaded()
+{
+	switch(lastReportedState)
+	{
+		case GameState::GAME_STATE_STARTING:
+			GetGameState<AProjectTapGameState>()->SetGameState( GameState::GAME_STATE_PLAYING );
+			break;
+		case GameState::GAME_STATE_GAME_OVER:
+			Respawn();
+			break;
+		case GameState::GAME_STATE_WIN:
+			LoadNextLevel();
+	}
+}
+
+void AProjectTapGameMode::OnCameraChanged(UProjectTapCameraComponent* newCamera)
+{
+	if(camera != nullptr)
+	{
+		camera->OnFadeIn.Remove( OnCameraFadeInDelegateHandle );
+		OnCameraFadeInDelegateHandle.Reset();
+		camera->OnFadeOut.Remove( OnCameraFadeOutDelegateHandle );
+		OnCameraFadeOutDelegateHandle.Reset();
+		camera->OnFadeUpdate.Remove( OnCameraFadeUpdateDelegateHandle );
+		OnCameraFadeUpdateDelegateHandle.Reset();
+	}
+	camera = newCamera;
+	if(camera != nullptr)
+	{
+		OnCameraFadeInDelegateHandle = camera->OnFadeIn.AddUFunction( this , TEXT( "OnCameraFaded" ) );
+		OnCameraFadeOutDelegateHandle = camera->OnFadeOut.AddUFunction( this , TEXT( "OnCameraFaded" ) );
+		OnCameraFadeUpdateDelegateHandle = camera->OnFadeUpdate.AddUFunction( this , TEXT( "OnCameraFadeUpdate" ) );
+	}
+}
+void AProjectTapGameMode::OnCameraFadeUpdate(const float percent)
+{
+	if(musicPlayer != nullptr) musicPlayer->SetVolumeMultiplier( percent );
 }

@@ -6,6 +6,8 @@
 #include "Tiles/Tile.h"
 #include "Pawns/BallPawn.h"
 #include "ProjectTapGameMode.h"
+#include "General/ProjectTapCameraComponent.h"
+#include "ProjectTapGameState.h"
 
 AMouseController::AMouseController(const FObjectInitializer& initializer):Super(initializer)
 {
@@ -14,6 +16,11 @@ AMouseController::AMouseController(const FObjectInitializer& initializer):Super(
   this->bEnableClickEvents = true;
   this->bEnableTouchEvents = true;
   this->DefaultMouseCursor = EMouseCursor::Default;
+}
+
+void AMouseController::BeginPlay()
+{
+	GetWorld()->GetGameState<AProjectTapGameState>()->CameraChanged.AddUFunction( this , TEXT( "OnCameraChanged" ) );
 }
 
 
@@ -28,16 +35,18 @@ void AMouseController::SetupInputComponent()
 
 }
 
+void AMouseController::OnCameraChanged(UProjectTapCameraComponent* newCamera)
+{
+	currentCamera = newCamera;
+	if(newCamera != nullptr)
+	{
+		SetViewTarget(currentCamera->GetAttachmentRootActor());
+	}
+}
 
 void AMouseController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
-	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	if(gameState->CurrentCamera != nullptr && gameState->CurrentCamera != currentCamera)
-	{
-		currentCamera = gameState->CurrentCamera;
-		SetViewTarget(currentCamera);
-	}
 	FHitResult hit;
 	auto gameMode = Cast<AProjectTapGameMode>(GetWorld()->GetAuthGameMode());
 

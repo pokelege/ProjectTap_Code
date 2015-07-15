@@ -4,7 +4,11 @@
 #include "ProjectTapCameraComponent.h"
 
 
-
+UProjectTapCameraComponent::UProjectTapCameraComponent()
+{
+	bConstrainAspectRatio = true;
+	PrimaryComponentTick.bCanEverTick = true;
+}
 
 bool UProjectTapCameraComponent::FadeIn()
 {
@@ -27,6 +31,7 @@ void UProjectTapCameraComponent::PlayIn( float DeltaSeconds )
 	float fadeValue = FMath::Clamp<float>( time / 1 , 0 , 1 );
 	PostProcessSettings.bOverride_ColorGain = true;
 	PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
+	OnFadeUpdate.Broadcast( fadeValue );
 	if ( time >= 1 )
 	{
 		time = 0;
@@ -40,15 +45,18 @@ void UProjectTapCameraComponent::PlayOut( float DeltaSeconds )
 	float fadeValue = 1 - FMath::Clamp<float>( time / 1 , 0 , 1 );
 	PostProcessSettings.bOverride_ColorGain = true;
 	PostProcessSettings.ColorGain = FVector( fadeValue , fadeValue , fadeValue );
+	OnFadeUpdate.Broadcast(fadeValue);
 	if ( time >= 1 )
 	{
 		time = 0;
 		OnFadeOut.Broadcast();
 		currentFade = FadeType::None;
 	}
+
 }
 
-void UProjectTapCameraComponent::ReceiveTick( float DeltaSeconds )
+void UProjectTapCameraComponent::TickComponent( float DeltaSeconds ,ELevelTick TickType ,
+												FActorComponentTickFunction * ThisTickFunction )
 {
 	switch ( currentFade )
 	{

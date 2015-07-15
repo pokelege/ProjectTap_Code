@@ -21,11 +21,11 @@ class PROJECTTAP_API ABallPawn : public APawn
 
 	bool bInvincible = false;
 
-	UCameraComponent* cameraComponent = nullptr;
+	class UProjectTapCameraComponent* cameraComponent = nullptr;
 	UMaterialInstanceDynamic* material = nullptr;
 	bool dying = false;
 	float currentDieTime = 0;
-	
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
 	UUserWidget* pauseMenuInstance = nullptr;
@@ -83,5 +83,5 @@ public:
 
 
 	void setCamera(class ABallPlayerStart* playerStart);
-	AActor* getCamera();
+	UProjectTapCameraComponent* GetCamera();
 };

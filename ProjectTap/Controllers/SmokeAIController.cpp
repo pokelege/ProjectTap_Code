@@ -83,11 +83,12 @@ void ASmokeAIController::UpdateCameraSaturation()
 
 	float length = (GetPawn()->GetActorLocation() - gamestate->CurrentPawn->GetActorLocation()).Size();
 	float newColor = FMath::Clamp<float>((length - gamestate->aiMinDistance) / (gamestate->aiMaxDistance - gamestate->aiMinDistance), 0, 1);
-	auto cameraToChangeTest = gamestate->CurrentCamera->GetComponentByClass(UCameraComponent::StaticClass());
-	auto cameraToChange = Cast<UCameraComponent>(cameraToChangeTest);
-	if(cameraToChange)
-	{
-		cameraToChange->PostProcessSettings.bOverride_FilmSaturation = true;
-		cameraToChange->PostProcessSettings.FilmSaturation = newColor;
-	}
+
+//	auto cameraToChangeTest = gamestate->CurrentCamera->GetComponentByClass(UCameraComponent::StaticClass());
+//	auto cameraToChange = Cast<UCameraComponent>(cameraToChangeTest);
+//	if(cameraToChange)
+//	{
+//		cameraToChange->PostProcessSettings.bOverride_FilmSaturation = true;
+//		cameraToChange->PostProcessSettings.FilmSaturation = newColor;
+//	}
 }

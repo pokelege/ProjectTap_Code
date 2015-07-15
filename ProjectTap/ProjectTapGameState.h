@@ -13,12 +13,13 @@ class PROJECTTAP_API AProjectTapGameState : public AGameState
 {
 	GENERATED_BODY()
 
-public:
-	DECLARE_EVENT_OneParam( AProjectTapGameState , FGameStateChanged , const uint8 )
 protected:
 	GameState CurrentState = UNKNOWN;
 	float cameraSaturation = 1.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
+	class UProjectTapCameraComponent* CurrentCamera = nullptr;
 public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	float aiMaxDistance = 500.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
@@ -26,14 +27,21 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Player)
 	class ABallPawn* CurrentPawn = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
-	class AActor* CurrentCamera = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level)
 	FName currentLevelToLoadWhenWin;
 
+	DECLARE_MULTICAST_DELEGATE_OneParam( FGameStateChanged , const uint8 )
+	UPROPERTY( BlueprintAssignable , Category = "GameState" )
 	FGameStateChanged GameStateChanged;
 
-	void SetState(GameState NewState, bool notifyListeners = true);
+	DECLARE_MULTICAST_DELEGATE_OneParam( FCameraChanged , UProjectTapCameraComponent* )
+	UPROPERTY( BlueprintAssignable , Category = "Camera" )
+	FCameraChanged CameraChanged;
+
+	UFUNCTION()
+	void SetGameState(uint8 NewState, bool notifyListeners = true);
+	UFUNCTION()
+	void SetCamera(class UProjectTapCameraComponent* camera,  bool notifyListeners = true);
 	GameState GetState();
 	float getCameraSaturation() const;
 	void setCameraSaturation(float value);

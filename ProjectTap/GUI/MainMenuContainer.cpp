@@ -75,14 +75,15 @@ void AMainMenuContainer::InitResolutionWidgets(UButton* resolutionButton,
 
 {
 	auto textBlock = Cast<UTextBlock>(resolutionButton->GetChildAt(0));
+	auto currResolutionString = getCurrentResolutionString();
 	
 	for (int32 i = 0; i < resolutionStrings.Num(); i++)
 	{
 		auto& str = resolutionStrings[i];
-		auto textBlockStr = textBlock->GetText().ToString();
-		if (str.Equals(textBlockStr))
+		if (str.Equals(currResolutionString))
 		{
 			currResolutionIndex = i;
+			textBlock->SetText(FText::FromString(currResolutionString));
 			break;
 		}
 	}
@@ -107,6 +108,7 @@ void AMainMenuContainer::InitSoundWidget(USlider* slider)
 		{
 			auto volume = audioDevice->GetSoundClassCurrentProperties(key)->Volume;
 			slider->SetValue(volume);
+			break;
 		}
 	}
 
@@ -122,7 +124,8 @@ void AMainMenuContainer::SetSoundVolume(float slider)
 		auto key = sc.Key;
 		if (key != nullptr && key->GetName().Equals("Master"))
 		{
-			audioDevice->GetSoundClassCurrentProperties(key)->Volume = slider * 10.0f;
+			key->Properties.Volume = slider;
+			break;
 		}
 	}
 }
@@ -259,7 +262,7 @@ void AMainMenuContainer::SetWidgetVisibility(AActor* widget, EVisibility visibil
 	}
 }
 
-FIntPoint AMainMenuContainer::getPointByString(const FString& screen)
+FIntPoint AMainMenuContainer::getResolutionByString(const FString& screen)
 {
 	FIntPoint point(1920, 1080);
 
@@ -289,6 +292,36 @@ FIntPoint AMainMenuContainer::getPointByString(const FString& screen)
 	return point;
 }
 
+FString AMainMenuContainer::getCurrentResolutionString()
+{
+	FString resolution = "1280X720";
+
+	auto resoPoint = GEngine->GameUserSettings->GetLastConfirmedScreenResolution();
+
+	if (resoPoint == FIntPoint(1920, 1080))
+	{
+		resolution = "1920X1080";
+	}
+	else if (resoPoint == FIntPoint(1600, 900))
+	{
+		resolution = "1600X900";
+	}
+	else if (resoPoint == FIntPoint(1366, 768))
+	{
+		resolution = "1366X768";
+	}
+	else if (resoPoint == FIntPoint(1280, 720))
+	{
+		resolution = "1280X720";
+	}
+	else if (resoPoint == FIntPoint(1024, 576))
+	{
+		resolution = "1024X576";
+	}
+
+	return resolution;
+}
+
 
 void AMainMenuContainer::ChangeSettings(const FString& graphicsSetting,
 									    const FString& resolution,
@@ -297,9 +330,8 @@ void AMainMenuContainer::ChangeSettings(const FString& graphicsSetting,
 	auto screenMode = fullScreen ? EWindowMode::Fullscreen : EWindowMode::Windowed ;
 	auto settings = GEngine->GameUserSettings;
 
-	auto resoPoint = getPointByString(resolution);
+	auto resoPoint = getResolutionByString(resolution);
 	settings->SetScreenResolution(resoPoint);
-	settings->SetFullscreenMode(EWindowMode::Fullscreen);
 	SetGraphicsScalability(graphicsSetting, settings);
 
 	settings->ApplySettings(false);
@@ -345,7 +377,7 @@ void AMainMenuContainer::SetGraphicsMid(UGameUserSettings* settings)
 void AMainMenuContainer::SetGraphicsHigh(UGameUserSettings* settings)
 {
 	SetGraphcisScalabilityNumber(settings, 2);
-
+	settings->ScalabilityQuality.ResolutionQuality = 100;
 }
 
 

@@ -32,7 +32,8 @@ private:
 	bool enabled = true;
 	bool bReachedGoal = false;
 
-	FIntPoint getPointByString(const FString& screen);
+	FIntPoint getResolutionByString(const FString& screen);
+	FString getCurrentResolutionString();
 	void SetGraphicsScalability(const FString& quality,
 								UGameUserSettings* settings);
 	void SetGraphicsLow(UGameUserSettings* settings);

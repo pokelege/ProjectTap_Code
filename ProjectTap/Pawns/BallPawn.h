@@ -4,7 +4,7 @@
 
 #include "GameFramework/Pawn.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
-#include "Editor/UMGEditor/Public/WidgetBlueprint.h"
+#include "Runtime/Engine/Classes/Engine/Blueprint.h"
 #include "BallPawn.generated.h"
 
 UCLASS()
@@ -16,16 +16,21 @@ class PROJECTTAP_API ABallPawn : public APawn
 
 	bool bInvincible = false;
 
-	UCameraComponent* cameraComponent = nullptr;
+	class UProjectTapCameraComponent* cameraComponent = nullptr;
 	UMaterialInstanceDynamic* material = nullptr;
-	UUserWidget* pauseMenuInstance = nullptr;
-	TSubclassOf<UUserWidget> pauseMenuBlueprint = nullptr;
 	bool dying = false;
 	float currentDieTime = 0;
-	
+
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
+	UUserWidget* pauseMenuInstance = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
+	UBlueprint* pauseMenuBlueprint = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	UCurveFloat* dieSequence;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	UStaticMeshComponent* ballMesh;
 
@@ -68,9 +73,10 @@ public:
 
 	void setInvincibility(bool invincible);
 
+	UFUNCTION(BlueprintCallable, Category=ToggleMenu)
 	void togglePauseMenu();
 
 
 	void setCamera(class ABallPlayerStart* playerStart);
-	AActor* getCamera();
+	UProjectTapCameraComponent* GetCamera();
 };

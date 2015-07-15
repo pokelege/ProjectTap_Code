@@ -7,9 +7,9 @@
 #include "PawnCastingTrigger.h"
 #include "BallPlayerStart.h"
 #include "ConstrainingSpringArmComponent.h"
-#include "Runtime/UMG/Public/Blueprint/WidgetBlueprintLibrary.h"
-#include "Runtime/UMG/Public/Blueprint/WidgetTree.h"
-#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "GameState.h"
+#include "General/ProjectTapCameraComponent.h"
+#include "General/ProjectTapCamera.h"
 
 // Sets default values
 ABallPawn::ABallPawn()
@@ -61,7 +61,7 @@ ABallPawn::ABallPawn()
 	spring->bInheritPitch = false;
 	spring->bInheritYaw = false;
 	spring->bInheritRoll = false;
-	cameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	cameraComponent = CreateDefaultSubobject<UProjectTapCameraComponent>(TEXT("Camera"));
 	cameraComponent->AttachTo(spring);
 
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("/Game/Curves/BallDeath"));
@@ -73,8 +73,8 @@ ABallPawn::ABallPawn()
 	dieSound->bAutoActivate = false;
 	dieSound->AttachTo( GetRootComponent() );
 
-	ConstructorHelpers::FObjectFinder<UWidgetBlueprint> pauseMenuAssewt(TEXT("/Game/GUI/Pause"));
-	pauseMenuInstance = Cast<UUserWidget>(pauseMenuAssewt.Object);
+	ConstructorHelpers::FObjectFinder<UBlueprint> pauseMenuAssewt(TEXT("Class'/Game/GUI/Pause'"));
+	pauseMenuBlueprint = pauseMenuAssewt.Object;
 
 }
 
@@ -94,6 +94,7 @@ void ABallPawn::BeginPlay()
 	if (ctrl != nullptr)
 	{
 		ctrl->InputComponent->BindAction("Pause", IE_Pressed, this, &ABallPawn::togglePauseMenu);
+		pauseMenuInstance = CreateWidget<UUserWidget>(ctrl, pauseMenuBlueprint->GeneratedClass);
 	}
 }
 
@@ -113,13 +114,13 @@ void ABallPawn::Tick( float DeltaTime )
 		trigger->SetActorLocation(pos);
 	}
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	if(dying && gameState->GetState() == AProjectTapGameState::GAME_STATE_DYING)
+	if(dying && gameState->GetState() == GameState::GAME_STATE_DYING)
 	{
 		currentDieTime += DeltaTime;
 		if(dieSequence == nullptr)
 		{
 			material->SetScalarParameterValue(TEXT("DeathMask"), 1);
-			gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
+			gameState->SetGameState( GameState::GAME_STATE_GAME_OVER );
 		}
 		else
 		{
@@ -128,7 +129,7 @@ void ABallPawn::Tick( float DeltaTime )
 			dieSequence->GetValueRange(min,max);
 			if(currentDieTime >= max)
 			{
-				gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
+				gameState->SetGameState( GameState::GAME_STATE_GAME_OVER );
 			}
 		}
 	}
@@ -142,26 +143,28 @@ void ABallPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 
 void ABallPawn::togglePauseMenu()
 {
-	/*auto state = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
+	auto state = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
 	auto ctrl = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 
-	if (state->GetState() == AProjectTapGameState::GameState::GAME_STATE_PAUSE)
+	if (state->GetState() == GameState::GAME_STATE_PAUSE)
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), false);
-		pauseMenu->RemoveFromParent();
-		ctrl->SetInputMode(FInputModeGameOnly::FInputModeGameOnly());
-		state->SetState(AProjectTapGameState::GameState::GAME_STATE_PLAYING);
+		pauseMenuInstance->RemoveFromParent();
+		auto inputMode = FInputModeGameOnly::FInputModeGameOnly();
+		ctrl->SetInputMode(inputMode);
+		state->SetGameState( GameState::GAME_STATE_PLAYING );
 
 	}
-	else if (state->GetState() != AProjectTapGameState::GameState::UNKNOWN)
+	else if (state->GetState() != GameState::UNKNOWN
+		&& state->GetState() != GameState::GAME_STATE_MAIN_MENU)
 	{
-		pauseMenu = CreateWidget<UUserWidget>(GetWorld()->GetFirstPlayerController(), EBlueprintType::);
 		auto inputMode = FInputModeUIOnly::FInputModeUIOnly();
+		inputMode.SetWidgetToFocus(pauseMenuInstance->GetCachedWidget());
 		ctrl->SetInputMode(inputMode);
-		pauseMenu->AddToViewport(1);		
+		pauseMenuInstance->AddToViewport(1);
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
-		state->SetState(AProjectTapGameState::GameState::GAME_STATE_PAUSE);
-	}*/
+		state->SetGameState( GameState::GAME_STATE_PAUSE );
+	}
 }
 
 
@@ -205,9 +208,9 @@ void ABallPawn::ResetBallXYPosition(const FVector& position)
 void ABallPawn::Kill()
 {
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	if (gameState && !bInvincible && gameState->GetState() == AProjectTapGameState::GAME_STATE_PLAYING)
+	if ( gameState && !bInvincible && gameState->GetState() == GameState::GAME_STATE_PLAYING )
 	{
-		gameState->SetState(AProjectTapGameState::GAME_STATE_DYING);
+		gameState->SetGameState( GameState::GAME_STATE_DYING );
 		dieSound->Play();
 		dying = true;
 	}
@@ -233,6 +236,7 @@ void ABallPawn::setCamera(ABallPlayerStart* playerStart)
 		spring->lockZ = playerStart->lockZ;
 		cameraComponent->SetWorldRotation( playerStart->camera->GetActorRotation() );
 		cameraComponent->SetWorldLocation( playerStart->camera->GetActorLocation() );
+		cameraComponent->PostProcessSettings = Cast<UProjectTapCameraComponent>( playerStart->camera->GetComponentByClass( UProjectTapCameraComponent::StaticClass() ) )->PostProcessSettings;
 		spring->SetTargetOffsetCustom( cameraComponent->RelativeLocation );
 		cameraComponent->SetRelativeLocation( FVector( 0 , 0 , 0 ) );
 
@@ -242,9 +246,9 @@ void ABallPawn::setCamera(ABallPlayerStart* playerStart)
 	}
 }
 
-AActor *ABallPawn::getCamera()
+UProjectTapCameraComponent* ABallPawn::GetCamera()
 {
-	return cameraComponent == nullptr ? nullptr : cameraComponent->GetAttachmentRootActor();
+	return cameraComponent;
 }
 
 bool ABallPawn::isDying()

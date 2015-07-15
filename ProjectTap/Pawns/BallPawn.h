@@ -3,8 +3,13 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
-#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+#include "Blueprint/WidgetBlueprintGeneratedClass.h"
 #include "Editor/UMGEditor/Public/WidgetBlueprint.h"
+#include "Runtime/UMG/Public/UMG.h"
+#include "Runtime/UMG/Public/UMGStyle.h"
+#include "Runtime/UMG/Public/Slate/SObjectWidget.h"
+#include "Runtime/UMG/Public/IUMGModule.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "BallPawn.generated.h"
 
 UCLASS()
@@ -18,14 +23,19 @@ class PROJECTTAP_API ABallPawn : public APawn
 
 	class UProjectTapCameraComponent* cameraComponent = nullptr;
 	UMaterialInstanceDynamic* material = nullptr;
-	UUserWidget* pauseMenuInstance = nullptr;
-	UWidgetBlueprint* pauseMenuBlueprint = nullptr;
 	bool dying = false;
 	float currentDieTime = 0;
 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
+	UUserWidget* pauseMenuInstance = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
+	UWidgetBlueprint* pauseMenuBlueprint = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	UCurveFloat* dieSequence;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	UStaticMeshComponent* ballMesh;
 

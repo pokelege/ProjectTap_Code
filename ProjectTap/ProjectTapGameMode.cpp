@@ -65,7 +65,7 @@ void AProjectTapGameMode::BeginPlay()
 
 		gameState->CurrentPawn = ball;
 	}
-	gameState->SetGameState( GameState::GAME_STATE_STARTING );
+	if ( camera != nullptr ) camera->FadeIn();
 	musicPlayer->Play();
 	musicPlayer->SetVolumeMultiplier( 0 );
 }
@@ -94,9 +94,6 @@ void AProjectTapGameMode::OnStateChanged(const uint8 newState )
 	{
 		switch(lastReportedState)
 		{
-			case GameState::GAME_STATE_STARTING:
-				camera->FadeIn();
-				break;
 			case GameState::GAME_STATE_GAME_OVER:
 			case GameState::GAME_STATE_WIN:
 				camera->FadeOut();
@@ -108,9 +105,6 @@ void AProjectTapGameMode::OnCameraFaded()
 {
 	switch(lastReportedState)
 	{
-		case GameState::GAME_STATE_STARTING:
-			GetGameState<AProjectTapGameState>()->SetGameState( GameState::GAME_STATE_PLAYING );
-			break;
 		case GameState::GAME_STATE_GAME_OVER:
 			Respawn();
 			break;

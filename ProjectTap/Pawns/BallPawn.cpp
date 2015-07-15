@@ -9,6 +9,7 @@
 #include "ConstrainingSpringArmComponent.h"
 #include "GameState.h"
 #include "General/ProjectTapCameraComponent.h"
+#include "General/ProjectTapCamera.h"
 
 // Sets default values
 ABallPawn::ABallPawn()
@@ -235,6 +236,7 @@ void ABallPawn::setCamera(ABallPlayerStart* playerStart)
 		spring->lockZ = playerStart->lockZ;
 		cameraComponent->SetWorldRotation( playerStart->camera->GetActorRotation() );
 		cameraComponent->SetWorldLocation( playerStart->camera->GetActorLocation() );
+		cameraComponent->PostProcessSettings = Cast<UProjectTapCameraComponent>( playerStart->camera->GetComponentByClass( UProjectTapCameraComponent::StaticClass() ) )->PostProcessSettings;
 		spring->SetTargetOffsetCustom( cameraComponent->RelativeLocation );
 		cameraComponent->SetRelativeLocation( FVector( 0 , 0 , 0 ) );
 

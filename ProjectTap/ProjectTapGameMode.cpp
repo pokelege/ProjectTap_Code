@@ -53,7 +53,7 @@ void AProjectTapGameMode::BeginPlay()
 					possibleCamera = ball->GetCamera();
 				}
 			}
-			gameState->SetCurrentCamera( possibleCamera );
+			gameState->SetCamera( possibleCamera );
 			if ( realPlayerStart->music != nullptr )musicPlayer->SetSound( realPlayerStart->music );
 		}
 		else
@@ -64,7 +64,7 @@ void AProjectTapGameMode::BeginPlay()
 
 		gameState->CurrentPawn = ball;
 	}
-	gameState->SetState( GameState::GAME_STATE_STARTING );
+	gameState->SetGameState( GameState::GAME_STATE_STARTING );
 	musicPlayer->Play();
 	musicPlayer->SetVolumeMultiplier( 0 );
 }
@@ -108,7 +108,7 @@ void AProjectTapGameMode::OnCameraFaded()
 	switch(lastReportedState)
 	{
 		case GameState::GAME_STATE_STARTING:
-			GetGameState<AProjectTapGameState>()->SetState( GameState::GAME_STATE_PLAYING );
+			GetGameState<AProjectTapGameState>()->SetGameState( GameState::GAME_STATE_PLAYING );
 			break;
 		case GameState::GAME_STATE_GAME_OVER:
 			Respawn();

@@ -15,15 +15,15 @@ void AProjectTapGameState::setCameraSaturation(float value)
 {
 	cameraSaturation = value;
 }
-void AProjectTapGameState::SetState( GameState NewState , bool notifyListeners )
+void AProjectTapGameState::SetGameState( uint8 NewState , bool notifyListeners )
 {
-	CurrentState = NewState;
+	CurrentState = (GameState)NewState;
 	if ( notifyListeners ) GameStateChanged.Broadcast( CurrentState );
 }
 
-void AProjectTapGameState::SetCurrentCamera(UProjectTapCameraComponent* currentCamera, bool notifyListeners)
+void AProjectTapGameState::SetCamera(UProjectTapCameraComponent* camera, bool notifyListeners)
 {
-	CurrentCamera = currentCamera;
+	CurrentCamera = camera;
 	if(notifyListeners) CameraChanged.Broadcast(CurrentCamera);
 }
 

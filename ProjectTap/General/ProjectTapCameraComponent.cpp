@@ -7,6 +7,7 @@
 UProjectTapCameraComponent::UProjectTapCameraComponent()
 {
 	bConstrainAspectRatio = true;
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 bool UProjectTapCameraComponent::FadeIn()
@@ -53,7 +54,8 @@ void UProjectTapCameraComponent::PlayOut( float DeltaSeconds )
 
 }
 
-void UProjectTapCameraComponent::ReceiveTick( float DeltaSeconds )
+void UProjectTapCameraComponent::TickComponent( float DeltaSeconds ,ELevelTick TickType ,
+												FActorComponentTickFunction * ThisTickFunction )
 {
 	switch ( currentFade )
 	{

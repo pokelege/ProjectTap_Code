@@ -30,5 +30,6 @@ public:
 	bool FadeIn();
 	UFUNCTION()
 	bool FadeOut();
-	void ReceiveTick( float DeltaSeconds );
+	void TickComponent( float DeltaSeconds , enum ELevelTick TickType ,
+					  FActorComponentTickFunction * ThisTickFunction );
 };

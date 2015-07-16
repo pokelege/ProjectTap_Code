@@ -21,6 +21,13 @@ class PROJECTTAP_API ABallPawn : public APawn
 	bool dying = false;
 	float currentDieTime = 0;
 
+	template <typename ObjClass>
+	static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path)
+	{
+		if (Path == NAME_None) return nullptr;
+		//~
+		return Cast<ObjClass>(StaticLoadObject(ObjClass::StaticClass(), nullptr, *Path.ToString()));
+	}
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
 	UUserWidget* pauseMenuInstance = nullptr;

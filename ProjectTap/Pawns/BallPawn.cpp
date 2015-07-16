@@ -208,7 +208,7 @@ void ABallPawn::ResetBallXYPosition(const FVector& position)
 void ABallPawn::Kill()
 {
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	if ( gameState && !bInvincible && gameState->GetState() == CustomGameState::GAME_STATE_PLAYING )
+	if ( gameState && !bInvincible && gameState->GetState() == CustomGameState::GAME_STATE_PLAYING && gameState->GetMode() != CustomGameMode::GAME_MODE_MAIN_MENU )
 	{
 		gameState->SetGameState( CustomGameState::GAME_STATE_DYING );
 		dieSound->Play();

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Tiles/Tile.h"
+#include "CustomGameState.h"
 #include "BaseRampTile.generated.h"
 
 /**
@@ -19,9 +20,11 @@ protected:
 	FScriptDelegate pawnIn;
 	FScriptDelegate pawnOut;
 	float time = 0;
+	FDelegateHandle OnGameStateChangedDelegateHandle;
 
 	friend class APawnCastingTrigger;
 	class ABallPawn* ball = nullptr;
+	class ABallPawn* lastPauseBall = nullptr;
 	USceneComponent* offset =nullptr;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
@@ -31,7 +34,7 @@ public:
 	UAudioComponent* flipSound = nullptr;
 
 	ABaseRampTile();
-
+	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
 
 	virtual void activate() override;
@@ -39,4 +42,6 @@ public:
 	virtual void CancelHighlightEdge() override;
 	virtual void HighlightTile() override;
 	virtual void CancelHighlightTile() override;
+	UFUNCTION()
+	void OnStateChanged( const CustomGameState newState );
 };

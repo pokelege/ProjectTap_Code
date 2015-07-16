@@ -5,7 +5,8 @@
 #include "BallPawn.h"
 #include "Tiles/BlockingTileBase.h"
 #include "Tiles/BaseRampTile.h"
-//#include "../Tiles/PortalTile.h"
+#include "ProjectTapGameState.h"
+#include "Engine/GameInstance.h"
 
 // Sets default values
 APawnCastingTrigger::APawnCastingTrigger()
@@ -33,8 +34,14 @@ APawnCastingTrigger::APawnCastingTrigger()
 	FScriptDelegate endEndLap;
 	endEndLap.BindUFunction(this, "OnEndTriggerOverlap");
 	tileOverlapCollision->OnComponentEndOverlap.Add(endEndLap);
+}
 
-
+void APawnCastingTrigger::BeginPlay()
+{
+	Super::BeginPlay();
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
 }
 
 void APawnCastingTrigger::SetBallPawn(ABallPawn* pawn)
@@ -48,6 +55,11 @@ void APawnCastingTrigger::OnBeginTriggerOverlap(AActor* OtherActor,
 	bool bFromSweep,
 	const FHitResult & SweepResult)
 {
+	if ( !canTrigger )
+	{
+		OnEndTriggerOverlap( OtherActor , OtherComp , OtherBodyIndex , bFromSweep , SweepResult );
+		return;
+	}
 	bool typeFound = false;
 	auto tile = Cast<ABlockingTileBase>(OtherActor);
 	if (tile != nullptr)
@@ -99,4 +111,8 @@ void APawnCastingTrigger::OnEndTriggerOverlap(AActor* OtherActor,
 		}
 
 	}
+}
+void APawnCastingTrigger::OnStateChanged( const CustomGameState newState )
+{
+	canTrigger = newState == CustomGameState::GAME_STATE_PLAYING;
 }

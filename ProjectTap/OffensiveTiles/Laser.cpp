@@ -9,6 +9,8 @@
 #include "Tiles/BlockingTile.h"
 #include "Tiles/PortalTile.h"
 #include "Classes/Particles/ParticleEmitter.h"
+#include "ProjectTapGameState.h"
+#include "Engine/GameInstance.h"
 
 #define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
 // Sets default values
@@ -50,9 +52,27 @@ ALaser::ALaser()
 void ALaser::BeginPlay()
 {
 	Super::BeginPlay();
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
 	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
 	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);
 	laserEmitSound->Play();
+}
+void ALaser::BeginDestroy()
+{
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState;
+	if ( world != nullptr && ( gameState = world->GetGameState<AProjectTapGameState>() ) != nullptr )
+	{
+		gameState->GameStateChanged.Remove( OnGameStateChangedDelegateHandle );
+		OnGameStateChangedDelegateHandle.Reset();
+	}
+	Super::BeginDestroy();
+}
+void ALaser::OnStateChanged( const CustomGameState newState )
+{
+	canHitBall = newState == CustomGameState::GAME_STATE_PLAYING;
 }
 
 void ALaser::SetLaserDepth(unsigned i)
@@ -83,12 +103,11 @@ void ALaser::checkLaserCollisions(float dt)
 	queryParam.bFindInitialOverlaps = false;
 	queryParam.bReturnFaceIndex = true;
 	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
-
+	if ( !canHitBall ) queryParam.AddIgnoredActor( GetWorld()->GetGameState<AProjectTapGameState>()->CurrentPawn );
 	auto pos = GetActorLocation();
 	auto rayStart = pos + dir * 2.0f;
 	auto laserVector = dir * length;
 	auto laserEmitter = laserParticle->EmitterInstances[0];
-
 	//ray cast to see if laser hits anything
 	GetWorld()->LineTraceSingleByObjectType(hit,rayStart, pos + laserVector, objectParam,queryParam);
 	auto hitActor = hit.Actor.Get();

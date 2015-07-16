@@ -38,3 +38,10 @@ CustomGameMode AProjectTapGameState::GetMode()
 {
 	return CurrentMode;
 }
+
+class AMagnetTile* AProjectTapGameState::SetMagnetTile( class AMagnetTile* magnet )
+{
+	AMagnetTile* lastMagnet = lastMagnetPull;
+	lastMagnetPull = magnet;
+	return lastMagnet;
+}

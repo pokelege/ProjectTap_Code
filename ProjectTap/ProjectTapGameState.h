@@ -17,6 +17,7 @@ class PROJECTTAP_API AProjectTapGameState : public AGameState
 protected:
 	CustomGameState CurrentState = CustomGameState::GAME_STATE_PLAYING;
 	CustomGameMode CurrentMode = CustomGameMode::GAME_MODE_LEVEL;
+	class AMagnetTile* lastMagnetPull = nullptr;
 	float cameraSaturation = 1.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	class UProjectTapCameraComponent* CurrentCamera = nullptr;
@@ -50,6 +51,7 @@ public:
 		void SetGameMode( CustomGameMode NewMode , bool notifyListeners = true );
 	UFUNCTION( BlueprintCallable , Category = Camera)
 	void SetCamera(class UProjectTapCameraComponent* camera,  bool notifyListeners = true);
+	AMagnetTile* SetMagnetTile( class AMagnetTile* magnet );
 	CustomGameState GetState();
 	CustomGameMode GetMode();
 	float getCameraSaturation() const;

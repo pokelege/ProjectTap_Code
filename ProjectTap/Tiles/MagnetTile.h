@@ -16,9 +16,11 @@ class PROJECTTAP_API AMagnetTile : public ATile, public ICarriable
 
 	class ABallPawn* FindBallPawn();
 	void PullBall(class ABallPawn* ball, float DeltaTime);
-	class ABallPawn* lastBall = nullptr;
 	TScriptDelegate<FWeakObjectPtr> delegate;
 public:
+	DECLARE_MULTICAST_DELEGATE_OneParam( FMagnetPullingBall , const AMagnetTile* )
+	FMagnetPullingBall aboutToPullBall;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float length = 99999.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)

@@ -4,7 +4,6 @@
 
 #include "Tiles/Tile.h"
 #include "EndTile.generated.h"
-
 /**
  *
  */
@@ -37,13 +36,13 @@ public:
 	UCurveVector* transportScalingCurve = nullptr;
 
 	AEndTile();
-
+	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
 
 	virtual void Tick( float DeltaTime ) override;
 
 	UFUNCTION()
-	void OnGameStateChanged(const uint8 gameState);
+		void OnGameStateChanged( const CustomGameState gameState );
 
 	UFUNCTION()
 	void OnBeginHit(class AActor* OtherActor,

@@ -46,7 +46,7 @@ void AEndTile::PlayTransport(const float &DeltaTime)
 		UWorld* world = GetWorld();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
 		gameState->currentLevelToLoadWhenWin = loadLevelName;
-		gameState->SetGameState( GameState::GAME_STATE_WIN );
+		gameState->SetGameState( CustomGameState::GAME_STATE_WIN );
 	}
 	auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
 	pc->SetWorldLocation(ballPosition);
@@ -82,14 +82,26 @@ AEndTile::AEndTile() : ATile()
 	transportScalingCurve = transportScalingCurveAsset.Object;
 	delegate.BindUFunction(this, TEXT("OnBeginHit"));
 	BoxCollision->OnComponentHit.Add(delegate);
-	OnGameStateChangedDelegateHandle = AProjectTapGameState::GameStateChanged.AddUFunction( this , TEXT( "OnGameStateChanged" ) );
 }
 
 void AEndTile::BeginDestroy()
 {
-	AProjectTapGameState::GameStateChanged.Remove(OnGameStateChangedDelegateHandle);
-	OnGameStateChangedDelegateHandle.Reset();
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState;
+	if ( world != nullptr && ( gameState = world->GetGameState<AProjectTapGameState>()) != nullptr )
+	{
+		gameState->GameStateChanged.Remove( OnGameStateChangedDelegateHandle );
+		OnGameStateChangedDelegateHandle.Reset();
+	}
 	Super::BeginDestroy();
+}
+
+void AEndTile::BeginPlay()
+{
+	Super::BeginPlay();
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnGameStateChanged" ) );
 }
 
 void AEndTile::Tick(float DeltaTime)
@@ -101,12 +113,11 @@ void AEndTile::Tick(float DeltaTime)
 	}
 }
 
-void AEndTile::OnGameStateChanged(const uint8 gameState)
+void AEndTile::OnGameStateChanged( const CustomGameState gameState )
 {
 	switch(gameState)
 	{
-		case GAME_STATE_MAIN_MENU:
-		case GAME_STATE_PLAYING:
+		case CustomGameState::GAME_STATE_PLAYING:
 			CanTransport = true;
 			break;
 		default:
@@ -125,7 +136,7 @@ void AEndTile::OnBeginHit(class AActor* OtherActor,
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
 		if ( gameState && CanTransport )
 		{
-			gameState->SetGameState( GameState::GAME_STATE_WINNING );
+			gameState->SetGameState( CustomGameState::GAME_STATE_WINNING );
 			targetBall = Cast<ABallPawn>(OtherActor);
 			auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
 			pc->SetSimulatePhysics(false);

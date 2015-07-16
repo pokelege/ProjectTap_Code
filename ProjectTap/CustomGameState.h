@@ -1,8 +1,9 @@
 #pragma once
-#include "Platform.h"
-enum GameState : uint8
+#include "ObjectBase.h"
+UENUM( CustomGameState )
+enum class CustomGameState : uint8
 {
-	UNKNOWN = 0 ,
+	GAME_STATE_UNKNOWN = 0 ,
 	GAME_STATE_PLAYING = 1 ,
 	GAME_STATE_DYING = 2 ,
 	GAME_STATE_WINNING = 3,

@@ -7,7 +7,7 @@
 #include "PawnCastingTrigger.h"
 #include "BallPlayerStart.h"
 #include "ConstrainingSpringArmComponent.h"
-#include "GameState.h"
+#include "CustomGameState.h"
 #include "General/ProjectTapCameraComponent.h"
 #include "General/ProjectTapCamera.h"
 
@@ -115,13 +115,13 @@ void ABallPawn::Tick( float DeltaTime )
 	}
 
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	if(dying && gameState->GetState() == GameState::GAME_STATE_DYING)
+	if(dying && gameState->GetState() == CustomGameState::GAME_STATE_DYING)
 	{
 		currentDieTime += DeltaTime;
 		if(dieSequence == nullptr)
 		{
 			material->SetScalarParameterValue(TEXT("DeathMask"), 1);
-			gameState->SetGameState( GameState::GAME_STATE_GAME_OVER );
+			gameState->SetGameState( CustomGameState::GAME_STATE_GAME_OVER );
 		}
 		else
 		{
@@ -130,7 +130,7 @@ void ABallPawn::Tick( float DeltaTime )
 			dieSequence->GetValueRange(min,max);
 			if(currentDieTime >= max)
 			{
-				gameState->SetGameState( GameState::GAME_STATE_GAME_OVER );
+				gameState->SetGameState( CustomGameState::GAME_STATE_GAME_OVER );
 			}
 		}
 	}
@@ -170,24 +170,24 @@ void ABallPawn::togglePauseMenu()
 	auto state = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
 	auto ctrl = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 
-	if (state->GetState() == GameState::GAME_STATE_PAUSE)
+	if ( state->GetState() == CustomGameState::GAME_STATE_PAUSE )
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), false);
 		pauseMenuInstance->RemoveFromParent();
 		auto inputMode = FInputModeGameOnly::FInputModeGameOnly();
 		ctrl->SetInputMode(inputMode);
-		state->SetGameState( GameState::GAME_STATE_PLAYING );
+		state->SetGameState( CustomGameState::GAME_STATE_PLAYING );
 
 	}
-	else if (state->GetState() != GameState::UNKNOWN
-		&& state->GetState() != GameState::GAME_STATE_MAIN_MENU)
+	else if ( state->GetState() != CustomGameState::GAME_STATE_UNKNOWN
+			  && state->GetMode() != CustomGameMode::GAME_MODE_MAIN_MENU )
 	{
 		auto inputMode = FInputModeUIOnly::FInputModeUIOnly();
 		inputMode.SetWidgetToFocus(pauseMenuInstance->GetCachedWidget());
 		ctrl->SetInputMode(inputMode);
 		pauseMenuInstance->AddToViewport(1);
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
-		state->SetGameState( GameState::GAME_STATE_PAUSE );
+		state->SetGameState( CustomGameState::GAME_STATE_PAUSE );
 	}
 }
 
@@ -227,9 +227,9 @@ void ABallPawn::ResetBallXYPosition(const FVector& position)
 void ABallPawn::Kill()
 {
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	if ( gameState && !bInvincible && gameState->GetState() == GameState::GAME_STATE_PLAYING )
+	if ( gameState && !bInvincible && gameState->GetState() == CustomGameState::GAME_STATE_PLAYING && gameState->GetMode() != CustomGameMode::GAME_MODE_MAIN_MENU )
 	{
-		gameState->SetGameState( GameState::GAME_STATE_DYING );
+		gameState->SetGameState( CustomGameState::GAME_STATE_DYING );
 		dieSound->Play();
 		dying = true;
 	}

@@ -177,7 +177,7 @@ void AMovingTile::EditorKeyPressed(FKey Key, EInputEvent Event)
 		{
 			AddCurrentLocation();
 		}
-		else if (keyname.Equals("Space"))
+		else if (keyname.Equals("LeftShift") || keyname.Equals("RightShift"))
 		{
 			UpdateCurrentLocation();
 		}

@@ -8,6 +8,10 @@ UProjectTapCameraComponent::UProjectTapCameraComponent()
 {
 	bConstrainAspectRatio = true;
 	PrimaryComponentTick.bCanEverTick = true;
+	PostProcessSettings.bOverride_BloomIntensity = true;
+	PostProcessSettings.BloomIntensity = 0.25f;
+	PostProcessSettings.bOverride_BloomThreshold = true;
+	PostProcessSettings.BloomThreshold = 3.5f;
 }
 
 bool UProjectTapCameraComponent::FadeIn()

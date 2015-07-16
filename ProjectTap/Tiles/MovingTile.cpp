@@ -73,13 +73,23 @@ void AMovingTile::UpdateMovement(float dt)
 		auto distanceBetweenCurrentNodes = FVector::DistSquared(nextPos, path[currNode]);
 		float min, max;
 
-		moveCurve->GetTimeRange(min, max);
+		moveCurve->GetTimeRange(min, max);		
 
 		if (!reachedNext)
 		{
 			auto speedFactor = moveCurve->GetFloatValue(1.0f - remainingDistSq / distanceBetweenCurrentNodes);
 			auto newCurr = GetActorLocation() + currDir * speed * speedFactor * dt;
 			SetActorLocation(newCurr);
+
+			checkDirection = nextPos - GetActorLocation();
+
+			//chekc if went over destination
+			if (FVector::DotProduct(currDir, checkDirection.GetSafeNormal()) < 0.0f)
+			{
+				SetActorLocation(nextPos);
+				IncrementIndex();
+				reset();
+			}
 		}
 		else if (pauseTimeCounter < pauseBetweenNodes)
 		{

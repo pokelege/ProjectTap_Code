@@ -113,6 +113,7 @@ void ABallPawn::Tick( float DeltaTime )
 		pos.Z -= 40.0f;
 		trigger->SetActorLocation(pos);
 	}
+
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
 	if(dying && gameState->GetState() == GameState::GAME_STATE_DYING)
 	{
@@ -133,7 +134,30 @@ void ABallPawn::Tick( float DeltaTime )
 			}
 		}
 	}
+
+	UpdateResetTransition(DeltaTime);
 }
+
+void ABallPawn::UpdateResetTransition(float dt)
+{
+	if (bTransitioning)
+	{
+		auto vec = GetActorLocation() - lastAnchorPosition;
+		auto moveDelta = -transitionNormal * transitionSpeed * dt;
+
+		auto dot = FVector::DotProduct(vec, transitionNormal);
+		auto reachedPos = dot < 0.1f;
+		if (reachedPos)
+		{
+			bTransitioning = false;
+		}
+		else
+		{
+			SetActorLocation(GetActorLocation() + moveDelta);
+		}
+	}
+}
+
 
 // Called to bind functionality to input
 void ABallPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
@@ -170,7 +194,7 @@ void ABallPawn::togglePauseMenu()
 
 void ABallPawn::AddVelocity(const FVector& vel, const FVector& resetPos, bool clearForce)
 {
-	ResetBallXYPosition(resetPos, vel);
+	TransitionBallToProperLocation(resetPos, vel);
 
 	if (clearForce)
 	{
@@ -183,19 +207,14 @@ void ABallPawn::AddVelocity(const FVector& vel, const FVector& resetPos, bool cl
 }
 
 
-void ABallPawn::ResetBallXYPosition(const FVector& position, const FVector& newVel)
+void ABallPawn::TransitionBallToProperLocation(const FVector& position, const FVector& newVel)
 {
-	FVector newPosition(position.X, position.Y, GetActorLocation().Z);
+	lastAnchorPosition = FVector(position.X, position.Y, GetActorLocation().Z);
 
-	auto vel = ballCollision->GetPhysicsLinearVelocity();
-	auto clampedVel = newVel;
-	clampedVel.Z = 0.0f;
-	auto dp = FMath::Abs(FVector::DotProduct(vel.GetSafeNormal(), clampedVel.GetSafeNormal()));
-	if (FMath::Acos(dp) * 180.0 / PI > 10.0f)
-	{
-		SetActorLocation(newPosition);
-	}
-
+	auto initVec = GetActorLocation() - position;
+	auto up = FVector::CrossProduct(newVel, initVec);
+	transitionNormal = FVector::CrossProduct(up, newVel).GetSafeNormal();
+	bTransitioning = true;
 }
 
 void ABallPawn::ResetBallXYPosition(const FVector& position)

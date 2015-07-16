@@ -34,6 +34,7 @@ ADraggableMoveTile::ADraggableMoveTile()
 	indicatorParticle->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UParticleSystem> particleAssets(TEXT("/Game/Particles/P_IndicatorParticle"));
 	indicatorParticle->SetTemplate(particleAssets.Object);
+	
 }
 
 void ADraggableMoveTile::BeginPlay()
@@ -185,7 +186,7 @@ void ADraggableMoveTile::processMouseEvents()
 		isMoving = false;
 	}
 
-	if (!isMoving)
+	if (!isMoving || mousePressTimer > 0.0f)
 	{
 		deactivate();
 	}
@@ -212,9 +213,9 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 
 			if (mostPossibleVertex != nullptr)
 			{
-				auto nextDir = mostPossibleVertex->GetActorLocation() - GetActorLocation();
-				auto moveDelta = moveRay.ProjectOnTo(nextDir);
-				auto isMoveRayAndNextDirSameDirection = FVector::DotProduct(moveDelta, nextDir) > 0.0f;
+				currDir = mostPossibleVertex->GetActorLocation() - GetActorLocation();
+				auto moveDelta = moveRay.ProjectOnTo(currDir);
+				auto isMoveRayAndNextDirSameDirection = FVector::DotProduct(moveDelta, currDir) > 0.0f;
 
 				if (isMoveRayAndNextDirSameDirection && moveDelta.SizeSquared() > dragTolerance * dragTolerance)
 				{
@@ -259,16 +260,22 @@ void ADraggableMoveTile::UpdateDragMove(float dt)
 	{		
 		activate();
 		auto moveDir = (newGoalPos - GetActorLocation()).GetSafeNormal();
-		auto reachedPos = FVector::DistSquared(newGoalPos, GetActorLocation()) < 10.0f;
+		auto reachedPos = FVector::DotProduct(currDir, moveDir) < 0.0f;
 	
-		if (reachedPos)
+		if (reachedPos || reachGoalNextFrame)
 		{
 			SetActorLocation(newGoalPos);
 			isMoving = false;
+			reachGoalNextFrame = false;
 		}
 		else if (moveDir.SizeSquared() > 0.1f)
 		{
-			SetActorLocation(GetActorLocation() + moveDir * dragMoveSpeed * dt);
+			auto deltaMovement = moveDir * dragMoveSpeed * dt;
+			SetActorLocation(GetActorLocation() + deltaMovement);
+
+			auto nextFramePos = GetActorLocation() + deltaMovement;
+			auto moveDir = (newGoalPos - nextFramePos).GetSafeNormal();
+			reachGoalNextFrame = FVector::DotProduct(currDir, moveDir) < 0.0f;
 		}
 	}
 }

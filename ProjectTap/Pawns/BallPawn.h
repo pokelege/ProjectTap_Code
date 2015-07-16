@@ -25,13 +25,12 @@ class PROJECTTAP_API ABallPawn : public APawn
 	bool bInvincible = false;
 	bool bTransitioning = false;
 
-
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
 	UUserWidget* pauseMenuInstance = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
-	UClass* pauseMenuBlueprint = nullptr;
+	UBlueprint* pauseMenuBlueprint = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	UCurveFloat* dieSequence;

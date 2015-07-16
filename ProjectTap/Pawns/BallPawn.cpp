@@ -73,9 +73,9 @@ ABallPawn::ABallPawn()
 	dieSound->bAutoActivate = false;
 	dieSound->AttachTo( GetRootComponent() );
 
-	ConstructorHelpers::FObjectFinder<UClass> pauseMenuAssewt(TEXT("Class'/Game/GUI/Pause'"));
+	ConstructorHelpers::FObjectFinder<UBlueprint> pauseMenuAssewt(TEXT("/Game/GUI/Pause"));
 	pauseMenuBlueprint = pauseMenuAssewt.Object;
-
+	
 }
 
 // Called when the game starts or when spawned
@@ -94,7 +94,7 @@ void ABallPawn::BeginPlay()
 	if (ctrl != nullptr)
 	{
 		ctrl->InputComponent->BindAction("Pause", IE_Pressed, this, &ABallPawn::togglePauseMenu);
-		pauseMenuInstance = CreateWidget<UUserWidget>(ctrl, pauseMenuBlueprint);
+		pauseMenuInstance = CreateWidget<UUserWidget>(ctrl, pauseMenuBlueprint->GeneratedClass);
 	}
 }
 

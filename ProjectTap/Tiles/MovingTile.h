@@ -65,6 +65,9 @@ public:
 	void AddCurrentLocation();
 
 	void UpdateCurrentLocation();
+
+	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
+
 #endif 
 	// Sets default values for this actor's properties
 	AMovingTile();

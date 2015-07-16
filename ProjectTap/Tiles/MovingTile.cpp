@@ -4,7 +4,7 @@
 #include "MovingTile.h"
 #include "ICarriable.h"
 #include "OffensiveTiles/Laser.h"
-
+#include "Runtime/CoreUObject/Public/UObject/UnrealType.h"
 
 // Sets default values
 AMovingTile::AMovingTile()
@@ -169,6 +169,7 @@ void AMovingTile::UpdateCarryOn(float dt)
 #if WITH_EDITOR
 void AMovingTile::EditorKeyPressed(FKey Key, EInputEvent Event)
 {
+	Super::EditorKeyPressed(Key, Event);
 	auto keyname = Key.GetFName().ToString();
 
 	if (Event == EInputEvent::IE_Released)
@@ -194,5 +195,40 @@ void AMovingTile::UpdateCurrentLocation()
 {
 	path[currentEditorPathIndex] = GetActorLocation();
 }
+
+void AMovingTile::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.Property != nullptr)
+	{
+		auto p = PropertyChangedEvent.Property;
+		auto pName = p->GetName();
+
+		//when currentEditorPathIndex property changes in editor
+		//reset current moving tile's location to desinated node's location
+		if (pName.Equals(TEXT("currentEditorPathIndex")))
+		{
+			auto intProp = Cast<UIntProperty>(p); 
+			//auto index = intProp->GetSignedIntPropertyValue(this);
+
+			if (currentEditorPathIndex >= 0 && currentEditorPathIndex < path.Num())
+			{
+				auto newLocation = path[currentEditorPathIndex];
+				SetActorLocation(newLocation);
+			}
+			else
+			{
+				currentEditorPathIndex = 0;
+				auto newLocation = path[currentEditorPathIndex];
+				SetActorLocation(newLocation);
+			}
+#if WITH_EDITOR
+			Super::PostEditChange();
+#endif
+		}
+	}
+}
+
 
 #endif 

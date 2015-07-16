@@ -4,6 +4,7 @@
 
 #include "GameFramework/Actor.h"
 #include "Tiles/ICarriable.h"
+#include "CustomGameState.h"
 #include "Laser.generated.h"
 
 UCLASS()
@@ -17,7 +18,8 @@ class PROJECTTAP_API ALaser : public AActor, public ICarriable
 	float elapseTime = 1 / 30.0f;
 	int currentDepth = 0;
 	const int MAX_DEPTH = 8;
-
+	bool canHitBall = true;
+	FDelegateHandle OnGameStateChangedDelegateHandle;
 	void checkLaserCollisions(float dt);
 
 	void SpawnSubLaser(const FVector& start, const FVector& normal);
@@ -56,9 +58,12 @@ public:
 	// Sets default values for this actor's properties
 	ALaser();
 
+	UFUNCTION()
+		void OnStateChanged( const CustomGameState newState );
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	virtual void BeginDestroy() override;
 	OffsetInfo getOffsetInfo() override;
 
 	// Called every frame

@@ -3,9 +3,6 @@
 #include "ProjectTap.h"
 #include "ProjectTapGameState.h"
 
-
-AProjectTapGameState::FGameStateChanged AProjectTapGameState::GameStateChanged = FGameStateChanged();
-
 float AProjectTapGameState::getCameraSaturation() const
 {
 	return cameraSaturation;
@@ -15,9 +12,9 @@ void AProjectTapGameState::setCameraSaturation(float value)
 {
 	cameraSaturation = value;
 }
-void AProjectTapGameState::SetGameState( uint8 NewState , bool notifyListeners )
+void AProjectTapGameState::SetGameState( CustomGameState NewState , bool notifyListeners )
 {
-	CurrentState = (GameState)NewState;
+	CurrentState = NewState;
 	if ( notifyListeners ) GameStateChanged.Broadcast( CurrentState );
 }
 
@@ -27,7 +24,17 @@ void AProjectTapGameState::SetCamera(UProjectTapCameraComponent* camera, bool no
 	if(notifyListeners) CameraChanged.Broadcast(CurrentCamera);
 }
 
-GameState AProjectTapGameState::GetState()
+CustomGameState AProjectTapGameState::GetState()
 {
 	return CurrentState;
+}
+void AProjectTapGameState::SetGameMode( CustomGameMode NewMode , bool notifyListeners )
+{
+	CurrentMode = NewMode;
+	if ( notifyListeners ) GameModeChanged.Broadcast( CurrentMode );
+}
+
+CustomGameMode AProjectTapGameState::GetMode()
+{
+	return CurrentMode;
 }

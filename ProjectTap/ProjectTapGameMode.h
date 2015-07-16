@@ -2,7 +2,7 @@
 
 #pragma once
 #include "GameFramework/GameMode.h"
-#include "GameState.h"
+#include "CustomGameState.h"
 #include "ProjectTapGameMode.generated.h"
 
 /**
@@ -19,29 +19,33 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 	float time = 0;
 	class UProjectTapCameraComponent* camera = nullptr;
 	float restartCoolDown = 1.0f;
-	int lastReportedState = GameState::UNKNOWN;
+	CustomGameState lastReportedState = CustomGameState::GAME_STATE_UNKNOWN;
 	FDelegateHandle OnCameraFadeInDelegateHandle;
 	FDelegateHandle OnCameraFadeOutDelegateHandle;
 	FDelegateHandle OnCameraFadeUpdateDelegateHandle;
+	FDelegateHandle OnGameStateChangedDelegateHandle;
+	FDelegateHandle OnCameraChangedDelegateHandle;
+	bool isMenu = false;
 public:
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 	class UAudioComponent* musicPlayer = nullptr;
 
 	AProjectTapGameMode ( const FObjectInitializer& initializer );
-
 	virtual void BeginPlay() override;
+	virtual void BeginDestroy() override;
 
 	void Respawn();
 	class ABallPawn* getBall();
 	UFUNCTION()
 	bool LoadNextLevel();
 	UFUNCTION()
-	void OnStateChanged( const uint8 newState );
+		void OnStateChanged( const CustomGameState newState );
 	UFUNCTION()
 	void OnCameraFaded();
 	UFUNCTION()
 	void OnCameraChanged(UProjectTapCameraComponent* newCamera);
 	UFUNCTION()
 	void OnCameraFadeUpdate(const float percent);
+	virtual void StartPlay() override;
 };

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/PlayerStart.h"
+#include "CustomGameMode.h"
 #include "BallPlayerStart.generated.h"
 
 /**
@@ -13,6 +14,8 @@ class PROJECTTAP_API ABallPlayerStart : public APlayerStart
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = GameMode )
+	CustomGameMode GameMode = CustomGameMode::GAME_MODE_LEVEL;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	FVector initialVelocity = FVector(0.0f, 0.0f, 0.0f);
 

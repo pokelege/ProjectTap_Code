@@ -12,14 +12,19 @@ class PROJECTTAP_API ABallPawn : public APawn
 {
 	GENERATED_BODY()
 
+	//these two vectors are used when the ball
+	//transits to the center of a tile
+	FVector transitionNormal;
+	FVector lastAnchorPosition;
+
 	class APawnCastingTrigger* trigger = nullptr;
-
-	bool bInvincible = false;
-
 	class UProjectTapCameraComponent* cameraComponent = nullptr;
-	UMaterialInstanceDynamic* material = nullptr;
-	bool dying = false;
+	UMaterialInstanceDynamic* material = nullptr;	
 	float currentDieTime = 0;
+	bool dying = false;
+	bool bInvincible = false;
+	bool bTransitioning = false;
+
 
 	template <typename ObjClass>
 	static FORCEINLINE ObjClass* LoadObjFromPath(const FName& Path)
@@ -33,7 +38,7 @@ public:
 	UUserWidget* pauseMenuInstance = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
-	UBlueprint* pauseMenuBlueprint = nullptr;
+	UClass* pauseMenuBlueprint = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
 	UCurveFloat* dieSequence;
@@ -52,6 +57,9 @@ public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 	UAudioComponent* dieSound = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Ball)
+	float transitionSpeed = 20.0f;
+
 	// Sets default values for this actor's properties
 	ABallPawn();
 
@@ -61,11 +69,13 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
+	void UpdateResetTransition(float dt);
+
 	UFUNCTION(BlueprintCallable, Category = "Ball")
 	void AddVelocity(const FVector& vel, const FVector& resetPos, bool clearForce = true);
 
 	//reset ball to the center of the tile when hit
-	void ResetBallXYPosition(const FVector& resetPosition, const FVector& newVel);
+	void TransitionBallToProperLocation(const FVector& resetPosition, const FVector& newVel);
 
 	void ResetBallXYPosition(const FVector& position);
 

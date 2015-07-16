@@ -7,7 +7,7 @@
 #include "PawnCastingTrigger.h"
 #include "BallPlayerStart.h"
 #include "ConstrainingSpringArmComponent.h"
-#include "GameState.h"
+#include "CustomGameState.h"
 #include "General/ProjectTapCameraComponent.h"
 #include "General/ProjectTapCamera.h"
 
@@ -73,10 +73,8 @@ ABallPawn::ABallPawn()
 	dieSound->bAutoActivate = false;
 	dieSound->AttachTo( GetRootComponent() );
 
-	//const FString ThePath = FPaths::ConvertRelativePathToFull(FPaths::GameContentDir()).Append("GUI/Pause");
-	//ConstructorHelpers::FObjectFinder<UBlueprint> pause(*ThePath);
-	//pauseMenuBlueprint = Cast<UBlueprint>(LoadObjFromPath<UObject>(FName(*ThePath)));
-	//pauseMenuBlueprint = pause.Object;
+	ConstructorHelpers::FObjectFinder<UClass> pauseMenuAssewt(TEXT("Class'/Game/GUI/Pause'"));
+	pauseMenuBlueprint = pauseMenuAssewt.Object;
 
 }
 
@@ -96,7 +94,7 @@ void ABallPawn::BeginPlay()
 	if (ctrl != nullptr)
 	{
 		ctrl->InputComponent->BindAction("Pause", IE_Pressed, this, &ABallPawn::togglePauseMenu);
-		//pauseMenuInstance = CreateWidget<UUserWidget>(ctrl, pauseMenuBlueprint->GeneratedClass);
+		pauseMenuInstance = CreateWidget<UUserWidget>(ctrl, pauseMenuBlueprint);
 	}
 }
 
@@ -115,14 +113,15 @@ void ABallPawn::Tick( float DeltaTime )
 		pos.Z -= 40.0f;
 		trigger->SetActorLocation(pos);
 	}
+
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	if(dying && gameState->GetState() == GameState::GAME_STATE_DYING)
+	if(dying && gameState->GetState() == CustomGameState::GAME_STATE_DYING)
 	{
 		currentDieTime += DeltaTime;
 		if(dieSequence == nullptr)
 		{
 			material->SetScalarParameterValue(TEXT("DeathMask"), 1);
-			gameState->SetGameState( GameState::GAME_STATE_GAME_OVER );
+			gameState->SetGameState( CustomGameState::GAME_STATE_GAME_OVER );
 		}
 		else
 		{
@@ -131,11 +130,34 @@ void ABallPawn::Tick( float DeltaTime )
 			dieSequence->GetValueRange(min,max);
 			if(currentDieTime >= max)
 			{
-				gameState->SetGameState( GameState::GAME_STATE_GAME_OVER );
+				gameState->SetGameState( CustomGameState::GAME_STATE_GAME_OVER );
 			}
 		}
 	}
+
+	UpdateResetTransition(DeltaTime);
 }
+
+void ABallPawn::UpdateResetTransition(float dt)
+{
+	if (bTransitioning)
+	{
+		auto vec = GetActorLocation() - lastAnchorPosition;
+		auto moveDelta = -transitionNormal * transitionSpeed * dt;
+
+		auto dot = FVector::DotProduct(vec, transitionNormal);
+		auto reachedPos = dot < 0.1f;
+		if (reachedPos)
+		{
+			bTransitioning = false;
+		}
+		else
+		{
+			SetActorLocation(GetActorLocation() + moveDelta);
+		}
+	}
+}
+
 
 // Called to bind functionality to input
 void ABallPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
@@ -148,31 +170,31 @@ void ABallPawn::togglePauseMenu()
 	auto state = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
 	auto ctrl = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
 
-	if (state->GetState() == GameState::GAME_STATE_PAUSE)
+	if ( state->GetState() == CustomGameState::GAME_STATE_PAUSE )
 	{
 		UGameplayStatics::SetGamePaused(GetWorld(), false);
 		pauseMenuInstance->RemoveFromParent();
 		auto inputMode = FInputModeGameOnly::FInputModeGameOnly();
 		ctrl->SetInputMode(inputMode);
-		state->SetGameState( GameState::GAME_STATE_PLAYING );
+		state->SetGameState( CustomGameState::GAME_STATE_PLAYING );
 
 	}
-	else if (state->GetState() != GameState::UNKNOWN
-		&& state->GetState() != GameState::GAME_STATE_MAIN_MENU)
+	else if ( state->GetState() != CustomGameState::GAME_STATE_UNKNOWN
+			  && state->GetMode() != CustomGameMode::GAME_MODE_MAIN_MENU )
 	{
 		auto inputMode = FInputModeUIOnly::FInputModeUIOnly();
 		inputMode.SetWidgetToFocus(pauseMenuInstance->GetCachedWidget());
 		ctrl->SetInputMode(inputMode);
 		pauseMenuInstance->AddToViewport(1);
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
-		state->SetGameState( GameState::GAME_STATE_PAUSE );
+		state->SetGameState( CustomGameState::GAME_STATE_PAUSE );
 	}
 }
 
 
 void ABallPawn::AddVelocity(const FVector& vel, const FVector& resetPos, bool clearForce)
 {
-	ResetBallXYPosition(resetPos, vel);
+	TransitionBallToProperLocation(resetPos, vel);
 
 	if (clearForce)
 	{
@@ -185,19 +207,14 @@ void ABallPawn::AddVelocity(const FVector& vel, const FVector& resetPos, bool cl
 }
 
 
-void ABallPawn::ResetBallXYPosition(const FVector& position, const FVector& newVel)
+void ABallPawn::TransitionBallToProperLocation(const FVector& position, const FVector& newVel)
 {
-	FVector newPosition(position.X, position.Y, GetActorLocation().Z);
+	lastAnchorPosition = FVector(position.X, position.Y, GetActorLocation().Z);
 
-	auto vel = ballCollision->GetPhysicsLinearVelocity();
-	auto clampedVel = newVel;
-	clampedVel.Z = 0.0f;
-	auto dp = FMath::Abs(FVector::DotProduct(vel.GetSafeNormal(), clampedVel.GetSafeNormal()));
-	if (FMath::Acos(dp) * 180.0 / PI > 10.0f)
-	{
-		SetActorLocation(newPosition);
-	}
-
+	auto initVec = GetActorLocation() - position;
+	auto up = FVector::CrossProduct(newVel, initVec);
+	transitionNormal = FVector::CrossProduct(up, newVel).GetSafeNormal();
+	bTransitioning = true;
 }
 
 void ABallPawn::ResetBallXYPosition(const FVector& position)
@@ -210,9 +227,9 @@ void ABallPawn::ResetBallXYPosition(const FVector& position)
 void ABallPawn::Kill()
 {
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	if ( gameState && !bInvincible && gameState->GetState() == GameState::GAME_STATE_PLAYING )
+	if ( gameState && !bInvincible && gameState->GetState() == CustomGameState::GAME_STATE_PLAYING && gameState->GetMode() != CustomGameMode::GAME_MODE_MAIN_MENU )
 	{
-		gameState->SetGameState( GameState::GAME_STATE_DYING );
+		gameState->SetGameState( CustomGameState::GAME_STATE_DYING );
 		dieSound->Play();
 		dying = true;
 	}

@@ -4,7 +4,6 @@
 
 #include "Tiles/Tile.h"
 #include "EndTile.generated.h"
-
 /**
  *
  */
@@ -24,6 +23,8 @@ class PROJECTTAP_API AEndTile : public ATile
 	bool transporting = false;
 	void StartTransporting();
 	void PlayTransport(const float& DeltaTime);
+	bool CanTransport = false;
+	FDelegateHandle OnGameStateChangedDelegateHandle;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level)
 	FName loadLevelName = FName("MainMenu");
@@ -35,8 +36,13 @@ public:
 	UCurveVector* transportScalingCurve = nullptr;
 
 	AEndTile();
+	virtual void BeginPlay() override;
+	virtual void BeginDestroy() override;
 
 	virtual void Tick( float DeltaTime ) override;
+
+	UFUNCTION()
+		void OnGameStateChanged( const CustomGameState gameState );
 
 	UFUNCTION()
 	void OnBeginHit(class AActor* OtherActor,

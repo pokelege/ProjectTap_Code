@@ -13,8 +13,8 @@ class PROJECTTAP_API AMovingTile : public ATile
 
 
 	float pauseTimeCounter = 0.0f;
-
 	float beta = 0.0f;
+
 protected:
 	FVector currDir;
 

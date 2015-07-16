@@ -296,7 +296,7 @@ FString AMainMenuContainer::getCurrentResolutionString()
 {
 	FString resolution = "1280X720";
 
-	auto resoPoint = GEngine->GameUserSettings->GetLastConfirmedScreenResolution();
+	auto resoPoint = GEngine->GameUserSettings->GetScreenResolution();
 
 	if (resoPoint == FIntPoint(1920, 1080))
 	{

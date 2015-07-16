@@ -140,13 +140,25 @@ void ALaser::checkLaserCollisions(float dt)
 			if (subLaserExistsHitDeflectiveTile)
 			{
 				auto incomingVector = hit.ImpactPoint - GetActorLocation();
-				auto newDir = FMath::GetReflectionVector(incomingVector, hit.ImpactNormal);
 
-				auto start = hit.ImpactPoint + newDir * 2.0f;
-				nextLaser->SetActorLocation(hit.ImpactPoint);
-				nextLaser->dir = newDir.IsNormalized() ? newDir : newDir.GetSafeNormal();
-				nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(hit.ImpactPoint, 0);
-				nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length, 0);
+				//if the incoming vector's angle is too small then kill sublasers to avoid laser flickering
+				auto dot = FVector::DotProduct(-incomingVector.GetSafeNormal(), hit.ImpactNormal);
+
+				auto angle = FMath::RadiansToDegrees(FMath::Acos(dot));
+				if (angle < 70.0f)
+				{
+					auto newDir = FMath::GetReflectionVector(incomingVector, hit.ImpactNormal);
+
+					auto start = hit.ImpactPoint + newDir * 2.0f;
+					nextLaser->SetActorLocation(hit.ImpactPoint);
+					nextLaser->dir = newDir.IsNormalized() ? newDir : newDir.GetSafeNormal();
+					nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(hit.ImpactPoint, 0);
+					nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length, 0);
+				}
+				else
+				{
+					KillSubLaser();
+				}
 			}
 
 			//if the laser hits blocking tile then make it go down faster
@@ -256,8 +268,8 @@ void ALaser::KillSubLaser()
 {
 	if (nextLaser != nullptr)
 	{
-		laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
-		laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);;
+		//laserParticle->EmitterInstances[0]->SetBeamSourcePoint(GetActorLocation(), 0);
+		//laserParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation(), 0);;
 		nextLaser->KillSubLaser();
 		nextLaser->Destroy();
 		nextLaser = nullptr;

@@ -28,9 +28,11 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 
 void AProjectTapGameMode::BeginPlay()
 {
+	Super::BeginPlay();
+
 	auto gameState = GetGameState<AProjectTapGameState>();
-	gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
-	gameState->CameraChanged.AddUFunction( this , TEXT( "OnCameraChanged" ) );
+	OnCameraChangedDelegateHandle = gameState->CameraChanged.AddUFunction( this , TEXT( "OnCameraChanged" ) );
+	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
 	if ( UWorld* world = GetWorld() )
 	{
 		AActor* playerStart = FindPlayerStart( 0, FString( "Player" ) );
@@ -55,6 +57,7 @@ void AProjectTapGameMode::BeginPlay()
 				}
 			}
 			gameState->SetCamera( possibleCamera );
+			isMenu = realPlayerStart->GameMode == CustomGameMode::GAME_MODE_MAIN_MENU;
 			if ( realPlayerStart->music != nullptr )musicPlayer->SetSound( realPlayerStart->music );
 		}
 		else
@@ -65,9 +68,30 @@ void AProjectTapGameMode::BeginPlay()
 
 		gameState->CurrentPawn = ball;
 	}
-	if ( camera != nullptr ) camera->FadeIn();
 	musicPlayer->Play();
 	musicPlayer->SetVolumeMultiplier( 0 );
+}
+
+
+void AProjectTapGameMode::StartPlay()
+{
+	Super::StartPlay();
+	auto gameState = GetGameState<AProjectTapGameState>();
+	gameState->SetGameState( CustomGameState::GAME_STATE_PLAYING );
+	if ( isMenu ) gameState->SetGameMode( CustomGameMode::GAME_MODE_MAIN_MENU );
+}
+
+void AProjectTapGameMode::BeginDestroy()
+{
+	auto gameState = GetGameState<AProjectTapGameState>();
+	if ( gameState )
+	{
+		gameState->GameStateChanged.Remove( OnGameStateChangedDelegateHandle );
+		OnGameStateChangedDelegateHandle.Reset();
+		gameState->CameraChanged.Remove( OnGameStateChangedDelegateHandle );
+		OnCameraChangedDelegateHandle.Reset();
+	}
+	Super::BeginDestroy();
 }
 
 void AProjectTapGameMode::Respawn()
@@ -83,10 +107,10 @@ ABallPawn* AProjectTapGameMode::getBall()
 bool AProjectTapGameMode::LoadNextLevel()
 {
 	if(loadingLevel) return false;
-	UGameplayStatics::OpenLevel(GetWorld(),GetGameState<AProjectTapGameState>()->currentLevelToLoadWhenWin);
+	UGameplayStatics::OpenLevel( GetWorld() , GetGameState<AProjectTapGameState>()->currentLevelToLoadWhenWin );
 	return loadingLevel = true;
 }
-void AProjectTapGameMode::OnStateChanged(const uint8 newState )
+void AProjectTapGameMode::OnStateChanged(const CustomGameState newState )
 {
 	if(lastReportedState == newState) return;
 	lastReportedState = newState;
@@ -94,8 +118,11 @@ void AProjectTapGameMode::OnStateChanged(const uint8 newState )
 	{
 		switch(lastReportedState)
 		{
-			case GameState::GAME_STATE_GAME_OVER:
-			case GameState::GAME_STATE_WIN:
+			case CustomGameState::GAME_STATE_PLAYING:
+				camera->FadeIn();
+				break;
+			case CustomGameState::GAME_STATE_GAME_OVER:
+			case CustomGameState::GAME_STATE_WIN:
 				camera->FadeOut();
 		}
 	}
@@ -105,10 +132,10 @@ void AProjectTapGameMode::OnCameraFaded()
 {
 	switch(lastReportedState)
 	{
-		case GameState::GAME_STATE_GAME_OVER:
+		case CustomGameState::GAME_STATE_GAME_OVER:
 			Respawn();
 			break;
-		case GameState::GAME_STATE_WIN:
+		case CustomGameState::GAME_STATE_WIN:
 			LoadNextLevel();
 	}
 }

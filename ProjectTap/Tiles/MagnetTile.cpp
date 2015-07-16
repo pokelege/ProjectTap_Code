@@ -3,7 +3,8 @@
 #include "ProjectTap.h"
 #include "MagnetTile.h"
 #include "Pawns/BallPawn.h"
-
+#include "ProjectTapGameState.h"
+#include "Engine/GameInstance.h"
 
 AMagnetTile::AMagnetTile() : ATile()
 {
@@ -56,23 +57,11 @@ OffsetInfo AMagnetTile::getOffsetInfo()
 void AMagnetTile::Tick( float DeltaTime )
 {
 	Super::Tick(DeltaTime);
-	if(!activated)
-	{
-		if(lastBall != nullptr)
-		{
-			lastBall = nullptr;
-		}
-		return;
-	}
-
+	if ( !activated )return;
 	ABallPawn* pawn = FindBallPawn();
 	if((pawn != nullptr))
 	{
 		PullBall(pawn, DeltaTime);
-	}
-	else if(lastBall != nullptr)
-	{
-		lastBall = nullptr;
 	}
 }
 
@@ -113,8 +102,9 @@ class ABallPawn* AMagnetTile::FindBallPawn()
 void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 {
 	auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
-
-	if(lastBall == nullptr)
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState;
+	if ( world != nullptr && ( gameState = world->GetGameState<AProjectTapGameState>() ) != nullptr && gameState->SetMagnetTile( this ) != this)
 	{
 		FVector linear = prim->GetPhysicsLinearVelocity();
 		linear.X = 0;
@@ -137,7 +127,6 @@ void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 		}
 	}
 	prim->AddImpulse(targetVelocity * -GetActorForwardVector());
-	lastBall = ball;
 }
 
  void AMagnetTile::deactivate()

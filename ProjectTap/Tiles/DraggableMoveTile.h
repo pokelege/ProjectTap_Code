@@ -12,12 +12,13 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 
 	class AGVertex* goalVertex = nullptr;
 	FVector anchorHitPoint;
-	FVector newGoalPos;
+	FVector newGoalPos;	
 	float cameraRayLength = 0.0f;
 	float mousePressTimer = 0.0f;
 	bool isMoving = false;
 	bool canSnap = false;
 	bool destinationOccupied = false;
+	bool reachGoalNextFrame = false;
 
 	void Initialize();
 

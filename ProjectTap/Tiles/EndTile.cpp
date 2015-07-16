@@ -46,7 +46,7 @@ void AEndTile::PlayTransport(const float &DeltaTime)
 		UWorld* world = GetWorld();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
 		gameState->currentLevelToLoadWhenWin = loadLevelName;
-		gameState->SetGameState( GameState::GAME_STATE_WIN );
+		gameState->SetGameState( CustomGameState::GAME_STATE_WIN );
 	}
 	auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
 	pc->SetWorldLocation(ballPosition);
@@ -84,11 +84,44 @@ AEndTile::AEndTile() : ATile()
 	BoxCollision->OnComponentHit.Add(delegate);
 }
 
+void AEndTile::BeginDestroy()
+{
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState;
+	if ( world != nullptr && ( gameState = world->GetGameState<AProjectTapGameState>()) != nullptr )
+	{
+		gameState->GameStateChanged.Remove( OnGameStateChangedDelegateHandle );
+		OnGameStateChangedDelegateHandle.Reset();
+	}
+	Super::BeginDestroy();
+}
+
+void AEndTile::BeginPlay()
+{
+	Super::BeginPlay();
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnGameStateChanged" ) );
+}
+
 void AEndTile::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
 	if(transporting)
 	{
 		PlayTransport(DeltaTime);
+	}
+}
+
+void AEndTile::OnGameStateChanged( const CustomGameState gameState )
+{
+	switch(gameState)
+	{
+		case CustomGameState::GAME_STATE_PLAYING:
+			CanTransport = true;
+			break;
+		default:
+			CanTransport = false;
 	}
 }
 
@@ -101,9 +134,9 @@ void AEndTile::OnBeginHit(class AActor* OtherActor,
 	{
 		UWorld* world = GetWorld();
 		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-		if ( gameState && ( gameState->GetState() == GameState::GAME_STATE_PLAYING || gameState->GetState() == GameState::GAME_STATE_MAIN_MENU ) )
+		if ( gameState && CanTransport )
 		{
-			gameState->SetGameState( GameState::GAME_STATE_WINNING );
+			gameState->SetGameState( CustomGameState::GAME_STATE_WINNING );
 			targetBall = Cast<ABallPawn>(OtherActor);
 			auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
 			pc->SetSimulatePhysics(false);

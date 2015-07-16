@@ -165,3 +165,34 @@ void AMovingTile::UpdateCarryOn(float dt)
 	}
 }
 
+
+#if WITH_EDITOR
+void AMovingTile::EditorKeyPressed(FKey Key, EInputEvent Event)
+{
+	auto keyname = Key.GetFName().ToString();
+
+	if (Event == EInputEvent::IE_Released)
+	{
+		if (keyname.Equals("Enter"))
+		{
+			AddCurrentLocation();
+		}
+		else if (keyname.Equals("Space"))
+		{
+			UpdateCurrentLocation();
+		}
+	}
+}
+
+void AMovingTile::AddCurrentLocation()
+{
+	path.Add(GetActorLocation());
+	currentEditorPathIndex = path.Num() - 1;
+}
+
+void AMovingTile::UpdateCurrentLocation()
+{
+	path[currentEditorPathIndex] = GetActorLocation();
+}
+
+#endif 

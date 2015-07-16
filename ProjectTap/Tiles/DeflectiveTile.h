@@ -31,8 +31,8 @@ class PROJECTTAP_API ADeflectiveTile : public ATile, public ICarriable
 	void UpdateEdgeHighlight(float dt);
 	//only keep the axis with biggest value
 	//others will be set to 0
-	FVector clampShortAxis(const FVector& vec);
 public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		float rotationDuration = 2.0f;
 
@@ -61,6 +61,8 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual OffsetInfo getOffsetInfo() override;
+
+	static FVector clampShortAxis(const FVector& vec);
 
 
 	void HighlightEdgeForDuration(float duration);

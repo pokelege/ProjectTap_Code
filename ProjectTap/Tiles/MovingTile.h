@@ -43,6 +43,9 @@ public:
 	AActor* carryOn = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
+	int32 currentEditorPathIndex = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
 	float speed = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
@@ -54,6 +57,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
 	bool reverseRouteWhenDone = true;
 
+#if WITH_EDITOR
+	virtual void EditorKeyPressed(FKey Key,
+				                  EInputEvent Event) override;
+
+	void AddCurrentLocation();
+
+	void UpdateCurrentLocation();
+#endif 
 	// Sets default values for this actor's properties
 	AMovingTile();
 

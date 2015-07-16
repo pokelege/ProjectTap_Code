@@ -210,7 +210,6 @@ void AMovingTile::PostEditChangeProperty(FPropertyChangedEvent & PropertyChanged
 		if (pName.Equals(TEXT("currentEditorPathIndex")))
 		{
 			auto intProp = Cast<UIntProperty>(p); 
-			//auto index = intProp->GetSignedIntPropertyValue(this);
 
 			if (currentEditorPathIndex >= 0 && currentEditorPathIndex < path.Num())
 			{

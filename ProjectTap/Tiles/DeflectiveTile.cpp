@@ -199,7 +199,7 @@ void ADeflectiveTile::HighlightEdgeForDuration(float duration)
 }
 
 
-FVector ADeflectiveTile::clampShortAxis(const FVector& vec)
+FVector ADeflectiveTile::clampShortAxis(const FVector& vec, bool resetValueToOne)
 {
 	float abs_x = FMath::Abs(vec.X);
 	float abs_y = FMath::Abs(vec.Y);
@@ -211,15 +211,15 @@ FVector ADeflectiveTile::clampShortAxis(const FVector& vec)
 
 	if (abs_longest - abs_x <= FLT_EPSILON)
 	{
-		newVec = FVector(vec.X, 0.0f, 0.0f);
+		newVec = FVector(resetValueToOne ? 1.0f : vec.X, 0.0f, 0.0f);
 	}
 	else if (abs_longest - abs_y <= FLT_EPSILON)
 	{
-		newVec = FVector(0.0f, vec.Y, 0.0f);
+		newVec = FVector(0.0f, resetValueToOne ? 1.0f : vec.Y, 0.0f);
 	}
 	else
 	{
-		newVec = FVector(0.0f, 0.0f, vec.Z);
+		newVec = FVector(0.0f, 0.0f, resetValueToOne ? 1.0f : vec.Z);
 	}
 
 	return newVec;

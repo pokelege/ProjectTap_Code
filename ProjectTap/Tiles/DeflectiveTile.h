@@ -62,7 +62,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual OffsetInfo getOffsetInfo() override;
 
-	static FVector clampShortAxis(const FVector& vec);
+	//for a 3D vector, this function will find the axis with largest value
+	//and make the other two 0
+	//@Param resetValueToOne: if true, set the largest value to 1
+	static FVector clampShortAxis(const FVector& vec, bool resetValueToOne = false);
 
 
 	void HighlightEdgeForDuration(float duration);

@@ -10,6 +10,7 @@
 #include "CustomGameState.h"
 #include "General/ProjectTapCameraComponent.h"
 #include "General/ProjectTapCamera.h"
+#include "../Tiles/DeflectiveTile.h"
 
 // Sets default values
 ABallPawn::ABallPawn()
@@ -146,7 +147,7 @@ void ABallPawn::UpdateResetTransition(float dt)
 		auto moveDelta = -transitionNormal * transitionSpeed * dt;
 
 		auto dot = FVector::DotProduct(vec, transitionNormal);
-		auto reachedPos = dot < 0.1f;
+		auto reachedPos = dot <= 0.0f;
 		if (reachedPos)
 		{
 			bTransitioning = false;
@@ -214,6 +215,7 @@ void ABallPawn::TransitionBallToProperLocation(const FVector& position, const FV
 	auto initVec = GetActorLocation() - position;
 	auto up = FVector::CrossProduct(newVel, initVec);
 	transitionNormal = FVector::CrossProduct(up, newVel).GetSafeNormal();
+	transitionNormal = ADeflectiveTile::clampShortAxis(transitionNormal);
 	bTransitioning = true;
 }
 

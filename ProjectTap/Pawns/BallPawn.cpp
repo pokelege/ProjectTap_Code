@@ -139,6 +139,20 @@ void ABallPawn::Tick( float DeltaTime )
 	UpdateResetTransition(DeltaTime);
 }
 
+
+void ABallPawn::TransitionBallToProperLocation(const FVector& position, const FVector& newVel)
+{
+	lastAnchorPosition = FVector(position.X, position.Y, GetActorLocation().Z);
+
+	auto initVec = GetActorLocation() - lastAnchorPosition;
+	auto clearedZVelocity = FVector(newVel.X, newVel.Y, 0.0f);
+	auto up = FVector::CrossProduct(clearedZVelocity, initVec);
+	transitionNormal = FVector::CrossProduct(up, clearedZVelocity).GetSafeNormal();
+	transitionNormal = ADeflectiveTile::clampShortAxis(transitionNormal, true);
+	bTransitioning = true;
+}
+
+
 void ABallPawn::UpdateResetTransition(float dt)
 {
 	if (bTransitioning)
@@ -148,13 +162,16 @@ void ABallPawn::UpdateResetTransition(float dt)
 
 		auto dot = FVector::DotProduct(vec, transitionNormal);
 		auto reachedPos = dot <= 0.0f;
-		if (reachedPos)
+		if (reachedPos || bTransitionFinishNextFrame)
 		{
 			bTransitioning = false;
+			SetActorLocation(GetActorLocation() + dot * -transitionNormal);
 		}
 		else
 		{
 			SetActorLocation(GetActorLocation() + moveDelta);
+			dot = FVector::DotProduct(vec, transitionNormal);
+			bTransitionFinishNextFrame = dot <= 0.0f;
 		}
 	}
 }
@@ -207,17 +224,6 @@ void ABallPawn::AddVelocity(const FVector& vel, const FVector& resetPos, bool cl
 
 }
 
-
-void ABallPawn::TransitionBallToProperLocation(const FVector& position, const FVector& newVel)
-{
-	lastAnchorPosition = FVector(position.X, position.Y, GetActorLocation().Z);
-
-	auto initVec = GetActorLocation() - position;
-	auto up = FVector::CrossProduct(newVel, initVec);
-	transitionNormal = FVector::CrossProduct(up, newVel).GetSafeNormal();
-	transitionNormal = ADeflectiveTile::clampShortAxis(transitionNormal);
-	bTransitioning = true;
-}
 
 void ABallPawn::ResetBallXYPosition(const FVector& position)
 {

@@ -65,7 +65,6 @@ public:
 	//@Param resetValueToOne: if true, set the largest value to 1
 	static FVector clampShortAxis(const FVector& vec, bool resetValueToOne = false);
 
-
 	void HighlightEdgeForDuration(float duration);
 
 	void activate() override;

@@ -13,26 +13,26 @@ UCLASS()
 class PROJECTTAP_API ABaseRampTile : public ATile
 {
 	GENERATED_BODY()
-
+	
+	friend class APawnCastingTrigger;
 	static const FName BASE_RAMP_CURVE_PATH;
 
 protected:
 	FScriptDelegate pawnIn;
 	FScriptDelegate pawnOut;
-	float time = 0;
 	FDelegateHandle OnGameStateChangedDelegateHandle;
-
-	friend class APawnCastingTrigger;
 	class ABallPawn* ball = nullptr;
 	class ABallPawn* lastPauseBall = nullptr;
 	USceneComponent* offset =nullptr;
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UCurveFloat* rotationSequence = nullptr;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
+		UCurveFloat* rotationSequence = nullptr;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
-	UAudioComponent* flipSound = nullptr;
-
+		UAudioComponent* flipSound = nullptr;
+protected:
+	float time = 0;
+public:
 	ABaseRampTile();
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;

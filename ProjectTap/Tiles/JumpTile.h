@@ -16,14 +16,14 @@ class PROJECTTAP_API AJumpTile : public ABaseRampTile
 	static const FName JUMP_MESH_PATH;
 	FVector force;
 public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Jump )
+		AJumpTile* target = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
 	float duration = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
 	float height = 500;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
-	AJumpTile* target = nullptr;
 
 	AJumpTile();
 

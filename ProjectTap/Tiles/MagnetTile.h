@@ -14,12 +14,17 @@ class PROJECTTAP_API AMagnetTile : public ATile, public ICarriable
 {
 	GENERATED_BODY()
 
-	class ABallPawn* FindBallPawn();
-	void PullBall(class ABallPawn* ball, float DeltaTime);
 	TScriptDelegate<FWeakObjectPtr> delegate;
 public:
 	DECLARE_MULTICAST_DELEGATE_OneParam( FMagnetPullingBall , const AMagnetTile* )
 	FMagnetPullingBall aboutToPullBall;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Magnet )
+	class UParticleSystemComponent* magnetParticle = nullptr;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Magnet )
+		UStaticMeshComponent* distortionMesh = nullptr;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+		UAudioComponent* magnetSound = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float length = 99999.0f;
@@ -28,13 +33,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float centerTolerance = 0.001f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
-	class UParticleSystemComponent* magnetParticle = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
-	UStaticMeshComponent* distortionMesh = nullptr;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
-	UAudioComponent* magnetSound = nullptr;
 	AMagnetTile();
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
@@ -48,4 +46,7 @@ public:
 
 	virtual void deactivate() override;
 	virtual void activate() override;
+private:
+	class ABallPawn* FindBallPawn();
+	void PullBall( class ABallPawn* ball , float DeltaTime );
 };

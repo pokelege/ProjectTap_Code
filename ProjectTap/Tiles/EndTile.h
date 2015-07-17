@@ -14,26 +14,25 @@ class PROJECTTAP_API AEndTile : public ATile
 
 	static const FName END_MESH;
 	TScriptDelegate<FWeakObjectPtr> delegate;
-	class ABallPawn* targetBall = nullptr;
-
+	FDelegateHandle OnGameStateChangedDelegateHandle;
 	FVector targetBallLastPosition;
+public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Level )
+		FName loadLevelName = FName( "MainMenu" );
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Transport )
+		UCurveVector* ballToSocketCurve = nullptr;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Transport )
+		UCurveVector* transportScalingCurve = nullptr;
+private:
+	class ABallPawn* targetBall = nullptr;
 	float currentAnimationTime = 0;
 	float ballToSocketCurveDuration = 0;
 	float transportScalingCurveDuration = 0;
 	bool transporting = false;
-	void StartTransporting();
-	void PlayTransport(const float& DeltaTime);
 	bool CanTransport = false;
-	FDelegateHandle OnGameStateChangedDelegateHandle;
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level)
-	FName loadLevelName = FName("MainMenu");
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Transport)
-	UCurveVector* ballToSocketCurve = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Transport)
-	UCurveVector* transportScalingCurve = nullptr;
 
 	AEndTile();
 	virtual void BeginPlay() override;
@@ -49,4 +48,7 @@ public:
 					class UPrimitiveComponent* OtherComp,
 					FVector NormalImpulse,
 					const FHitResult& Hit);
+private:
+	void StartTransporting();
+	void PlayTransport( const float& DeltaTime );
 };

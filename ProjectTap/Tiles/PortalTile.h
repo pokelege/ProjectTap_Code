@@ -18,30 +18,32 @@ class PROJECTTAP_API APortalTile : public ATile, public ICarriable
 	TScriptDelegate<FWeakObjectPtr> endBlueOverlap;
 	TScriptDelegate<FWeakObjectPtr> beginOrangeOverlap;
 	TScriptDelegate<FWeakObjectPtr> endOrangeOverlap;
-	void AdjustOrientationAndTriggerBoxes();
-
-	void SetMeshCollisionProperty(UBoxComponent* box);
-	void GeneratePortalCollision();
-	bool colorSet = false;
 	FVector baseColor;
 public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Portal )
+		APortalTile* otherPortal = nullptr;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Portal )
+		UBoxComponent* bluePortalTrigger = nullptr;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Portal )
+		UBoxComponent* orangePortalTrigger = nullptr;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+		UAudioComponent* teleportSound = nullptr;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Portal )
+		float velocityMultiplier = 1.0f;
+private:
+	bool colorSet = false;
+	bool leftBluePortal = false;
+	bool leftOrangePortal = false;
+	bool enteredPortal = false;
+public:
+	
+	APortalTile();
+
 	void SetColor( const FVector& color );
 	bool GetColorSet();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
-	float velocityMultiplier = 1.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
-	APortalTile* otherPortal = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
-	UBoxComponent* bluePortalTrigger = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Portal)
-	UBoxComponent* orangePortalTrigger = nullptr;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
-	UAudioComponent* teleportSound = nullptr;
-	APortalTile();
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
@@ -80,12 +82,13 @@ public:
 	void Enable() override;
 
 private:
-	bool leftBluePortal = false;
-	bool leftOrangePortal = false;
-	bool enteredPortal = false;
 
 	void TransportBallToOrange(class ABallPawn* pawn);
 	void TransportBallToBlue(ABallPawn* pawn);
+	void AdjustOrientationAndTriggerBoxes();
+
+	void SetMeshCollisionProperty( UBoxComponent* box );
+	void GeneratePortalCollision();
 
 	friend class ALaser;
 	void GetLaserPortalTransportedLocation(UPrimitiveComponent* hit4PportalTrigger, FVector& newDir, FVector& newPos);

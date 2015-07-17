@@ -11,46 +11,36 @@ class PROJECTTAP_API AMovingTile : public ATile
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
+		TArray<FVector> path;
+protected:
+	FVector currDir;
+public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
+		AActor* carryOn = nullptr;
 
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
+		UCurveFloat* moveCurve = nullptr;
+#if WITH_EDITOR
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
+		int32 currentEditorPathIndex = 0;
+#endif
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
+		float speed = 50.0f;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
+		float pauseBetweenNodes = 2.0f;
+private:
 	float pauseTimeCounter = 0.0f;
 	float beta = 0.0f;
 
 protected:
-	FVector currDir;
-
+	int32 currNode = 0;
 	bool pathReversed = false;
 
-	int32 currNode = 0;
-
-	void UpdateMovement(float dt);
-
-	int32 NextIndex();
-
-	FVector NextDirection();
-
-	int32 IncrementIndex();
-
-	void reset();
 public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
-	UCurveFloat* moveCurve = nullptr;
-
-#if WITH_EDITOR
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
-		int32 currentEditorPathIndex = 0;
-#endif
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
-	TArray<FVector> path;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
-	AActor* carryOn = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
-	float speed = 50.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
-	float pauseBetweenNodes = 2.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
 	bool enabled = true;
@@ -79,5 +69,13 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 
 	void UpdateCarryOn(float dt);
+protected:
+	void reset();
+	void UpdateMovement( float dt );
 
+	int32 NextIndex();
+
+	FVector NextDirection();
+
+	int32 IncrementIndex();
 };

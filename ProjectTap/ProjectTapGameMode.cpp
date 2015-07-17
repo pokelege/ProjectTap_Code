@@ -29,30 +29,37 @@ AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer 
 void AProjectTapGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
 	auto gameState = GetGameState<AProjectTapGameState>();
 	OnCameraChangedDelegateHandle = gameState->CameraChanged.AddUFunction( this , TEXT( "OnCameraChanged" ) );
 	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
+}
+
+
+void AProjectTapGameMode::StartPlay()
+{
+	Super::StartPlay();
+	auto gameState = GetGameState<AProjectTapGameState>();
+	ABallPawn* ball = nullptr;
 	if ( UWorld* world = GetWorld() )
 	{
-		AActor* playerStart = FindPlayerStart( 0, FString( "Player" ) );
+		AActor* playerStart = FindPlayerStart( 0 , FString( "Player" ) );
 		FTransform playerTransform = playerStart->GetTransform();
 		if ( ABallPlayerStart* realPlayerStart = Cast<ABallPlayerStart>( playerStart ) )
 		{
-			auto possibleCamera = Cast<UProjectTapCameraComponent>(realPlayerStart->camera->GetComponentByClass(UProjectTapCameraComponent::StaticClass()));
+			auto possibleCamera = Cast<UProjectTapCameraComponent>( realPlayerStart->camera->GetComponentByClass( UProjectTapCameraComponent::StaticClass() ) );
 			FActorSpawnParameters params;
 			ball = world->SpawnActor<ABallPawn>(
-				ABallPawn::StaticClass(),
-				playerTransform.GetTranslation(),
-				FRotator( playerTransform.GetRotation()),
-				params);
+				ABallPawn::StaticClass() ,
+				playerTransform.GetTranslation() ,
+				FRotator( playerTransform.GetRotation() ) ,
+				params );
 
-			if (ball != nullptr)
+			if ( ball != nullptr )
 			{
-				ball->AddVelocity(realPlayerStart->initialVelocity, realPlayerStart->GetActorLocation());
-				if(possibleCamera != nullptr && realPlayerStart->followPlayer)
+				ball->AddVelocity( realPlayerStart->initialVelocity , realPlayerStart->GetActorLocation() );
+				if ( possibleCamera != nullptr && realPlayerStart->followPlayer )
 				{
-					ball->setCamera(realPlayerStart);
+					ball->setCamera( realPlayerStart );
 					possibleCamera = ball->GetCamera();
 				}
 			}
@@ -63,20 +70,14 @@ void AProjectTapGameMode::BeginPlay()
 		else
 		{
 			FActorSpawnParameters params;
-			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
+			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass() , playerTransform.GetTranslation() , FRotator( playerTransform.GetRotation() ) , params );
 		}
 
-		gameState->CurrentPawn = ball;
+		gameState->SetPlayer(ball);
 	}
 	musicPlayer->Play();
 	musicPlayer->SetVolumeMultiplier( 0 );
-}
 
-
-void AProjectTapGameMode::StartPlay()
-{
-	Super::StartPlay();
-	auto gameState = GetGameState<AProjectTapGameState>();
 	gameState->SetGameState( CustomGameState::GAME_STATE_PLAYING );
 	if ( isMenu ) gameState->SetGameMode( CustomGameMode::GAME_MODE_MAIN_MENU );
 }
@@ -97,11 +98,6 @@ void AProjectTapGameMode::BeginDestroy()
 void AProjectTapGameMode::Respawn()
 {
 	GetWorld()->GetFirstPlayerController()->ClientTravel( TEXT("?restart"), TRAVEL_MAX );
-}
-
-ABallPawn* AProjectTapGameMode::getBall()
-{
-	return ball;
 }
 
 bool AProjectTapGameMode::LoadNextLevel()

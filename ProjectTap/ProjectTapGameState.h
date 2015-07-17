@@ -19,6 +19,7 @@ protected:
 	CustomGameMode CurrentMode = CustomGameMode::GAME_MODE_LEVEL;
 	class AMagnetTile* lastMagnetPull = nullptr;
 	float cameraSaturation = 1.0f;
+	class ABallPawn* CurrentPawn = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	class UProjectTapCameraComponent* CurrentCamera = nullptr;
 public:
@@ -28,10 +29,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	float aiMinDistance = 100.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Player)
-	class ABallPawn* CurrentPawn = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Level)
 	FName currentLevelToLoadWhenWin;
+
+	DECLARE_MULTICAST_DELEGATE_OneParam( FPlayerChanged , const ABallPawn* )
+	UPROPERTY( BlueprintAssignable , Category = "Player" )
+	FPlayerChanged PlayerChanged;
 
 	DECLARE_MULTICAST_DELEGATE_OneParam( FGameModeChanged , const CustomGameMode )
 	UPROPERTY( BlueprintAssignable , Category = "GameMode" )
@@ -45,13 +48,17 @@ public:
 	UPROPERTY( BlueprintAssignable , Category = "Camera" )
 	FCameraChanged CameraChanged;
 
+	UFUNCTION( BlueprintCallable , Category = Player )
+	void SetPlayer( ABallPawn* NewPlayer , bool notifyListeners = true );
+
 	UFUNCTION( BlueprintCallable , Category = GameState )
 		void SetGameState( CustomGameState NewState , bool notifyListeners = true );
-	UFUNCTION( BlueprintCallable , Category = GameState )
+	UFUNCTION( BlueprintCallable , Category = GameMode )
 		void SetGameMode( CustomGameMode NewMode , bool notifyListeners = true );
 	UFUNCTION( BlueprintCallable , Category = Camera)
 	void SetCamera(class UProjectTapCameraComponent* camera,  bool notifyListeners = true);
 	AMagnetTile* SetMagnetTile( class AMagnetTile* magnet );
+	ABallPawn* GetPlayer();
 	CustomGameState GetState();
 	CustomGameMode GetMode();
 	float getCameraSaturation() const;

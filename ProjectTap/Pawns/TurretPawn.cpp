@@ -78,6 +78,10 @@ ATurretPawn::ATurretPawn()
 void ATurretPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+	OnPlayerChangedDelegateHandle = gameState->PlayerChanged.AddUFunction( this , TEXT( "OnPlayerChanged" ) );
+
 	nozzleLocal = TurretGunMesh->GetSocketLocation("Nozzle");
 	nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation("Nozzle");
 	laserTag->EmitterInstances[0]->SetBeamSourcePoint(nozzleLocal, 0);
@@ -86,17 +90,20 @@ void ATurretPawn::BeginPlay()
 	explosionParticle->Deactivate();
 }
 
+void ATurretPawn::OnPlayerChanged( ABallPawn* newPlayer )
+{
+	target = newPlayer;
+}
+
 bool ATurretPawn::FoundPlayerToHit()
 {
 	FVector forward;
 
 	forward = this->GetActorForwardVector();
 
-	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	ABallPawn* player = gameState->CurrentPawn;
-	if(player == nullptr) return false;
-	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - nozzleLocal).GetSafeNormal();
-	float distance = FVector::DistSquared(player->GetActorLocation(), nozzleLocal);
+	if(target == nullptr) return false;
+	FVector turretToBallNormal = (target->GetTransform().GetTranslation() - nozzleLocal).GetSafeNormal();
+	float distance = FVector::DistSquared(target->GetActorLocation(), nozzleLocal);
 
 	float dot = FVector::DotProduct(turretToBallNormal,forward);
 	float radians = FMath::Cos(FMath::DegreesToRadians(FOV));
@@ -108,8 +115,8 @@ bool ATurretPawn::FoundPlayerToHit()
 	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
 
 	auto pos = TurretGunMesh->GetSocketLocation("Nozzle");
-	auto rayStart = pos + (player->GetActorLocation() - nozzleLocalUpdatable).GetSafeNormal();
-	auto laserVector = (player->GetActorLocation() - nozzleLocalUpdatable).GetSafeNormal() * maxDistance;
+	auto rayStart = pos + (target->GetActorLocation() - nozzleLocalUpdatable).GetSafeNormal();
+	auto laserVector = (target->GetActorLocation() - nozzleLocalUpdatable).GetSafeNormal() * maxDistance;
 
 	GetWorld()->LineTraceSingleByObjectType(hit,rayStart, pos + laserVector, objectParam,queryParam);
 	while(hit.GetActor() != nullptr && Cast<ABullet>(hit.GetActor()) != nullptr)
@@ -123,10 +130,8 @@ bool ATurretPawn::FoundPlayerToHit()
 
 void ATurretPawn::Fire()
 {
-	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
-	ABallPawn* player = gameState->CurrentPawn;
-	if(player == nullptr) return;
-	FVector turretToBallNormal = (player->GetTransform().GetTranslation() - nozzleLocalUpdatable);
+	if(target == nullptr) return;
+	FVector turretToBallNormal = (target->GetTransform().GetTranslation() - nozzleLocalUpdatable);
 	float distance = turretToBallNormal.Size();
 	turretToBallNormal.Normalize();
 
@@ -183,11 +188,8 @@ void ATurretPawn::SetupPlayerInputComponent(class UInputComponent* InputComponen
 
 void ATurretPawn::UpdateLaserTag(float dt)
 {
-	auto state = GetWorld()->GetGameState<AProjectTapGameState>();
-	auto pawn = state->CurrentPawn;
-
-	auto l = pawn->GetActorLocation();
-	direction = FoundPlayerToHit() ? (pawn->GetActorLocation() - TurretGunMesh->GetComponentLocation()).GetSafeNormal() : TurretGunMesh->GetForwardVector();
+	auto l = target->GetActorLocation();
+	direction = FoundPlayerToHit() ? (target->GetActorLocation() - TurretGunMesh->GetComponentLocation()).GetSafeNormal() : TurretGunMesh->GetForwardVector();
 
 	auto gunPrimitive = Cast<UPrimitiveComponent>(TurretGunMesh);
 	gunPrimitive->SetWorldRotation(direction.Rotation());

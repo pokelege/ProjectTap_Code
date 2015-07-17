@@ -8,6 +8,8 @@
 #include "Pawns/SmokePawn.h"
 #include "Characters/SmokeCharacter.h"
 #include "ProjectTapGameState.h"
+#include "Pawns/BallPawn.h"
+
 ASmokeAIController::ASmokeAIController(const FObjectInitializer& ObjectInitializer) : AAIController(ObjectInitializer)
 {
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard"));
@@ -41,10 +43,10 @@ bool ASmokeAIController::SetEnemy()
 	if(smokePawn != nullptr && smokePawn->behavior != nullptr)
 	{
 		AProjectTapGameState* gamestate = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
-		if(gamestate != nullptr && gamestate->CurrentPawn != nullptr)
+		if(gamestate != nullptr && gamestate->GetPlayer() != nullptr)
 		{
-			BlackboardComponent->SetValueAsObject(FName("Enemy"), gamestate->CurrentPawn);
-			BlackboardComponent->SetValueAsVector(FName("Destination"), gamestate->CurrentPawn->GetActorLocation());
+			BlackboardComponent->SetValueAsObject(FName("Enemy"), gamestate->GetPlayer());
+			BlackboardComponent->SetValueAsVector(FName("Destination"), gamestate->GetPlayer()->GetActorLocation());
 			return true;
 		}
 	}
@@ -54,10 +56,10 @@ bool ASmokeAIController::SetEnemy()
 		if(smokeCharacter != nullptr && smokeCharacter->behavior != nullptr)
 		{
 			AProjectTapGameState* gamestate = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
-			if(gamestate != nullptr && gamestate->CurrentPawn != nullptr)
+			if(gamestate != nullptr && gamestate->GetPlayer() != nullptr)
 			{
-				BlackboardComponent->SetValueAsObject(FName("Enemy"), gamestate->CurrentPawn);
-				BlackboardComponent->SetValueAsVector(FName("Destination"), gamestate->CurrentPawn->GetActorLocation());
+				BlackboardComponent->SetValueAsObject(FName("Enemy"), gamestate->GetPlayer());
+				BlackboardComponent->SetValueAsVector(FName("Destination"), gamestate->GetPlayer()->GetActorLocation());
 				return true;
 			}
 		}
@@ -68,9 +70,9 @@ bool ASmokeAIController::SetEnemy()
 bool ASmokeAIController::KillEnemy()
 {
 	AProjectTapGameState* gamestate = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
-	if(gamestate != nullptr &&  gamestate->CurrentPawn != nullptr)
+	if(gamestate != nullptr &&  gamestate->GetPlayer() != nullptr)
 	{
-		gamestate->CurrentPawn->Kill();
+		gamestate->GetPlayer()->Kill();
 		return true;
 	}
 	else
@@ -81,14 +83,6 @@ void ASmokeAIController::UpdateCameraSaturation()
 {
 	AProjectTapGameState* gamestate = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
 
-	float length = (GetPawn()->GetActorLocation() - gamestate->CurrentPawn->GetActorLocation()).Size();
+	float length = (GetPawn()->GetActorLocation() - gamestate->GetPlayer()->GetActorLocation()).Size();
 	float newColor = FMath::Clamp<float>((length - gamestate->aiMinDistance) / (gamestate->aiMaxDistance - gamestate->aiMinDistance), 0, 1);
-
-//	auto cameraToChangeTest = gamestate->CurrentCamera->GetComponentByClass(UCameraComponent::StaticClass());
-//	auto cameraToChange = Cast<UCameraComponent>(cameraToChangeTest);
-//	if(cameraToChange)
-//	{
-//		cameraToChange->PostProcessSettings.bOverride_FilmSaturation = true;
-//		cameraToChange->PostProcessSettings.FilmSaturation = newColor;
-//	}
 }

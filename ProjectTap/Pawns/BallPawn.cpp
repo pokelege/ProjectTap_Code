@@ -47,7 +47,7 @@ ABallPawn::ABallPawn()
 	//tileOverlapCollision->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Game/Models/Ball"));
 
-	ballMesh->SetWorldScale3D(FVector(0.23f));
+	//ballMesh->SetWorldScale3D(FVector(0.23f));
 
 	//ballMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 

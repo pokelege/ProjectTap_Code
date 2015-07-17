@@ -13,7 +13,6 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
-	class ABallPawn* ball = nullptr;
 	FStreamLevelAction* levelStream = nullptr;
 	bool loadingLevel = false;
 	float time = 0;
@@ -36,7 +35,6 @@ public:
 	virtual void BeginDestroy() override;
 
 	void Respawn();
-	class ABallPawn* getBall();
 	UFUNCTION()
 	bool LoadNextLevel();
 	UFUNCTION()

@@ -45,3 +45,14 @@ class AMagnetTile* AProjectTapGameState::SetMagnetTile( class AMagnetTile* magne
 	lastMagnetPull = magnet;
 	return lastMagnet;
 }
+
+ABallPawn* AProjectTapGameState::GetPlayer()
+{
+	return CurrentPawn;
+}
+
+void AProjectTapGameState::SetPlayer( ABallPawn* NewPlayer , bool notifyListeners )
+{
+	CurrentPawn = NewPlayer;
+	if ( notifyListeners ) PlayerChanged.Broadcast( CurrentPawn );
+}

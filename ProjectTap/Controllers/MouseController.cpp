@@ -189,7 +189,7 @@ void AMouseController::RespawnPressed()
 {
 	AProjectTapGameState* gamestate = Cast<AProjectTapGameState>( GetWorld()->GetGameState() );
 	auto currentState = gamestate->GetState();
-	ABallPawn* ball = gamestate->CurrentPawn;
+	ABallPawn* ball = gamestate->GetPlayer();
 	if (ball != nullptr) ball->Kill();
 }
 

@@ -13,30 +13,28 @@ class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
-	class ABallPawn* ball = nullptr;
-	FStreamLevelAction* levelStream = nullptr;
-	bool loadingLevel = false;
-	float time = 0;
-	class UProjectTapCameraComponent* camera = nullptr;
-	float restartCoolDown = 1.0f;
-	CustomGameState lastReportedState = CustomGameState::GAME_STATE_UNKNOWN;
 	FDelegateHandle OnCameraFadeInDelegateHandle;
 	FDelegateHandle OnCameraFadeOutDelegateHandle;
 	FDelegateHandle OnCameraFadeUpdateDelegateHandle;
 	FDelegateHandle OnGameStateChangedDelegateHandle;
 	FDelegateHandle OnCameraChangedDelegateHandle;
-	bool isMenu = false;
+	FStreamLevelAction* levelStream = nullptr;
+	class UProjectTapCameraComponent* camera = nullptr;
 public:
-
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 	class UAudioComponent* musicPlayer = nullptr;
-
+private:
+	float time = 0;
+	float restartCoolDown = 1.0f;
+	CustomGameState lastReportedState = CustomGameState::GAME_STATE_UNKNOWN;
+	bool isMenu = false;
+	bool loadingLevel = false;
+public:
 	AProjectTapGameMode ( const FObjectInitializer& initializer );
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
 
 	void Respawn();
-	class ABallPawn* getBall();
 	UFUNCTION()
 	bool LoadNextLevel();
 	UFUNCTION()

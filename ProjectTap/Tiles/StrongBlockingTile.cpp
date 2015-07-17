@@ -17,20 +17,17 @@ AStrongBlockingTile::AStrongBlockingTile()
 	BoxCollision->SetBoxExtent(FVector(80.0f, 80.0f, 80.0f));
 	move_speed = 400.0f;
 	move_distance_tolerance = 150.0f;
-
 }
 
 // Called when the game starts or when spawned
 void AStrongBlockingTile::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
 void AStrongBlockingTile::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-
 }
 

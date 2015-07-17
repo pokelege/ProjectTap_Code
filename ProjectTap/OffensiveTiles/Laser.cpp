@@ -103,7 +103,7 @@ void ALaser::checkLaserCollisions(float dt)
 	queryParam.bFindInitialOverlaps = false;
 	queryParam.bReturnFaceIndex = true;
 	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
-	if ( !canHitBall ) queryParam.AddIgnoredActor( GetWorld()->GetGameState<AProjectTapGameState>()->CurrentPawn );
+	if ( !canHitBall ) queryParam.AddIgnoredActor( GetWorld()->GetGameState<AProjectTapGameState>()->GetPlayer() );
 	auto pos = GetActorLocation();
 	auto rayStart = pos + dir * 2.0f;
 	auto laserVector = dir * length;

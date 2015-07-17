@@ -15,16 +15,18 @@ class PROJECTTAP_API ATurretPawn : public APawn
 	FVector nozzleLocal;
 	FVector nozzleLocalUpdatable;
 	FVector direction;
+	class ABallPawn* target = nullptr;
 	float currentFireCooldown = 0;
 	const float MAX_HEALTH = 10.0f;
 	bool died = false;
 	float current_hp = MAX_HEALTH;
 	float currentTime = 0;
+	FDelegateHandle OnPlayerChangedDelegateHandle;
 	void UpdateLaserTag(float dt);
 	void UpdateTurretDamage(float dt);
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	bool activated = false;
+	bool activated = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	UStaticMeshComponent* TurretGunMesh;
@@ -74,4 +76,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Turret")
 	void Kill();
+
+	UFUNCTION()
+		void OnPlayerChanged( ABallPawn* newPlayer );
 };

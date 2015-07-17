@@ -9,7 +9,6 @@ UCLASS()
 class PROJECTTAP_API AStrongBlockingTile : public ABlockingTileBase
 {
 	GENERATED_BODY()
-	
 public:	
 	// Sets default values for this actor's properties
 	AStrongBlockingTile();
@@ -19,7 +18,4 @@ public:
 	
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
-
-	
-	
 };

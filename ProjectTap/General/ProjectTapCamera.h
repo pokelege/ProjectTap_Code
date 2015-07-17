@@ -10,9 +10,8 @@ class PROJECTTAP_API AProjectTapCamera : public AActor
 {
 	GENERATED_BODY()
 public:
-
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
+	class UProjectTapCameraComponent* camera = nullptr;
 	// Sets default values for this actor's properties
 	AProjectTapCamera();
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	class UProjectTapCameraComponent* camera = nullptr;
 };

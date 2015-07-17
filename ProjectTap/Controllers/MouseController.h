@@ -9,43 +9,38 @@
 /**
  *
  */
-UCLASS(config=Game)
+UCLASS( config = Game )
 class PROJECTTAP_API AMouseController : public APlayerController
 {
 	GENERATED_BODY()
-
+		UTilesManager btManager;
+	class UProjectTapCameraComponent* currentCamera = nullptr;
 	float raycastElapseTime = 0.05f;
 	float raycastElapseTimeCounter = 0.0f;
 	bool raycasted = false;
-
-	UTilesManager btManager;
 	bool bCheckForSwipe = false;
-
-
-	void ActivateOtherTiles(const FHitResult& hit);
-	void SendBlockingTile(const FHitResult& hit);
-	void SendStrongBlockingTile(const FHitResult& hit);
-	void SendGroupedBlockingTile(const FHitResult& hit);
-	void SendDraggableMoveTile(const FHitResult& hit);
-	void checkObjectHighlight(const FHitResult& hit);
+public:
+	AMouseController( const FObjectInitializer& initializer );
+	virtual void BeginPlay() override;
+	// Begin PlayerController interface
+	virtual void PlayerTick( float DeltaTime ) override;
+	virtual void SetupInputComponent() override;
+	UFUNCTION()
+		void OnCameraChanged( UProjectTapCameraComponent* newCamera );
+private:
+	void ActivateOtherTiles( const FHitResult& hit );
+	void SendBlockingTile( const FHitResult& hit );
+	void SendStrongBlockingTile( const FHitResult& hit );
+	void SendGroupedBlockingTile( const FHitResult& hit );
+	void SendDraggableMoveTile( const FHitResult& hit );
+	void checkObjectHighlight( const FHitResult& hit );
 
 	void NotifyMouseReleased();
 	void NotifyMousePressed();
 	void DisnableSwipeCheck();
-	void EnableSwipeCheck(const FHitResult& hit);
+	void EnableSwipeCheck( const FHitResult& hit );
 
 	void RespawnPressed();
 
-	void GetCameraRay(FVector& WorldOrigin, FVector& WorldDirection);
-
-	class UProjectTapCameraComponent* currentCamera = nullptr;
-public:
-  AMouseController(const FObjectInitializer& initializer);
-  virtual void BeginPlay() override;
-  // Begin PlayerController interface
-  virtual void PlayerTick(float DeltaTime) override;
-  virtual void SetupInputComponent() override;
-  UFUNCTION()
-  void OnCameraChanged(UProjectTapCameraComponent* newCamera);
-
+	void GetCameraRay( FVector& WorldOrigin , FVector& WorldDirection );
 };

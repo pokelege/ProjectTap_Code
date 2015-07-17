@@ -12,16 +12,15 @@ class PROJECTTAP_API APawnCastingTrigger : public AActor
 	GENERATED_BODY()
 
 	friend class APortalTile;
-	class ABallPawn* currentPawn = nullptr;
-
-private:
 	friend class ABallPawn;
-	void SetBallPawn(ABallPawn* currentPawn);
 	FDelegateHandle OnGameStateChangedDelegateHandle;
+	class ABallPawn* currentPawn = nullptr;
+public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
+		UBoxComponent* tileOverlapCollision;
+private:
 	bool canTrigger = true;
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ball)
-		UBoxComponent* tileOverlapCollision;
 
 	// Sets default values for this actor's properties
 	APawnCastingTrigger();
@@ -42,4 +41,6 @@ public:
 		const FHitResult & SweepResult);
 	UFUNCTION()
 	void OnStateChanged( const CustomGameState newState );
+private:
+	void SetBallPawn( ABallPawn* currentPawn );
 };

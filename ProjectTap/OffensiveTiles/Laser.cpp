@@ -13,6 +13,7 @@
 #include "Engine/GameInstance.h"
 
 #define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
+const int ALaser::MAX_DEPTH = 8;
 // Sets default values
 ALaser::ALaser()
 {

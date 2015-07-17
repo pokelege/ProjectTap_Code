@@ -12,10 +12,10 @@ class PROJECTTAP_API ASmokeCharacter : public ACharacter
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Smoke)
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Smoke )
 	class UParticleSystemComponent* smokeParticleSystem;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Smoke)
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Smoke )
 	class UBehaviorTree* behavior;
 
 	// Sets default values for this character's properties

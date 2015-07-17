@@ -3,6 +3,8 @@
 #include "ProjectTap.h"
 #include "GVertex.h"
 #include "Graph.h"
+
+const int32 AGVertex::MAX_NUM = 4;
 AGVertex::AGVertex()
 {
 	PrimaryActorTick.bCanEverTick = false;

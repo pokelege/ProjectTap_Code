@@ -211,15 +211,15 @@ FVector ADeflectiveTile::clampShortAxis(const FVector& vec, bool resetValueToOne
 
 	if (abs_longest - abs_x <= FLT_EPSILON)
 	{
-		newVec = FVector(resetValueToOne ? 1.0f : vec.X, 0.0f, 0.0f);
+		newVec = FVector(resetValueToOne ? (vec.X > .0f ? 1.0f : -1.0f) : vec.X, 0.0f, 0.0f);
 	}
 	else if (abs_longest - abs_y <= FLT_EPSILON)
 	{
-		newVec = FVector(0.0f, resetValueToOne ? 1.0f : vec.Y, 0.0f);
+		newVec = FVector(0.0f, resetValueToOne ? (vec.X > .0f ? 1.0f : -1.0f) : vec.Y, 0.0f);
 	}
 	else
 	{
-		newVec = FVector(0.0f, 0.0f, resetValueToOne ? 1.0f : vec.Z);
+		newVec = FVector(0.0f, 0.0f, resetValueToOne ? (vec.X > .0f ? 1.0f : -1.0f) : vec.Z);
 	}
 
 	return newVec;
@@ -240,7 +240,7 @@ void ADeflectiveTile::OnHit(class AActor* OtherActor,
 			auto newVel = deflectingSpeed * clampShortAxis(newDir);
 			ball->ballCollision->SetPhysicsAngularVelocity(FVector::ZeroVector);
 			ball->ballCollision->SetPhysicsLinearVelocity(newVel);
-			ball->ResetBallXYPosition(GetActorLocation() + newDir * 40);
+			ball->TransitionBallToProperLocation(GetActorLocation() + newDir * 10, newVel);
 			HighlightEdgeForDuration(0.3f);
 			ballDeflectSound->Play();
 		}

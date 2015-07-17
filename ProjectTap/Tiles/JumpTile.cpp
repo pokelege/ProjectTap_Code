@@ -2,6 +2,7 @@
 
 #include "ProjectTap.h"
 #include "JumpTile.h"
+#include "../Pawns/BallPawn.h"
 
 const FName AJumpTile::JUMP_MESH_PATH = FName("/Game/Models/Jump");
 
@@ -21,7 +22,7 @@ void AJumpTile::BeginPlay()
 	pc->SetWorldRotation(dir.Rotation());
 }
 
-void AJumpTile::SetPortalWaitForBall()
+void AJumpTile::SetWaitForBall()
 {
 	isBallComing = true;
 }
@@ -30,12 +31,15 @@ void AJumpTile::activate()
 {
 	if(rotationSequence == nullptr || target == nullptr || ball == nullptr || !IsEnabled() || activated) return;
 	Super::activate();
-	//todo check if mass is the same
+	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+
+	ball->TransitionBallToProperLocation(GetActorLocation(), dir);
+	target->SetWaitForBall();
+
 	calculateImpulse();
 	ball->ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
 	ball->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
 	ball->ballCollision->AddImpulse(impulse);
-	ball->TransitionBallToProperLocation(GetActorLocation(), impulse);
 }
 
 void AJumpTile::calculateImpulse()
@@ -47,9 +51,10 @@ void AJumpTile::calculateImpulse()
 	//vf == 0
 	//vi = -at
 	float velocityZ = -GetWorld()->GetGravityZ() * t;
-
 	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	auto distance = FVector::Dist(target->GetActorLocation(), GetActorLocation());
+
+	auto startPos = ball->GetActorLocation();
+	auto distance = FVector::Dist(target->GetActorLocation(), startPos);
 
 	//d = 1/2 * a *t^2
 	//a = 2d / t^2
@@ -58,7 +63,7 @@ void AJumpTile::calculateImpulse()
 	auto forceX = mass * horizontaAcceleration;
 	auto forceZ = mass * velocityZ;
 
-	//change in momentum = f * t
+	//impuls(change in momentum) = f * t
 	impulse = (dir * forceX + FVector(0.0f, 0.0f, forceZ)) * t;
 }
 
@@ -86,6 +91,12 @@ void AJumpTile::HighlightTile()
 	if ( target != nullptr )
 	{
 		target->Super::HighlightTile();
+		if (isBallComing)
+		{
+			isBallComing = false;
+			auto newDir = (GetActorLocation() - target->GetActorLocation()).GetSafeNormal();
+			ball->AddVelocity(newDir * 2000.0f, false);
+		}
 	}
 }
 

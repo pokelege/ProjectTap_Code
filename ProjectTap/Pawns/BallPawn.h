@@ -42,8 +42,8 @@ private:
 	UMaterialInstanceDynamic* material = nullptr;	
 	float currentDieTime = 0;
 public:
-	UPROPERTY( VisibleAnywhere , BlueprintReadWrite , Category = Ball )
-		float transitionSpeed = 300.0f;
+	float currentTransitionSpeed = 300.0f;
+	const float DEFUALT_TRANSITION_SPEED = 300.0f;
 private:
 	bool dying = false;
 	bool bInvincible = false;
@@ -63,10 +63,14 @@ public:
 	void UpdateResetTransition(float dt);
 
 	UFUNCTION(BlueprintCallable, Category = "Ball")
+
+	void AddVelocity(const FVector& vel, bool clearForce = true);
 	void AddVelocity(const FVector& vel, const FVector& resetPos, bool clearForce = true);
 
 	//reset ball to the center of the tile when hit
-	void TransitionBallToProperLocation(const FVector& resetPosition, const FVector& newVel);
+	//@param transitionSpeed: as the name says, however, it will be reset to default speed after next transition is finished,
+	//it will not change the default speed
+	void TransitionBallToProperLocation(const FVector& resetPosition, const FVector& newVelDir,float transitionSpeed = 300.0f);
 
 	void ResetBallXYPosition(const FVector& position);
 

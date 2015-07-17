@@ -240,7 +240,7 @@ void ADeflectiveTile::OnHit(class AActor* OtherActor,
 			auto newVel = deflectingSpeed * clampShortAxis(newDir);
 			ball->ballCollision->SetPhysicsAngularVelocity(FVector::ZeroVector);
 			ball->ballCollision->SetPhysicsLinearVelocity(newVel);
-			ball->TransitionBallToProperLocation(GetActorLocation() + newDir * 10, newVel);
+			ball->TransitionBallToProperLocation(GetActorLocation() + newDir * 100.0f, newVel);
 			HighlightEdgeForDuration(0.3f);
 			ballDeflectSound->Play();
 		}

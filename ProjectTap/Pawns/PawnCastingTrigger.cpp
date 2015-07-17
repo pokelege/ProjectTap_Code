@@ -75,9 +75,9 @@ void APawnCastingTrigger::OnBeginTriggerOverlap(AActor* OtherActor,
 		auto ramp = Cast<ABaseRampTile>(OtherActor);
 		if (ramp != nullptr)
 		{
+			ramp->ball = currentPawn;
 			ramp->Enable();
 			ramp->HighlightTile();
-			ramp->ball = currentPawn;
 			typeFound = true;
 		}
 	}
@@ -106,7 +106,7 @@ void APawnCastingTrigger::OnEndTriggerOverlap(AActor* OtherActor,
 		{
 			ramp->CancelHighlight();
 			ramp->Disable();
-			ramp->ball = nullptr;
+			ramp->ball = nullptr;			
 			typeFound = true;
 		}
 

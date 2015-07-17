@@ -142,16 +142,30 @@ void ABallPawn::Tick( float DeltaTime )
 }
 
 
-void ABallPawn::TransitionBallToProperLocation(const FVector& position, const FVector& newVel)
+void ABallPawn::TransitionBallToProperLocation(const FVector& position, const FVector& newVelDir, float _transitionSpeed)
 {
 	lastAnchorPosition = FVector(position.X, position.Y, GetActorLocation().Z);
 
 	auto initVec = GetActorLocation() - lastAnchorPosition;
-	auto clearedZVelocity = FVector(newVel.X, newVel.Y, 0.0f);
+	auto clearedZVelocity = FVector(newVelDir.X, newVelDir.Y, 0.0f);
 	auto up = FVector::CrossProduct(clearedZVelocity, initVec);
-	transitionNormal = FVector::CrossProduct(up, clearedZVelocity).GetSafeNormal();
-	transitionNormal = ADeflectiveTile::clampShortAxis(transitionNormal, true);
-	bTransitioning = true;
+	currentTransitionSpeed = _transitionSpeed;
+
+	//when the ball is rolling towards the same direction 
+	//as the new velocity, only transition the ball
+	//if the ball has not passed the tile
+	auto notPassedTile = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(initVec, newVelDir))) < 10.0f;
+	if (up.IsZero() && notPassedTile)
+	{
+		transitionNormal = ADeflectiveTile::clampShortAxis(clearedZVelocity, true);
+	}
+	else
+	{
+		transitionNormal = FVector::CrossProduct(up, clearedZVelocity).GetSafeNormal();
+		transitionNormal = ADeflectiveTile::clampShortAxis(transitionNormal, true);
+		bTransitioning = true;
+	}
+
 }
 
 
@@ -160,13 +174,14 @@ void ABallPawn::UpdateResetTransition(float dt)
 	if (bTransitioning)
 	{
 		auto vec = GetActorLocation() - lastAnchorPosition;
-		auto moveDelta = -transitionNormal * transitionSpeed * dt;
+		auto moveDelta = -transitionNormal * currentTransitionSpeed * dt;
 
 		auto dot = FVector::DotProduct(vec, transitionNormal);
 		auto reachedPos = dot <= 0.0f;
 		if (reachedPos || bTransitionFinishNextFrame)
 		{
 			bTransitioning = false;
+			currentTransitionSpeed = DEFUALT_TRANSITION_SPEED;
 			SetActorLocation(GetActorLocation() + dot * -transitionNormal);
 		}
 		else
@@ -209,6 +224,16 @@ void ABallPawn::togglePauseMenu()
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
 		state->SetGameState( CustomGameState::GAME_STATE_PAUSE );
 	}
+}
+
+void ABallPawn::AddVelocity(const FVector& vel, bool clearForce)
+{
+	if (clearForce)
+	{
+		ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
+	}
+	ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
+	ballCollision->AddImpulse(vel);
 }
 
 

@@ -26,7 +26,7 @@ public:
 	
 	AJumpTile();
 
-	void SetPortalWaitForBall();
+	void SetWaitForBall();
 
 	virtual void BeginPlay() override;
 

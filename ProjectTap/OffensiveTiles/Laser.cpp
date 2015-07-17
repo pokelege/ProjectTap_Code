@@ -151,7 +151,7 @@ void ALaser::checkLaserCollisions(float dt)
 					}
 				}
 				//cut the laser length to make sure new sub laser start doesn't hit the same object
-				if(typeFound && CanSpawnSubLaser()) SpawnSubLaser(hit.ImpactPoint, hit.ImpactNormal);
+				if (typeFound && CanSpawnSubLaser()) SpawnSubLaser(hit.ImpactPoint + hit.ImpactNormal * 10.0f, hit.ImpactNormal);
 			}
 
 

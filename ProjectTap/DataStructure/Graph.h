@@ -19,82 +19,41 @@ class PROJECTTAP_API AGraph : public AActor
 {
 	GENERATED_BODY()
 	friend class AGVertex;
-	const int32 MAX_SIZE = 25;
+	static const int32 MAX_SIZE;
+	static const int32 NONEDGE;
+	static const int32 EDGE;
 
-private:
 	TArray<int32> visitsMarks;
+public:
+	//stores visualizers for all edges
+	UPROPERTY( VisibleAnywhere , BlueprintReadOnly , Category = visualizer )
+		TArray<UStaticMeshComponent*> edgeMeshes;
+
+	//stores visualizers for all verts
+	UPROPERTY( VisibleAnywhere , BlueprintReadOnly , Category = visualizer )
+		TArray<UStaticMeshComponent*> vertexMeshes;
+
+	UPROPERTY( VisibleAnywhere , BlueprintReadOnly , Category = vertices )
+		TArray<FVertexArray> edgeMatrix;
+
+	UPROPERTY( VisibleAnywhere , BlueprintReadOnly , Category = vertices )
+		TArray<AGVertex*> mark;
+private:
 	UStaticMesh* vertexStaticMesh;
 	UStaticMesh* edgeStaticMesh;
-
-	const int32 NONEDGE = -1;
-	const int32 EDGE = 1;
 
 	int32 numVert = 0;
 	int32 numEdge = 0;
 
-	void Init();
-
-	int genId();
-
-	void setUndirectedEdge(int32 v1, int32 v2);
-
-	void deleteUndirectedEdge(int32 v1, int32 v2);
-
-	void deleteAllVertsConnectionsToVert(int32 v,
-										 int32 connectIndex);
-
-	//the following methods will only be excuted inside editor
-
-
-	void DFS_makeVisualizers(TArray<int32>& stack,
-							 int32 vIndex);
-
-	UStaticMeshComponent* makeEdgeMeshForEdge(int32 i, int32 j);
-
-	UStaticMeshComponent* makeVertexMeshForVertex(int32 j);
-
-	void initializeEdgeMesh(UStaticMeshComponent* edgeMesh,
-							const class AGVertex* v1,
-							const class AGVertex* v2);
-
-	class AGVertex* next(int32 v,
-		int32 v2);
-
-	class AGVertex* first(int32 v);
-
-	class AGVertex* getConnectedVertexByIndex(int32 vertexIndex,
-										int32 connectionIndex);
-
-	void unmarkAll();
-	void markVertex(int32 v_index);
-	void markVertex(class AGVertex* vertex);
-
-	void clearRouteVisuals();
 public:
+	UPROPERTY( EditAnywhere , BlueprintReadOnly , Category = graph )
+		bool clearRoutVisuals;
+
+	UPROPERTY( EditAnywhere , BlueprintReadOnly , Category = graph )
+		bool clickToInitialize;
 
 	AGraph();
 	~AGraph();
-
-	//stores visualizers for all edges
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = visualizer)
-	TArray<UStaticMeshComponent*> edgeMeshes;
-
-	//stores visualizers for all verts
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = visualizer)
-	TArray<UStaticMeshComponent*> vertexMeshes;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = vertices)
-	TArray<FVertexArray> edgeMatrix;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = vertices)
-	TArray<AGVertex*> mark;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = graph)
-	bool clearRoutVisuals;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = graph)
-	bool clickToInitialize;
 
 	virtual void BeginPlay() override;
 
@@ -139,5 +98,43 @@ public:
 	AGVertex* getVertex(int index);
 
 	void BeginDestroy() override;
+private:
+		void Init();
 
+		int genId();
+
+		void setUndirectedEdge( int32 v1 , int32 v2 );
+
+		void deleteUndirectedEdge( int32 v1 , int32 v2 );
+
+		void deleteAllVertsConnectionsToVert( int32 v ,
+											  int32 connectIndex );
+
+		//the following methods will only be excuted inside editor
+
+
+		void DFS_makeVisualizers( TArray<int32>& stack ,
+								  int32 vIndex );
+
+		UStaticMeshComponent* makeEdgeMeshForEdge( int32 i , int32 j );
+
+		UStaticMeshComponent* makeVertexMeshForVertex( int32 j );
+
+		void initializeEdgeMesh( UStaticMeshComponent* edgeMesh ,
+								 const class AGVertex* v1 ,
+								 const class AGVertex* v2 );
+
+		class AGVertex* next( int32 v ,
+							  int32 v2 );
+
+		class AGVertex* first( int32 v );
+
+		class AGVertex* getConnectedVertexByIndex( int32 vertexIndex ,
+												   int32 connectionIndex );
+
+		void unmarkAll();
+		void markVertex( int32 v_index );
+		void markVertex( class AGVertex* vertex );
+
+		void clearRouteVisuals();
 };

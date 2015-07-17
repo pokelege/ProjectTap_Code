@@ -8,10 +8,10 @@
 
 
 
-void UGetBallInstanceBTService::TickNode(UBehaviorTreeComponent &OwnerComp, uint8 *NodeMemory, float DeltaSeconds)
+void UGetBallInstanceBTService::TickNode( UBehaviorTreeComponent &OwnerComp , uint8 *NodeMemory , float DeltaSeconds )
 {
-	ASmokeAIController* ai = Cast<ASmokeAIController>(OwnerComp.GetAIOwner());
-	if(ai != nullptr)
+	ASmokeAIController* ai = Cast<ASmokeAIController>( OwnerComp.GetAIOwner() );
+	if ( ai != nullptr )
 	{
 		ai->SetEnemy();
 	}

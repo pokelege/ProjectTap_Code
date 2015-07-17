@@ -1,7 +1,10 @@
 #include "ProjectTap.h"
 #include "Graph.h"
 #include "GVertex.h"
-//#include <assert.h>
+
+const int32 AGraph::MAX_SIZE = 25;
+const int32 AGraph::NONEDGE = -1;
+const int32 AGraph::EDGE = 1;
 AGraph::AGraph()
 {
 	PrimaryActorTick.bCanEverTick = false;

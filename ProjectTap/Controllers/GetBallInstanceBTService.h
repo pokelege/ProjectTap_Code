@@ -17,9 +17,9 @@ class PROJECTTAP_API UGetBallInstanceBTService : public UBTService
 
 public:
 	virtual void TickNode
-	(
-		UBehaviorTreeComponent & OwnerComp,
-		uint8 * NodeMemory,
+		(
+		UBehaviorTreeComponent & OwnerComp ,
+		uint8 * NodeMemory ,
 		float DeltaSeconds
-	);
+		);
 };

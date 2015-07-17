@@ -20,9 +20,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
 	float height = 500;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
-	AJumpTile* target = nullptr;
-
 	AJumpTile();
 
 	virtual void BeginPlay() override;

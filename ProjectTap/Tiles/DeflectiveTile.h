@@ -21,35 +21,33 @@ UCLASS()
 class PROJECTTAP_API ADeflectiveTile : public ATile, public ICarriable
 {
 	GENERATED_BODY()
+public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
+		USceneComponent* frameCollisionsComponent = nullptr;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+		UAudioComponent* ballDeflectSound = nullptr;
+private:
 	float timer = 0.0f;
 	float rotationDegreeLimit = 90;
 	float accum = 0;
 	float edgeHighlightTimer = 0.0f;
 	float edgeHighlightDuration = 0.0f;
-	bool ballCanTouch = true;
-
-	void UpdateEdgeHighlight(float dt);
-	//only keep the axis with biggest value
-	//others will be set to 0
 public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
 		float rotationDuration = 2.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
 		float deflectingSpeed = 300.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
+		float currentRotation = 45;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
 		DeflectiveTileType type;
+private:
+	bool ballCanTouch = true;
+public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	float currentRotation = 45;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		USceneComponent* frameCollisionsComponent = nullptr;
-
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
-		UAudioComponent* ballDeflectSound = nullptr;
 	ADeflectiveTile();
 
 	UFUNCTION()
@@ -73,4 +71,5 @@ public:
 	void deactivate() override;
 
 	void Spin(float dt);
+	void UpdateEdgeHighlight( float dt );
 };

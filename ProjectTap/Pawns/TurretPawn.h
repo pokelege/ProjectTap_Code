@@ -12,48 +12,47 @@ class PROJECTTAP_API ATurretPawn : public APawn
 
 	static const FName BASE_MESH;
 	static const FName GUN_MESH;
+	FDelegateHandle OnPlayerChangedDelegateHandle;
 	FVector nozzleLocal;
 	FVector nozzleLocalUpdatable;
 	FVector direction;
 	class ABallPawn* target = nullptr;
-	float currentFireCooldown = 0;
-	const float MAX_HEALTH = 10.0f;
-	bool died = false;
-	float current_hp = MAX_HEALTH;
-	float currentTime = 0;
-	FDelegateHandle OnPlayerChangedDelegateHandle;
-	void UpdateLaserTag(float dt);
-	void UpdateTurretDamage(float dt);
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	bool activated = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	UStaticMeshComponent* TurretGunMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	UParticleSystemComponent* laserTag;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Laser)
-	UParticleSystemComponent* explosionParticle;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	float FOV = 60.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	float maxDistance = 300.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	float updateInterval = 0.2f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	float fireRate = 2.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
-	float bulletForce = 2000.0f;
-
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
-	UAudioComponent* explosionSound = nullptr;
+		UAudioComponent* explosionSound = nullptr;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 		UAudioComponent* fireSound = nullptr;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
+		UStaticMeshComponent* TurretGunMesh;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
+		UParticleSystemComponent* laserTag;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Laser )
+		UParticleSystemComponent* explosionParticle;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
+		float FOV = 60.0f;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
+		float maxDistance = 300.0f;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
+		float updateInterval = 0.2f;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
+		float fireRate = 2.0f;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
+		float bulletForce = 2000.0f;
+private:
+	float currentFireCooldown = 0;
+	const float MAX_HEALTH = 10.0f;
+	float current_hp = MAX_HEALTH;
+	float currentTime = 0;
+	bool died = false;
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
+	bool activated = true;
 	// Sets default values for this pawn's properties
 	ATurretPawn();
 
@@ -79,4 +78,7 @@ public:
 
 	UFUNCTION()
 		void OnPlayerChanged( ABallPawn* newPlayer );
+private:
+	void UpdateLaserTag( float dt );
+	void UpdateTurretDamage( float dt );
 };

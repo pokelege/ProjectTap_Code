@@ -10,46 +10,33 @@ class PROJECTTAP_API ADraggableMoveTile : public AMovingTile
 {
 	GENERATED_BODY()
 
-	class AGVertex* goalVertex = nullptr;
 	FVector anchorHitPoint;
-	FVector newGoalPos;	
+	FVector newGoalPos;
+	class AGVertex* goalVertex = nullptr;
+public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Indicator )
+		UParticleSystemComponent* indicatorParticle = nullptr;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Indicator )
+		UStaticMeshComponent* arrowMeshComponent = nullptr;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
+	class AGVertex* currentVertex = nullptr;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
+		float dragTolerance = 300.0f;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
+		float dragMoveSpeed = 150.0f;
+private:
 	float cameraRayLength = 0.0f;
 	float mousePressTimer = 0.0f;
 	bool isMoving = false;
 	bool canSnap = false;
 	bool destinationOccupied = false;
 	bool reachGoalNextFrame = false;
-
-	void Initialize();
-
-	void UpdateDragMove(float dt);
-
-	FVector calculateCurrentDir();
-
-	void UpdateIndicator();
-
-	bool cameraRayIntersectWithTilePlane(const FVector& camlocation,
-										 const FVector& dir,
-										 FVector& hitPoint);
-
-	void processMouseEvents();
-
-	void click();
+	bool isSelected = false;
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Indicator)
-	UParticleSystemComponent* indicatorParticle = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Indicator)
-	UStaticMeshComponent* arrowMeshComponent = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	class AGVertex* currentVertex = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	float dragTolerance = 300.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	float dragMoveSpeed = 150.0f;
 
 	// Sets default values for this actor's properties
 	ADraggableMoveTile();
@@ -73,5 +60,19 @@ public:
 	void RemoveFocus();
 
 private:
-	bool isSelected = false;
+	void Initialize();
+
+	void UpdateDragMove( float dt );
+
+	FVector calculateCurrentDir();
+
+	void UpdateIndicator();
+
+	bool cameraRayIntersectWithTilePlane( const FVector& camlocation ,
+										  const FVector& dir ,
+										  FVector& hitPoint );
+
+	void processMouseEvents();
+
+	void click();
 };

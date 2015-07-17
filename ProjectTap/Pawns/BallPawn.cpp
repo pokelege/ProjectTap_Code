@@ -3,6 +3,8 @@
 #include "ProjectTap.h"
 #include "BallPawn.h"
 #include "Engine/GameInstance.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+#include "Runtime/Engine/Classes/Engine/Blueprint.h"
 #include "ProjectTapGameState.h"
 #include "PawnCastingTrigger.h"
 #include "BallPlayerStart.h"
@@ -10,7 +12,7 @@
 #include "CustomGameState.h"
 #include "General/ProjectTapCameraComponent.h"
 #include "General/ProjectTapCamera.h"
-#include "../Tiles/DeflectiveTile.h"
+#include "Tiles/DeflectiveTile.h"
 
 // Sets default values
 ABallPawn::ABallPawn()

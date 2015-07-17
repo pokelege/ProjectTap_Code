@@ -9,12 +9,12 @@ UCLASS()
 class PROJECTTAP_API ABlockingTileBase : public ATile
 {
 	GENERATED_BODY()
-
+public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+		UAudioComponent* activateSound = nullptr;
 protected:
 	FVector original;
 	float time_counter = 0.0f;
-
-	virtual void lerpMaterialColorForCoolDown(const float& beta);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
@@ -22,9 +22,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		float move_distance_tolerance = 100.0f;
-
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
-	UAudioComponent* activateSound = nullptr;
 
 	// Sets default values for this actor's properties
 	ABlockingTileBase();
@@ -37,4 +34,6 @@ public:
 
 	void deactivate() override;
 	void activate() override;
+protected:
+	virtual void lerpMaterialColorForCoolDown( const float& beta );
 };

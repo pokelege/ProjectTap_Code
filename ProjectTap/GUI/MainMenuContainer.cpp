@@ -1,9 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectTap.h"
-#include "../Tiles/Ramp.h"
 #include "MainMenuContainer.h"
+#include "Runtime/UMG/Public/UMG.h"
+#include "Runtime/UMG/Public/Components/Button.h"
+#include "Runtime/UMG/Public/Components/TextBlock.h"
+#include "Runtime/UMG/Public/Components/Slider.h"
+#include "Runtime/UMG/Public/Components/CheckBox.h"
+#include "Runtime/UMG/Public/Components/WidgetComponent.h"
 #include "Runtime/Engine/Public/AudioDevice.h"
+#include "Tiles/Ramp.h"
 
 AMainMenuContainer::AMainMenuContainer()
 {

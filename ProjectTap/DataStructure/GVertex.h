@@ -12,36 +12,26 @@ class PROJECTTAP_API AGVertex : public AActor
 	GENERATED_BODY()
 
 	friend class AGraph;
-	const int32 MAX_NUM = 4;
+	static const int32 MAX_NUM;
+public:
+	TMap<int32 , UArrowComponent*> debugArrows;
+	UPROPERTY( VisibleAnywhere , BlueprintReadWrite , Category = Tile )
+		TArray<int32> connections;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
+		UStaticMeshComponent* debugMesh = nullptr;
+	UPROPERTY( VisibleAnywhere , BlueprintReadWrite , Category = Tile )
+		int32 vertexIndex = -1;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
+		bool clickUpdateAllNodes;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
+		bool clickToMakeGraph;
+private:
 	bool visited = false;
 	bool hasTile = false;
 	bool isSelected = false;
-
-	void regenerateDebugArrows();
-
-	void disconnectTo(int32 v);
-
-	void connectTo(int32 v);
-	
-	UArrowComponent* makeArrowToVertex(int32 v);
 public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		UStaticMeshComponent* debugMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Tile)
-		TArray<int32> connections;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Tile)
-		int32 vertexIndex = -1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		bool clickUpdateAllNodes;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		bool clickToMakeGraph;
-
-	TMap<int32, UArrowComponent*> debugArrows;
 
 	virtual void PostLoad() override;
 
@@ -72,5 +62,12 @@ public:
 
 	AGVertex();
 	~AGVertex();
-	
+private:
+	void regenerateDebugArrows();
+
+	void disconnectTo( int32 v );
+
+	void connectTo( int32 v );
+
+	UArrowComponent* makeArrowToVertex( int32 v );
 };

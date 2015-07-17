@@ -13,14 +13,13 @@ class PROJECTTAP_API ASmokeAIController : public AAIController
 {
 	GENERATED_BODY()
 public:
-
-	ASmokeAIController(const FObjectInitializer& ObjectInitializer);
-
 	UPROPERTY()
 	class UBlackboardComponent* BlackboardComponent;
 
 	UPROPERTY()
 	class UBehaviorTreeComponent* BehaviorComponent;
+
+	ASmokeAIController(const FObjectInitializer& ObjectInitializer);
 
 	virtual void Possess(class APawn* pawn) override;
 

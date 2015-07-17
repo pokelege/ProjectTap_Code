@@ -108,3 +108,23 @@ void AJumpTile::CancelHighlightTile()
 		target->Super::CancelHighlightTile();
 	}
 }
+
+#if WITH_EDITOR
+void AJumpTile::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.Property != nullptr)
+	{
+		auto p = PropertyChangedEvent.Property;
+		auto pName = p->GetName();
+
+		//when currentEditorPathIndex property changes in editor
+		//reset current moving tile's location to desinated node's location
+		if (target != nullptr && pName.Equals(TEXT("height")))
+		{
+			target->height = height;
+		}
+	}
+}
+#endif

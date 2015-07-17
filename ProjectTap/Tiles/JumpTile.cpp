@@ -29,21 +29,32 @@ void AJumpTile::activate()
 	calculateImpulse();
 	ball->ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
 	ball->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
-	ball->ballCollision->AddImpulse(force);
-	ball->ResetBallXYPosition(GetActorLocation());
-
+	ball->ballCollision->AddImpulse(impulse);
+	ball->TransitionBallToProperLocation(GetActorLocation(), impulse);
 }
 
 void AJumpTile::calculateImpulse()
 {
-	float vz = FMath::Sqrt(2 * -GetWorld()->GetGravityZ() * height);
-	float forceZ = ball->ballCollision->GetMass() * vz / duration;
+	//h = 1/2*a*t^2
+	//t = sqrt(2h/a)
+	float t = FMath::Sqrt(2 * height  / -GetWorld()->GetGravityZ()); 
+	//vf = vi + at
+	//vf == 0
+	//vi = -at
+	float velocityZ = -GetWorld()->GetGravityZ() * t;
 
 	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 	auto distance = FVector::Dist(target->GetActorLocation(), GetActorLocation());
-	auto horizontalAcceleration = 2 * distance / FMath::Square(2 * duration);
-	auto forceX = ball->ballCollision->GetMass() * horizontalAcceleration;
-	force = dir * forceX * 2 * duration + FVector(0.0f, 0.0f, forceZ) * duration;
+
+	//d = 1/2 * a *t^2
+	//a = 2d / t^2
+	auto horizontaAcceleration = 2 * distance / FMath::Square(2 * t);//t *2 because ball goes up and down
+	auto mass = ball->ballCollision->GetMass();
+	auto forceX = mass * horizontaAcceleration;
+	auto forceZ = mass * velocityZ;
+
+	//change in momentum = f * t
+	impulse = (dir * forceX + FVector(0.0f, 0.0f, forceZ)) * t;
 }
 
 void AJumpTile::HighlightEdge()

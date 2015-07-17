@@ -14,10 +14,8 @@ class PROJECTTAP_API AJumpTile : public ABaseRampTile
 	GENERATED_BODY()
 
 	static const FName JUMP_MESH_PATH;
-	FVector force;
+	FVector impulse;
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
-	float duration = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
 	float height = 500;

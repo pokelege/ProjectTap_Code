@@ -10,7 +10,7 @@
 
 const FName ATurretPawn::BASE_MESH = FName("/Game/Models/TurretBase");
 const FName ATurretPawn::GUN_MESH = FName("/Game/Models/TurretGun");
-
+const float ATurretPawn::MAX_HEALTH = 10.0f;
 // Sets default values
 ATurretPawn::ATurretPawn()
 {

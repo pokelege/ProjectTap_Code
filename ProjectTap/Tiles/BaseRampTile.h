@@ -18,8 +18,6 @@ class PROJECTTAP_API ABaseRampTile : public ATile
 	static const FName BASE_RAMP_CURVE_PATH;
 
 protected:
-	FScriptDelegate pawnIn;
-	FScriptDelegate pawnOut;
 	FDelegateHandle OnGameStateChangedDelegateHandle;
 	class ABallPawn* ball = nullptr;
 	class ABallPawn* lastPauseBall = nullptr;

@@ -11,8 +11,8 @@ UCLASS()
 class PROJECTTAP_API ALaser : public AActor , public ICarriable
 {
 	GENERATED_BODY()
-
-		FDelegateHandle OnGameStateChangedDelegateHandle;
+		static const int MAX_DEPTH;
+	FDelegateHandle OnGameStateChangedDelegateHandle;
 	FVector currHitPoint;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Laser )
@@ -36,10 +36,9 @@ public:
 		UAudioComponent* laserEmitSound = nullptr;
 private:
 	ALaser* nextLaser = nullptr;
-	static const int MAX_DEPTH;
 	int currentDepth = 0;
 	float timer = .0f;
-	float elapseTime = 1 / 30.0f;
+	float elapseTime = 1.0f / 30.0f;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Laser )
 		float length = 1000000.0f;

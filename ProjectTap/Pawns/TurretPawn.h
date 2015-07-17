@@ -12,6 +12,8 @@ class PROJECTTAP_API ATurretPawn : public APawn
 
 	static const FName BASE_MESH;
 	static const FName GUN_MESH;
+	static const float MAX_HEALTH;
+
 	FDelegateHandle OnPlayerChangedDelegateHandle;
 	FVector nozzleLocal;
 	FVector nozzleLocalUpdatable;
@@ -46,7 +48,6 @@ public:
 		float bulletForce = 2000.0f;
 private:
 	float currentFireCooldown = 0;
-	const float MAX_HEALTH = 10.0f;
 	float current_hp = MAX_HEALTH;
 	float currentTime = 0;
 	bool died = false;

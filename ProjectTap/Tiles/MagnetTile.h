@@ -16,9 +16,6 @@ class PROJECTTAP_API AMagnetTile : public ATile, public ICarriable
 
 	TScriptDelegate<FWeakObjectPtr> delegate;
 public:
-	DECLARE_MULTICAST_DELEGATE_OneParam( FMagnetPullingBall , const AMagnetTile* )
-	FMagnetPullingBall aboutToPullBall;
-
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Magnet )
 	class UParticleSystemComponent* magnetParticle = nullptr;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Magnet )

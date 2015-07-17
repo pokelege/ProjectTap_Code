@@ -125,6 +125,10 @@ void AJumpTile::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEv
 		{
 			target->height = height;
 		}
+		else if (pName.Equals("target"))
+		{
+			target->height = height;
+		}
 	}
 }
 #endif

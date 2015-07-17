@@ -22,25 +22,12 @@ class UTilesManager
 	class ATile* prevHighlighted = nullptr;
 	class ADraggableMoveTile* currDraggableTile = nullptr;
 	class AMouseController* controller = nullptr;
-
-
-	bool isMousePressed = false;
-
 	unsigned char size_limit{ 1 };
 	unsigned char grouped_size_limit{ 6 };
 	CurrentTileType currentTileType{ CurrentTileType::NONE };
-
-	void UpdateDraggableMoveTile();
-	void UpdateGroupedBlockingTiles();
-	void SetBlockingTileCurrent();
-	void SetStrongBlockingTileCurrent();
-	void SetGroupedBlockingTileCurrent();
-	void SetDraggableMoveTileCurrent();
-
-	void DeactivateBlockingTiles();
-	void DeactivateGroupedBlockingTiles();
+	bool isMousePressed = false;
 public:
-
+	UTilesManager();
 	void AddTile(ABlockingTile* tile);
 	void AddTile(AStrongBlockingTile* tile);
 	void AddTile(AGroupedBlockingTile* tile);
@@ -51,11 +38,16 @@ public:
 	void SetCameraRay(const FHitResult& hit,
 					  const FVector& worldOrigin,
 					  const FVector& worldDirection);
-
 	void MouseRelease();
-
-	UTilesManager();
-
 	void Tick( float DeltaSeconds );
+private:
+	void UpdateDraggableMoveTile();
+	void UpdateGroupedBlockingTiles();
+	void SetBlockingTileCurrent();
+	void SetStrongBlockingTileCurrent();
+	void SetGroupedBlockingTileCurrent();
+	void SetDraggableMoveTileCurrent();
 
+	void DeactivateBlockingTiles();
+	void DeactivateGroupedBlockingTiles();
 };

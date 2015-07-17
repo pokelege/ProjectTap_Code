@@ -13,7 +13,10 @@ ABaseRampTile::ABaseRampTile() : ATile()
 		BoxCollision->SetBoxExtent(FVector(40,40,2), false);
 		BoxCollision->bGenerateOverlapEvents = true;
 	}
-
+	BoxCollision->SetCollisionResponseToAllChannels( ECollisionResponse::ECR_Ignore );
+	BoxCollision->SetCollisionResponseToChannel( ECollisionChannel::ECC_Pawn , ECR_Overlap );
+	BoxCollision->SetCollisionResponseToChannel( ECollisionChannel::ECC_WorldDynamic , ECR_Overlap );
+	BoxCollision->SetCollisionResponseToChannel( ECollisionChannel::ECC_Visibility , ECR_Block ); 
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(*BASE_RAMP_CURVE_PATH.ToString());
 	if(curve.Object != nullptr) rotationSequence = curve.Object;
 	offset = CreateDefaultSubobject<USceneComponent>( TEXT( "Ramp offset" ) );

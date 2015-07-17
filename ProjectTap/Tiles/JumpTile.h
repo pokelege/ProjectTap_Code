@@ -15,12 +15,18 @@ class PROJECTTAP_API AJumpTile : public ABaseRampTile
 
 	static const FName JUMP_MESH_PATH;
 	FVector impulse;
+	bool isBallComing = false;
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
 	float height = 500;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
+	AJumpTile* target = nullptr;
+	
 	AJumpTile();
+
+	void SetPortalWaitForBall();
 
 	virtual void BeginPlay() override;
 

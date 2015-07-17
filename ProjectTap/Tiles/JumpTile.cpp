@@ -21,6 +21,11 @@ void AJumpTile::BeginPlay()
 	pc->SetWorldRotation(dir.Rotation());
 }
 
+void AJumpTile::SetPortalWaitForBall()
+{
+	isBallComing = true;
+}
+
 void AJumpTile::activate()
 {
 	if(rotationSequence == nullptr || target == nullptr || ball == nullptr || !IsEnabled() || activated) return;

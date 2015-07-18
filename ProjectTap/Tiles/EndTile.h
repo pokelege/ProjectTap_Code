@@ -19,10 +19,13 @@ class PROJECTTAP_API AEndTile : public ATile
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Level )
 		FName loadLevelName = FName( "MainMenu" );
-
+private:
+	TArray<USoundBase*> sounds;
+	UAudioComponent* audioPlayer = nullptr;
+	UCurveFloat* soundToPlayCurve = nullptr;
+public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Transport )
 		UCurveVector* ballToSocketCurve = nullptr;
-
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Transport )
 		UCurveVector* transportScalingCurve = nullptr;
 private:

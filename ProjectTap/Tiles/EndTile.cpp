@@ -56,6 +56,17 @@ void AEndTile::PlayTransport(const float &DeltaTime)
 	}
 	else (pc->SetWorldScale3D(ballScale));
 	pc->SetWorldRotation(FQuat(0,0,0,0));
+	if ( soundToPlayCurve == nullptr ) return;
+	int soundIndex = soundToPlayCurve->GetFloatValue( currentAnimationTime );
+	if ( soundIndex >= 0 && soundIndex < sounds.Num() )
+	{
+		if ( audioPlayer->Sound != sounds[soundIndex] )
+		{
+			audioPlayer->Stop();
+			audioPlayer->SetSound( sounds[soundIndex] );
+			audioPlayer->Play();
+		}
+	}
 }
 
 AEndTile::AEndTile() : ATile()
@@ -82,10 +93,21 @@ AEndTile::AEndTile() : ATile()
 
 	ConstructorHelpers::FObjectFinder<UCurveVector> ballToSocketCurveAsset(TEXT("/Game/Curves/BallToSocketCurve"));
 	ConstructorHelpers::FObjectFinder<UCurveVector> transportScalingCurveAsset(TEXT("/Game/Curves/TransportScalingCurve"));
+	soundToPlayCurve = ConstructorHelpers::FObjectFinder<UCurveFloat>( TEXT( "/Game/Curves/SoundToPlayCurve" ) ).Object;
 	ballToSocketCurve = ballToSocketCurveAsset.Object;
 	transportScalingCurve = transportScalingCurveAsset.Object;
 	delegate.BindUFunction(this, TEXT("OnBeginHit"));
 	BoxCollision->OnComponentHit.Add(delegate);
+
+	ConstructorHelpers::FObjectFinder<USoundBase> sound1( TEXT( "/Game/Sound/S_Warp1" ) );
+	ConstructorHelpers::FObjectFinder<USoundBase> sound2( TEXT( "/Game/Sound/S_Warp2" ) );
+	ConstructorHelpers::FObjectFinder<USoundBase> sound3( TEXT( "/Game/Sound/S_Warp3" ) );
+	sounds.Add( sound1.Object );
+	sounds.Add( sound2.Object );
+	sounds.Add( sound3.Object );
+	audioPlayer = CreateDefaultSubobject<UAudioComponent>( TEXT( "Audio Player" ) );
+	audioPlayer->bAutoActivate = false;
+	audioPlayer->AttachTo( spiralComponent );
 }
 
 void AEndTile::BeginDestroy()

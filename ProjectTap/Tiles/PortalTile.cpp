@@ -314,3 +314,23 @@ bool APortalTile::GetColorSet()
 {
 	return colorSet;
 }
+
+#if WITH_EDITOR
+void APortalTile::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.Property != nullptr)
+	{
+		auto p = PropertyChangedEvent.Property;
+		auto pName = p->GetName();
+
+		//when currentEditorPathIndex property changes in editor
+		//reset current moving tile's location to desinated node's location
+		if (pName.Equals("otherPortal"))
+		{
+			otherPortal->otherPortal = this;
+		}
+	}
+}
+#endif

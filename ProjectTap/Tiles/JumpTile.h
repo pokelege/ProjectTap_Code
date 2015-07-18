@@ -22,6 +22,9 @@ public:
 	float height = 500;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
+	float ballLandingForceStrength = 3000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
 	AJumpTile* target = nullptr;
 	
 	AJumpTile();

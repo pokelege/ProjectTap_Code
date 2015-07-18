@@ -12,12 +12,10 @@ AGVertex::AGVertex()
 	SetRootComponent(debugMesh);
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Game/Models/Ball"));
-	debugMesh->SetWorldScale3D(FVector(0.1f));
+	debugMesh->SetRelativeScale3D(FVector(.5f));
 	debugMesh->SetStaticMesh(tempMesh.Object);
 	debugMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-
 	vertexIndex = -1;
-	
 }
 
 #define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
@@ -94,8 +92,9 @@ void AGVertex::connectTo(int32 v)
 		auto rot = FRotationMatrix::MakeFromX(dir);
 		arrow->SetWorldLocation(start);
 		arrow->SetWorldRotation(FRotator(rot.ToQuat()));
-		arrow->SetRelativeScale3D(FVector(distance / 8.0f, 10.0f, 10.0f));
-		 
+		auto arrowScale = FVector(distance / 4.0f, 10.0f, 10.0f) / 10.0f;
+		arrow->SetRelativeScale3D(arrowScale);
+
 		if (!remakeArrow)
 		{
 			connections.Add(other->vertexIndex);
@@ -113,7 +112,8 @@ void AGVertex::connectTo(int32 v)
 		auto rot = FRotationMatrix::MakeFromX(dir);
 		arrow->SetWorldLocation(start);
 		arrow->SetWorldRotation(FRotator(rot.ToQuat()));
-		arrow->SetRelativeScale3D(FVector(distance / 8.0f, 10.0f, 10.0f));
+		auto arrowScale = FVector(distance / 4.0f, 10.0f, 10.0f) / 10.0f;
+		arrow->SetRelativeScale3D(arrowScale);
 	}
 }
 

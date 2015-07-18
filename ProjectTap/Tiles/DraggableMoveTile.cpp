@@ -18,7 +18,6 @@ ADraggableMoveTile::ADraggableMoveTile()
 	BoxCollision->AttachTo(TileMesh);
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh( TEXT( "/Game/Models/SM_DragTile" ) );
 	TileMesh->SetStaticMesh( mesh.Object );
@@ -60,6 +59,10 @@ void ADraggableMoveTile::Initialize()
 			BoxCollision->SetRelativeScale3D(scale);
 			BoxCollision->AddLocalOffset(offset);
 		}
+	}
+	else
+	{
+		BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 	}
 }
 

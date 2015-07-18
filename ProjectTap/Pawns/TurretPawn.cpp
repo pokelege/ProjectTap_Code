@@ -125,7 +125,7 @@ bool ATurretPawn::FoundPlayerToHit()
 		hit = FHitResult();
 		GetWorld()->LineTraceSingleByObjectType( hit , rayStart , pos + laserVector , objectParam , queryParam );
 	}
-	return Cast<ABallPawn>( hit.GetActor() ) != nullptr;
+	return Cast<ABallPawn>( hit.GetActor() ) != nullptr && !Cast<ABallPawn>( hit.GetActor() )->isDying();
 }
 
 void ATurretPawn::Fire()
@@ -163,20 +163,21 @@ void ATurretPawn::Tick( float DeltaTime )
 	currentFireCooldown += DeltaTime;
 	laserTag->EmitterInstances[0]->SetBeamSourcePoint( nozzleLocalUpdatable , 0 );
 	fireSound->SetWorldLocation( nozzleLocalUpdatable );
-
+	bool found = false;
 	if ( FoundPlayerToHit() )
 	{
 		auto targetVector = ( target->GetActorLocation() - TurretGunMesh->GetComponentLocation() ).GetSafeNormal();
 		auto targetRotation = targetVector.Rotation();
-		if ( FMath::Abs<float>( targetRotation.Yaw ) <= rotation )
+		if ( targetRotation.GetNormalized().Yaw <= GetActorRotation().GetNormalized().Yaw + rotation && targetRotation.GetNormalized().Yaw >= GetActorRotation().GetNormalized().Yaw - rotation )
 		{
-			TurretGunMesh->SetRelativeRotation( FMath::RInterpTo( TurretGunMesh->GetRelativeTransform().Rotator() , targetRotation , DeltaTime , ballSightedRotateSpeed ) );
+			found = true;
+			TurretGunMesh->SetWorldRotation( FMath::RInterpTo( TurretGunMesh->GetComponentTransform().Rotator() , targetRotation , DeltaTime , ballSightedRotateSpeed ) );
 			auto dot = FVector::DotProduct( TurretGunMesh->GetForwardVector() , targetVector );
 			if ( dot > 0 && 1.0f - dot < maxErrorToShoot )
 				AttemptToFire( DeltaTime );
 		}
 	}
-	else
+	if (!found )
 	{
 		currentTime += ( DeltaTime * idleRotateSpeed );
 		regularRotation = FRotator( 0 , FMath::Sin( currentTime ) * ( rotation * 0.5f ) , 0 );

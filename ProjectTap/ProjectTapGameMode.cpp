@@ -2,75 +2,160 @@
 
 #include "ProjectTap.h"
 #include "ProjectTapGameMode.h"
+#include "ProjectTapGameState.h"
+#include "Runtime/Engine/Classes/Engine/World.h"
 #include "Pawns/BallPawn.h"
 #include "ProjectTapGameState.h"
 #include "Controllers/MouseController.h"
-#include "Runtime/Engine/Classes/Engine/World.h"
-#include "Pawns/BallPawn.h"
 #include "Pawns/BallPlayerStart.h"
-#define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
+#include "General/ProjectTapCameraComponent.h"
+#include "General/ProjectTapCamera.h"
+
 AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer ): Super( initializer )
 {
-	UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
+	//UE_LOG( LogTemp , Warning , TEXT( "mouse" ) );
 	PlayerControllerClass = AMouseController::StaticClass();
-	DefaultPawnClass = 0;
+	DefaultPawnClass = nullptr;
 	GameStateClass = AProjectTapGameState::StaticClass();
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	ConstructorHelpers::FObjectFinder<USoundWave> defaultMusicFile( TEXT( "/Game/Sound/S_DefaultMusic" ) );
+	musicPlayer = CreateDefaultSubobject<UAudioComponent>( TEXT( "Music" ) );
+	musicPlayer->SetSound( defaultMusicFile.Object );
+	musicPlayer->bAutoActivate = false;
+	musicPlayer->AttachTo( GetRootComponent() );
 }
 
 void AProjectTapGameMode::BeginPlay()
 {
+	Super::BeginPlay();
+	auto gameState = GetGameState<AProjectTapGameState>();
+	OnCameraChangedDelegateHandle = gameState->CameraChanged.AddUFunction( this , TEXT( "OnCameraChanged" ) );
+	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
+}
+
+
+void AProjectTapGameMode::StartPlay()
+{
+	Super::StartPlay();
+	auto gameState = GetGameState<AProjectTapGameState>();
+	ABallPawn* ball = nullptr;
 	if ( UWorld* world = GetWorld() )
 	{
-		AActor* playerStart = FindPlayerStart( 0, FString( "Player" ) );
+		AActor* playerStart = FindPlayerStart( 0 , FString( "Player" ) );
 		FTransform playerTransform = playerStart->GetTransform();
 		if ( ABallPlayerStart* realPlayerStart = Cast<ABallPlayerStart>( playerStart ) )
 		{
+			auto possibleCamera = Cast<UProjectTapCameraComponent>( realPlayerStart->camera->GetComponentByClass( UProjectTapCameraComponent::StaticClass() ) );
 			FActorSpawnParameters params;
-			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
-			ABallPawn* ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
-			ball->AddVelocity( realPlayerStart->initialVelocity );
+			ball = world->SpawnActor<ABallPawn>(
+				ABallPawn::StaticClass() ,
+				playerTransform.GetTranslation() ,
+				FRotator( playerTransform.GetRotation() ) ,
+				params );
+
+			if ( ball != nullptr )
+			{
+				ball->AddVelocity( realPlayerStart->initialVelocity , realPlayerStart->GetActorLocation() );
+				if ( possibleCamera != nullptr && realPlayerStart->followPlayer )
+				{
+					ball->setCamera( realPlayerStart );
+					possibleCamera = ball->GetCamera();
+				}
+			}
+			gameState->SetCamera( possibleCamera );
+			isMenu = realPlayerStart->GameMode == CustomGameMode::GAME_MODE_MAIN_MENU;
+			if ( realPlayerStart->music != nullptr )musicPlayer->SetSound( realPlayerStart->music );
 		}
 		else
 		{
 			FActorSpawnParameters params;
-			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
-			ABallPawn* ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
+			ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass() , playerTransform.GetTranslation() , FRotator( playerTransform.GetRotation() ) , params );
 		}
+
+		gameState->SetPlayer(ball);
 	}
-	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::AProjectTapGameState::GAME_STATE_PLAYING);
+	musicPlayer->Play();
+	musicPlayer->SetVolumeMultiplier( 0 );
+
+	gameState->SetGameState( CustomGameState::GAME_STATE_PLAYING );
+	if ( isMenu ) gameState->SetGameMode( CustomGameMode::GAME_MODE_MAIN_MENU );
 }
 
-void AProjectTapGameMode::Tick( float DeltaTime )
+void AProjectTapGameMode::BeginDestroy()
 {
-	Super::Tick( DeltaTime );
-	if (GetGameState<AProjectTapGameState>()->GetState() == AProjectTapGameState::GAME_STATE_GAME_OVER )
+	auto gameState = GetGameState<AProjectTapGameState>();
+	if ( gameState )
 	{
-		//todo GameOver
-		//printonscreen( "GameOver" );
-		Respawn();
+		gameState->GameStateChanged.Remove( OnGameStateChangedDelegateHandle );
+		OnGameStateChangedDelegateHandle.Reset();
+		gameState->CameraChanged.Remove( OnGameStateChangedDelegateHandle );
+		OnCameraChangedDelegateHandle.Reset();
 	}
+	Super::BeginDestroy();
 }
 
 void AProjectTapGameMode::Respawn()
 {
-	if ( UWorld* world = GetWorld() )
+	GetWorld()->GetFirstPlayerController()->ClientTravel( TEXT("?restart"), TRAVEL_MAX );
+}
+
+bool AProjectTapGameMode::LoadNextLevel()
+{
+	if(loadingLevel) return false;
+	UGameplayStatics::OpenLevel( GetWorld() , GetGameState<AProjectTapGameState>()->currentLevelToLoadWhenWin );
+	return loadingLevel = true;
+}
+void AProjectTapGameMode::OnStateChanged(const CustomGameState newState )
+{
+	if(lastReportedState == newState) return;
+	lastReportedState = newState;
+	if(camera != nullptr)
 	{
-		AActor* playerStart = FindPlayerStart( 0, FString( "Player" ) );
-		FTransform playerTransform = playerStart->GetTransform();
-		if ( ABallPlayerStart* realPlayerStart = Cast<ABallPlayerStart>( playerStart ) )
+		switch(lastReportedState)
 		{
-			FActorSpawnParameters params;
-			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
-			ABallPawn* ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
-			ball->AddVelocity( realPlayerStart->initialVelocity );
-		}
-		else
-		{
-			FActorSpawnParameters params;
-			//AActor* spawned = world->SpawnActor(ABallPawn::StaticClass(), playerStart.GetTranslation(),FRotation(playerStart.GetRotation());
-			ABallPawn* ball = world->SpawnActor<ABallPawn>( ABallPawn::StaticClass(), playerTransform.GetTranslation(), FRotator( playerTransform.GetRotation() ), params );
+			case CustomGameState::GAME_STATE_PLAYING:
+				camera->FadeIn();
+				break;
+			case CustomGameState::GAME_STATE_GAME_OVER:
+			case CustomGameState::GAME_STATE_WIN:
+				camera->FadeOut();
 		}
 	}
-	GetGameState<AProjectTapGameState>()->SetState(AProjectTapGameState::AProjectTapGameState::GAME_STATE_PLAYING);
+}
+
+void AProjectTapGameMode::OnCameraFaded()
+{
+	switch(lastReportedState)
+	{
+		case CustomGameState::GAME_STATE_GAME_OVER:
+			Respawn();
+			break;
+		case CustomGameState::GAME_STATE_WIN:
+			LoadNextLevel();
+	}
+}
+
+void AProjectTapGameMode::OnCameraChanged(UProjectTapCameraComponent* newCamera)
+{
+	if(camera != nullptr)
+	{
+		camera->OnFadeIn.Remove( OnCameraFadeInDelegateHandle );
+		OnCameraFadeInDelegateHandle.Reset();
+		camera->OnFadeOut.Remove( OnCameraFadeOutDelegateHandle );
+		OnCameraFadeOutDelegateHandle.Reset();
+		camera->OnFadeUpdate.Remove( OnCameraFadeUpdateDelegateHandle );
+		OnCameraFadeUpdateDelegateHandle.Reset();
+	}
+	camera = newCamera;
+	if(camera != nullptr)
+	{
+		OnCameraFadeInDelegateHandle = camera->OnFadeIn.AddUFunction( this , TEXT( "OnCameraFaded" ) );
+		OnCameraFadeOutDelegateHandle = camera->OnFadeOut.AddUFunction( this , TEXT( "OnCameraFaded" ) );
+		OnCameraFadeUpdateDelegateHandle = camera->OnFadeUpdate.AddUFunction( this , TEXT( "OnCameraFadeUpdate" ) );
+	}
+}
+void AProjectTapGameMode::OnCameraFadeUpdate(const float percent)
+{
+	if(musicPlayer != nullptr) musicPlayer->SetVolumeMultiplier( percent );
 }

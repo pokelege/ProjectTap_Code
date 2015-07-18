@@ -11,3 +11,4 @@ Makefile
 *.kdev4
 *.pro
 *.pri
+Build/

@@ -1,10 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ProjectTap.h"
-#include "ProjectTapGameState.h"
-#include "Engine/GameInstance.h"
 #include "BallPawn.h"
-
+#include "Engine/GameInstance.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
+#include "Runtime/Engine/Classes/Engine/Blueprint.h"
+#include "ProjectTapGameState.h"
+#include "PawnCastingTrigger.h"
+#include "BallPlayerStart.h"
+#include "ConstrainingSpringArmComponent.h"
+#include "CustomGameState.h"
+#include "General/ProjectTapCameraComponent.h"
+#include "General/ProjectTapCamera.h"
+#include "Tiles/DeflectiveTile.h"
 
 // Sets default values
 ABallPawn::ABallPawn()
@@ -13,12 +21,15 @@ ABallPawn::ABallPawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ballCollision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-
 	this->SetRootComponent(ballCollision);
+
+	ballMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallMesh"));
+
+	ballMesh->AttachTo(ballCollision);
 
 	ballCollision->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
-	ballCollision->SetSphereRadius(45.0f);
+	ballCollision->SetSphereRadius(32.0f);
 
 	ballCollision->SetSimulatePhysics(true);
 
@@ -35,12 +46,10 @@ ABallPawn::ABallPawn()
 	ballCollision->GetBodyInstance()->bOverrideMass = true;
 	ballCollision->GetBodyInstance()->MassInKg = 10.0f;
 
-	ballMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BallMesh"));
-
-
+	//tileOverlapCollision->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Game/Models/Ball"));
 
-	ballMesh->SetWorldScale3D(FVector(0.25f));
+	//ballMesh->SetWorldScale3D(FVector(0.23f));
 
 	//ballMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
@@ -48,11 +57,27 @@ ABallPawn::ABallPawn()
 	ballMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	ballMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-
 	ballMesh->SetSimulatePhysics(false);
 
-	ballMesh->AttachTo(ballCollision);
+	spring = CreateDefaultSubobject<UConstrainingSpringArmComponent>(TEXT("Camera Spring"));
+	spring->AttachTo(GetRootComponent());
+	spring->bInheritPitch = false;
+	spring->bInheritYaw = false;
+	spring->bInheritRoll = false;
+	cameraComponent = CreateDefaultSubobject<UProjectTapCameraComponent>(TEXT("Camera"));
+	cameraComponent->AttachTo(spring);
 
+	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("/Game/Curves/BallDeath"));
+	if(curve.Object != nullptr) dieSequence = curve.Object;
+
+	ConstructorHelpers::FObjectFinder<USoundWave> dieSoundFile( TEXT( "/Game/Sound/S_Sizzle" ) );
+	dieSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Die Sound" ) );
+	dieSound->SetSound( dieSoundFile.Object );
+	dieSound->bAutoActivate = false;
+	dieSound->AttachTo( GetRootComponent() );
+
+	ConstructorHelpers::FObjectFinder<UBlueprint> pauseMenuAssewt(TEXT("/Game/GUI/Pause"));
+	pauseMenuBlueprint = pauseMenuAssewt.Object;
 	
 }
 
@@ -62,13 +87,112 @@ void ABallPawn::BeginPlay()
 	Super::BeginPlay();
 
 	ballCollision->AddImpulse(initialVelocity);
+	trigger = GetWorld()->SpawnActor<APawnCastingTrigger>(GetActorLocation(), FRotator());
+	trigger->SetBallPawn(this);
+	bInvincible = false;
+	spring->SetLockPosition(GetActorLocation());
+	material = ballMesh->CreateDynamicMaterialInstance(0);
+	material->SetVectorParameterValue(TEXT("Color"), FVector((float)FMath::Rand() / RAND_MAX, (float)FMath::Rand() / RAND_MAX, (float)FMath::Rand() / RAND_MAX));
+	auto ctrl = GetWorld()->GetFirstPlayerController();
+	if (ctrl != nullptr)
+	{
+		ctrl->InputComponent->BindAction("Pause", IE_Pressed, this, &ABallPawn::togglePauseMenu);
+		pauseMenuInstance = CreateWidget<UUserWidget>(ctrl, pauseMenuBlueprint->GeneratedClass);
+	}
 }
 
 // Called every frame
 void ABallPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+	if (Controller != nullptr)
+	{
+		Controller->InputComponent->BindAction("Pause", IE_Pressed, this, &ABallPawn::togglePauseMenu);
+	}
+	//udpate trigger position
+	if (trigger != nullptr)
+	{
+		auto pos = GetActorLocation();
+		pos.Z -= 40.0f;
+		trigger->SetActorLocation(pos);
+	}
+
+	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
+	if(dying && gameState->GetState() == CustomGameState::GAME_STATE_DYING)
+	{
+		currentDieTime += DeltaTime;
+		if(dieSequence == nullptr)
+		{
+			material->SetScalarParameterValue(TEXT("DeathMask"), 1);
+			gameState->SetGameState( CustomGameState::GAME_STATE_GAME_OVER );
+		}
+		else
+		{
+			material->SetScalarParameterValue(TEXT("DeathMask"), dieSequence->GetFloatValue(currentDieTime));
+			float min,max;
+			dieSequence->GetValueRange(min,max);
+			if(currentDieTime >= max)
+			{
+				gameState->SetGameState( CustomGameState::GAME_STATE_GAME_OVER );
+			}
+		}
+	}
+
+	UpdateResetTransition(DeltaTime);
 }
+
+
+void ABallPawn::TransitionBallToProperLocation(const FVector& position, const FVector& newVelDir, float _transitionSpeed)
+{
+	lastAnchorPosition = FVector(position.X, position.Y, GetActorLocation().Z);
+
+	auto initVec = GetActorLocation() - lastAnchorPosition;
+	auto clearedZVelocity = FVector(newVelDir.X, newVelDir.Y, 0.0f);
+	auto up = FVector::CrossProduct(clearedZVelocity, initVec);
+	currentTransitionSpeed = _transitionSpeed;
+
+	//when the ball is rolling towards the same direction 
+	//as the new velocity, only transition the ball
+	//if the ball has not passed the tile
+	auto notPassedTile = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(initVec, newVelDir))) < 10.0f;
+	if (up.IsZero() && notPassedTile)
+	{
+		transitionNormal = ADeflectiveTile::clampShortAxis(clearedZVelocity, true);
+	}
+	else
+	{
+		transitionNormal = FVector::CrossProduct(up, clearedZVelocity).GetSafeNormal();
+		transitionNormal = ADeflectiveTile::clampShortAxis(transitionNormal, true);
+		bTransitioning = true;
+	}
+
+}
+
+
+void ABallPawn::UpdateResetTransition(float dt)
+{
+	if (bTransitioning)
+	{
+		auto vec = GetActorLocation() - lastAnchorPosition;
+		auto moveDelta = -transitionNormal * currentTransitionSpeed * dt;
+
+		auto dot = FVector::DotProduct(vec, transitionNormal);
+		auto reachedPos = dot <= 0.0f;
+		if (reachedPos || bTransitionFinishNextFrame)
+		{
+			bTransitioning = false;
+			currentTransitionSpeed = DEFUALT_TRANSITION_SPEED;
+			SetActorLocation(GetActorLocation() + dot * -transitionNormal);
+		}
+		else
+		{
+			SetActorLocation(GetActorLocation() + moveDelta);
+			dot = FVector::DotProduct(vec, transitionNormal);
+			bTransitionFinishNextFrame = dot <= 0.0f;
+		}
+	}
+}
+
 
 // Called to bind functionality to input
 void ABallPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
@@ -76,8 +200,48 @@ void ABallPawn::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 	Super::SetupPlayerInputComponent(InputComponent);
 }
 
+void ABallPawn::togglePauseMenu()
+{
+	auto state = Cast<AProjectTapGameState>(GetWorld()->GetGameState());
+	auto ctrl = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
+
+	if ( state->GetState() == CustomGameState::GAME_STATE_PAUSE )
+	{
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
+		pauseMenuInstance->RemoveFromParent();
+		auto inputMode = FInputModeGameOnly::FInputModeGameOnly();
+		ctrl->SetInputMode(inputMode);
+		state->SetGameState( CustomGameState::GAME_STATE_PLAYING );
+
+	}
+	else if ( state->GetState() != CustomGameState::GAME_STATE_UNKNOWN
+			  && state->GetMode() != CustomGameMode::GAME_MODE_MAIN_MENU )
+	{
+		auto inputMode = FInputModeUIOnly::FInputModeUIOnly();
+		inputMode.SetWidgetToFocus(pauseMenuInstance->GetCachedWidget());
+		ctrl->SetInputMode(inputMode);
+		pauseMenuInstance->AddToViewport(1);
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		state->SetGameState( CustomGameState::GAME_STATE_PAUSE );
+	}
+}
+
 void ABallPawn::AddVelocity(const FVector& vel, bool clearForce)
 {
+	if (clearForce)
+	{
+		float velZ = ballCollision->GetPhysicsLinearVelocity().Z;
+		ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, velZ));
+	}
+	ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
+	ballCollision->AddImpulse(vel);
+}
+
+
+void ABallPawn::AddVelocity(const FVector& vel, const FVector& resetPos, bool clearForce)
+{
+	TransitionBallToProperLocation(resetPos, vel);
+
 	if (clearForce)
 	{
 		ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
@@ -85,20 +249,64 @@ void ABallPawn::AddVelocity(const FVector& vel, bool clearForce)
 	}
 
 	ballCollision->AddImpulse(vel);
+
 }
 
 
+void ABallPawn::ResetBallXYPosition(const FVector& position)
+{
+	FVector newPosition(position.X, position.Y, GetActorLocation().Z);
+
+	SetActorLocation(newPosition);
+}
+
 void ABallPawn::Kill()
 {
-	UGameInstance* gameInstance = GetGameInstance();
-	FWorldContext* worldContext = gameInstance->GetWorldContext();
-	UWorld* world = worldContext->World();
-	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-	if(gameState) gameState->SetState(AProjectTapGameState::GAME_STATE_GAME_OVER);
-	Destroy();
+	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
+	if ( gameState && !bInvincible && gameState->GetState() == CustomGameState::GAME_STATE_PLAYING && gameState->GetMode() != CustomGameMode::GAME_MODE_MAIN_MENU )
+	{
+		gameState->SetGameState( CustomGameState::GAME_STATE_DYING );
+		dieSound->Play();
+		dying = true;
+	}
 }
 
 void ABallPawn::FellOutOfWorld(const class UDamageType & dmgType)
 {
+	bInvincible = false;
 	Kill();
+}
+
+void ABallPawn::setInvincibility(bool invincible)
+{
+	bInvincible = invincible;
+}
+
+void ABallPawn::setCamera(ABallPlayerStart* playerStart)
+{
+	if(playerStart != nullptr)
+	{
+		spring->lockX = playerStart->lockX;
+		spring->lockY = playerStart->lockY;
+		spring->lockZ = playerStart->lockZ;
+		cameraComponent->SetWorldRotation( playerStart->camera->GetActorRotation() );
+		cameraComponent->SetWorldLocation( playerStart->camera->GetActorLocation() );
+		cameraComponent->PostProcessSettings = Cast<UProjectTapCameraComponent>( playerStart->camera->GetComponentByClass( UProjectTapCameraComponent::StaticClass() ) )->PostProcessSettings;
+		spring->SetTargetOffsetCustom( cameraComponent->RelativeLocation );
+		cameraComponent->SetRelativeLocation( FVector( 0 , 0 , 0 ) );
+
+		spring->bEnableCameraLag = playerStart->lagCamera;
+		spring->CameraLagSpeed = playerStart->lagSpeed;
+		spring->CameraLagMaxDistance = playerStart->lagMaxDistance;
+	}
+}
+
+UProjectTapCameraComponent* ABallPawn::GetCamera()
+{
+	return cameraComponent;
+}
+
+bool ABallPawn::isDying()
+{
+	return dying;
 }

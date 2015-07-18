@@ -5,6 +5,8 @@
 #include "BlockingTile.h"
 #include "StrongBlockingTile.h"
 #include "GroupedBlockingTile.h"
+#include "BaseRampTile.h"
+#include "DraggableMoveTile.h"
 
  //Sets default values
 UTilesManager::UTilesManager()
@@ -12,8 +14,6 @@ UTilesManager::UTilesManager()
  	 //Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 
 }
-
-
 
 void UTilesManager::DeactivateBlockingTiles()
 {
@@ -31,9 +31,40 @@ void UTilesManager::DeactivateGroupedBlockingTiles()
 	{
 		t->deactivate();
 	}
+
 	activatedGroupedBlocks.RemoveAll([](AGroupedBlockingTile* b){return true; });
 }
 
+void UTilesManager::HighLightTile(ATile* tile)
+{
+	if (tile != prevHighlighted && prevHighlighted != nullptr)
+	{
+		prevHighlighted->CancelHighlight();
+	}
+
+	if (tile != nullptr && !tile->isActivated())
+	{
+		prevHighlighted = tile;
+		if (Cast<ABaseRampTile>(tile) == nullptr)
+		{
+			tile->Highlight();
+		}
+		else
+		{
+			if (tile->IsEnabled())
+			{
+				tile->HighlightEdge();
+			}
+		}
+	}
+	else if (prevHighlighted != nullptr)
+	{
+		prevHighlighted->CancelHighlight();
+		prevHighlighted->CancelHighlightEdge();
+		prevHighlighted->CancelHighlightTile();
+		prevHighlighted = nullptr;
+	}
+}
 
 void UTilesManager::AddTile(AGroupedBlockingTile* tile)
 {
@@ -66,7 +97,7 @@ void UTilesManager::AddTile(AGroupedBlockingTile* tile)
 
 void UTilesManager::AddTile(ABlockingTile* tile)
 {
-	if (tile != nullptr)
+	if (tile != nullptr && !activatedBlocks.Contains(tile))
 	{
 		SetBlockingTileCurrent();
 
@@ -100,18 +131,44 @@ void UTilesManager::AddTile(AStrongBlockingTile* tile)
 	}
 }
 
+void UTilesManager::AddTile(ADraggableMoveTile* tile)
+{
+	if (tile != nullptr && currDraggableTile == nullptr)
+	{		
+		currDraggableTile = tile;
+		SetDraggableMoveTileCurrent();		
+	}
+}
+
+
 void UTilesManager::Tick(float dt)
 {
-	if (isMousePressed)
-	{
-		UpdateGroupedBlockingTiles();
-	}
+	UpdateGroupedBlockingTiles();
+	UpdateDraggableMoveTile();
 
 }
 
+void UTilesManager::UpdateDraggableMoveTile()
+{
+	if (isMousePressed && currDraggableTile != nullptr)
+	{
+		currDraggableTile->DragTo(hit, worldOrigin, worldDirection);
+	}
+}
+
+void UTilesManager::SetCameraRay(const FHitResult& _hit,
+								 const FVector& _worldOrigin, 
+								 const FVector& _worldDirection)
+{
+	hit = _hit;
+	worldOrigin = _worldOrigin;
+	worldDirection = _worldDirection;
+}
+
+
 void UTilesManager::UpdateGroupedBlockingTiles()
 {
-	for (size_t i = 0; i < activatedGroupedBlocks.Num(); i++)
+	for (int32 i = 0; i < activatedGroupedBlocks.Num(); i++)
 	{
 		auto gbt = activatedGroupedBlocks[i];
 		if (!gbt->isActivated())
@@ -121,7 +178,7 @@ void UTilesManager::UpdateGroupedBlockingTiles()
 		}
 	}
 
-	for (size_t i = 0; i < activatedBlocks.Num(); i++)
+	for (int32 i = 0; i < activatedBlocks.Num(); i++)
 	{
 		auto bt = activatedBlocks[i];
 		if (!bt->isActivated())
@@ -167,4 +224,22 @@ void UTilesManager::SetGroupedBlockingTileCurrent()
 	DeactivateStrongBlockingTile();
 }
 
+void UTilesManager::SetDraggableMoveTileCurrent()
+{
+	currentTileType = CurrentTileType::DRAGGABLE_TILE;
 
+}
+
+
+void UTilesManager::MouseRelease()
+{
+	DeactivateStrongBlockingTile();
+	SetEnableSwipeCheck(false);
+	
+	if (currDraggableTile != nullptr)
+	{
+		currDraggableTile->RemoveFocus();
+		currDraggableTile = nullptr;
+	}
+
+}

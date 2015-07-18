@@ -3,32 +3,36 @@
 #pragma once
 
 #include "Tiles/Tile.h"
-#include "Pawns/BallPawn.h"
+#include "Tiles/BaseRampTile.h"
 #include "Ramp.generated.h"
+
+UENUM(BlueprintType)
+enum class Direction : uint8
+{
+	XPlus,
+	YPlus,
+	xMinus,
+	yMinus
+};
+
 /**
- * 
+ *
  */
 UCLASS()
-class PROJECTTAP_API ARamp : public ATile
+class PROJECTTAP_API ARamp : public ABaseRampTile
 {
 	GENERATED_BODY()
+
 	static const FName RAMP_MESH_PATH;
-	static const FName RAMP_TOP_MESH_PATH;
-	static const FName RAMP_CURVE_PATH;
-	
-	float time = 0;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UCurveFloat* rotationSequence;
-
-// 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-// 	UBoxComponent* BallTrigger;
+	Direction rotationDirection = Direction::XPlus;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	UStaticMeshComponent* TopMesh;
+	float forceMultiplier= 2000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	float forceMultiplier;
+		float additionalZForce = 3000.0f;
 
 	ARamp();
 
@@ -36,8 +40,5 @@ public:
 	virtual void Tick( float DeltaTime ) override;
 
 	virtual void activate() override;
-
-	void BoostBall();
-
 
 };

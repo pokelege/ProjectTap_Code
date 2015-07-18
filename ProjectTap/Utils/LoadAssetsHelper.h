@@ -31,7 +31,8 @@ static FORCEINLINE AssetsClass* LoadAssetFromPath(const FName& path)
 
 	if (path != NAME_None)
 	{
-		result = Cast<AssetsClass>(StaticLoadObject(AssetsClass::StaticClass(), nullptr, *path.ToString()));
+		auto object = StaticLoadObject(AssetsClass::StaticClass(), nullptr, *path.ToString());
+		result = Cast<AssetsClass>(object);
 	}
 
 	return result;

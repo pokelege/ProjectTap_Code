@@ -2,10 +2,8 @@
 
 #pragma once
 #include "GameFramework/GameMode.h"
-
+#include "CustomGameState.h"
 #include "ProjectTapGameMode.generated.h"
-
-
 
 /**
  *
@@ -13,14 +11,37 @@
 UCLASS()
 class PROJECTTAP_API AProjectTapGameMode : public AGameMode
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
+	FDelegateHandle OnCameraFadeInDelegateHandle;
+	FDelegateHandle OnCameraFadeOutDelegateHandle;
+	FDelegateHandle OnCameraFadeUpdateDelegateHandle;
+	FDelegateHandle OnGameStateChangedDelegateHandle;
+	FDelegateHandle OnCameraChangedDelegateHandle;
+	FStreamLevelAction* levelStream = nullptr;
+	class UProjectTapCameraComponent* camera = nullptr;
 public:
-    AProjectTapGameMode ( const FObjectInitializer& initializer );
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
+	class UAudioComponent* musicPlayer = nullptr;
+private:
+	CustomGameState lastReportedState = CustomGameState::GAME_STATE_UNKNOWN;
+	bool isMenu = false;
+	bool loadingLevel = false;
+public:
+	AProjectTapGameMode ( const FObjectInitializer& initializer );
+	virtual void BeginPlay() override;
+	virtual void BeginDestroy() override;
 
-    virtual void BeginPlay() override;
-
-    virtual void Tick ( float DeltaTime ) override;
-
-    void Respawn();
+	void Respawn();
+	UFUNCTION()
+	bool LoadNextLevel();
+	UFUNCTION()
+		void OnStateChanged( const CustomGameState newState );
+	UFUNCTION()
+	void OnCameraFaded();
+	UFUNCTION()
+	void OnCameraChanged(UProjectTapCameraComponent* newCamera);
+	UFUNCTION()
+	void OnCameraFadeUpdate(const float percent);
+	virtual void StartPlay() override;
 };

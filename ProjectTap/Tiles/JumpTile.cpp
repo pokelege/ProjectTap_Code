@@ -95,7 +95,7 @@ void AJumpTile::HighlightTile()
 		{
 			isBallComing = false;
 			auto newDir = (GetActorLocation() - target->GetActorLocation()).GetSafeNormal();
-			ball->AddVelocity(newDir * 2000.0f, true);
+			ball->AddVelocity(newDir * ballLandingForceStrength, true);
 		}
 	}
 }
@@ -128,6 +128,7 @@ void AJumpTile::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEv
 		else if (pName.Equals("target"))
 		{
 			target->height = height;
+			target->target = this;
 		}
 	}
 }

@@ -50,6 +50,11 @@ public:
 
 	OffsetInfo getOffsetInfo() override;
 
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
+#endif
+
+
 	UFUNCTION()
 	void OnBlueBeginTriggerOverlap(class AActor* OtherActor,
 									class UPrimitiveComponent* OtherComp,

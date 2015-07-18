@@ -17,7 +17,6 @@ AMovingTile::AMovingTile()
 	
 	TileMesh->SetStaticMesh(mesh.Object);
 	BoxCollision->SetWorldScale3D(FVector(1));
-
 	BoxCollision->SetBoxExtent(FVector(40.0f, 40.0f, 10.0f));
 
 

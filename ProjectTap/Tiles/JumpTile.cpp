@@ -95,7 +95,7 @@ void AJumpTile::HighlightTile()
 		{
 			isBallComing = false;
 			auto newDir = (GetActorLocation() - target->GetActorLocation()).GetSafeNormal();
-			ball->AddVelocity(newDir * 2000.0f, false);
+			ball->AddVelocity(newDir * 2000.0f, true);
 		}
 	}
 }

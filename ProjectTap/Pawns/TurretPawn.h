@@ -49,7 +49,7 @@ public:
 		float rotation = 60.0f;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
-		float FOV = 30.0f;
+		float FOV = 60.0f;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
 		float maxDistance = 300.0f;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )

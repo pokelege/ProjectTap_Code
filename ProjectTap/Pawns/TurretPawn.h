@@ -18,6 +18,7 @@ class PROJECTTAP_API ATurretPawn : public APawn
 	FVector nozzleLocal;
 	FVector nozzleLocalUpdatable;
 	FVector direction;
+	FRotator regularRotation;
 	class ABallPawn* target = nullptr;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
@@ -32,8 +33,20 @@ public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
 		UParticleSystemComponent* laserTag;
 
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Laser )
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
 		UParticleSystemComponent* explosionParticle;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
+		float maxErrorToShoot = 0.01f;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
+		float ballSightedRotateSpeed = 10.0f;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
+		float idleRotateSpeed = 1.0f;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
+		float rotation = 60.0f;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
 		float FOV = 60.0f;

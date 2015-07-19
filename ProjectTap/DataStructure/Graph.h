@@ -3,6 +3,7 @@
 #pragma once
 #include <Array.h>
 #include "GameFramework/Actor.h"
+#include "GVertex.h"
 #include "Graph.generated.h"
 
 USTRUCT()

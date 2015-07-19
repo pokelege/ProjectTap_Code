@@ -1,6 +1,5 @@
 #include "ProjectTap.h"
 #include "Graph.h"
-#include "GVertex.h"
 
 const int32 AGraph::MAX_SIZE = 25;
 const int32 AGraph::NONEDGE = -1;
@@ -132,7 +131,7 @@ AGVertex* AGraph::next(int32 v, int32 v2)
 	return nullptr;
 }
 
-AGVertex* AGraph::getConnectedVertexByIndex(int32 vertexIndex, 
+AGVertex* AGraph::getConnectedVertexByIndex(int32 vertexIndex,
 											int32 connectionIndex)
 {
 	if (vertexIndex == connectionIndex) return nullptr;
@@ -154,7 +153,7 @@ AGVertex* AGraph::first(int32 v)
 	return nullptr;
 }
 
-AGVertex* AGraph::FindNearestVertexTo(const FVector& dragRay, 
+AGVertex* AGraph::FindNearestVertexTo(const FVector& dragRay,
 									  const AGVertex* vertex,
 									  const float thresholdSquared)
 {
@@ -163,16 +162,16 @@ AGVertex* AGraph::FindNearestVertexTo(const FVector& dragRay,
 
 	//find the closest vertex from all verts that are connected to this vertex
 	auto goal = mark[vertex->vertexIndex];
-	for (int32 i = 0; 
-		 i < MAX_SIZE; 
+	for (int32 i = 0;
+		 i < MAX_SIZE;
 		 goal = getConnectedVertexByIndex(vertex->vertexIndex, i++))
-	{ 
-		if (goal == nullptr || goal->vertexIndex == vertex->vertexIndex) continue;		
+	{
+		if (goal == nullptr || goal->vertexIndex == vertex->vertexIndex) continue;
 
 		auto goalDir = goal->GetActorLocation() - vertex->GetActorLocation();
 		auto flatGoalDir = FVector(goalDir.X, goalDir.Y, 0.0f);
 		auto dotProduct = FVector::DotProduct(dragRay, flatGoalDir);
-		
+
 		if (dotProduct > 0.0f)
 		{
 			auto degree = FMath::RadiansToDegrees(FMath::Acos(dotProduct));
@@ -249,7 +248,7 @@ void AGraph::generateEdges()
 }
 
 AGVertex* AGraph::getVertex(int v)
-{	
+{
 	if(v >= 0 && v < MAX_SIZE)
 		return mark[v];
 	else
@@ -288,7 +287,7 @@ void AGraph::addVertex(AGVertex* vertex)
 	//check if contains vertex
 	for (int32 i = 0; i < mark.Num() && !containsVertex; i++)
 	{
-		containsVertex = mark[i] != nullptr && 
+		containsVertex = mark[i] != nullptr &&
 			vertex->vertexIndex == mark[i]->vertexIndex;
 	}
 
@@ -327,7 +326,7 @@ void AGraph::DFS_makeVisualizers(TArray<int32>& stack,
 
 	markVertex(vIndex);
 	stack.Push(vIndex);
-	//generate a visulaizer for an unvisited vertex 
+	//generate a visulaizer for an unvisited vertex
 	auto vertexMesh = makeVertexMeshForVertex(vIndex);
 	vertexMeshes.Add(vertexMesh);
 
@@ -386,13 +385,13 @@ void AGraph::initializeEdgeMesh(UStaticMeshComponent* edgeMesh,
 	auto pos1 = v1->GetActorLocation();
 	auto pos2 = v2->GetActorLocation();
 
-	
+
 	auto ray = pos2 - pos1;
-	
+
 	auto n_p1p2 = ray;
 	n_p1p2.Z = 0;
 	n_p1p2 = n_p1p2.GetSafeNormal();
-	
+
 	//tile is 40*40*1. The distance needs to substract half of the tile size
 	auto totalOffsetDistance = 40.0f;
 	//change start & end positions from the center of the vertex mesh

@@ -224,6 +224,7 @@ bool bCtrlDown
 	if (g != nullptr)
 	{
 		g->clearRouteVisuals();
+		g->generateGraphRouteVisualization();
 	}
 	renerateGraphArrows();
 

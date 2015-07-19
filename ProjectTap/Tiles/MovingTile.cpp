@@ -221,9 +221,8 @@ void AMovingTile::PostEditChangeProperty(FPropertyChangedEvent & PropertyChanged
 				auto newLocation = path[currentEditorPathIndex];
 				SetActorLocation(newLocation);
 			}
-#if WITH_EDITOR
 			Super::PostEditChange();
-#endif
+
 		}
 	}
 }

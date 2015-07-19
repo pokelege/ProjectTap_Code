@@ -79,12 +79,6 @@ AEndTile::AEndTile() : ATile()
 		BoxCollision->SetBoxExtent(FVector(40,40,80), false);
 	}
 
-	auto spiralComponent = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Spiral mesh" ) );
-	ConstructorHelpers::FObjectFinder<UStaticMesh> spiralMesh(*FName("/Game/Models/SM_SpiralPlane").ToString());
-	spiralComponent->SetStaticMesh(spiralMesh.Object);
-	spiralComponent->AttachTo(BoxCollision);
-	spiralComponent->SetRelativeLocation(FVector(0,0,85));
-
 	auto particleComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particle"));
 	ConstructorHelpers::FObjectFinder<UParticleSystem> particle(TEXT("/Game/Particles/P_EndTile"));
 	particleComponent->SetTemplate(particle.Object);
@@ -107,7 +101,7 @@ AEndTile::AEndTile() : ATile()
 	sounds.Add( sound3.Object );
 	audioPlayer = CreateDefaultSubobject<UAudioComponent>( TEXT( "Audio Player" ) );
 	audioPlayer->bAutoActivate = false;
-	audioPlayer->AttachTo( spiralComponent );
+	audioPlayer->AttachTo( particleComponent );
 }
 
 void AEndTile::BeginDestroy()

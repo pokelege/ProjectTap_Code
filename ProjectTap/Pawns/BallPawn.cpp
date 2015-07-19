@@ -78,7 +78,7 @@ ABallPawn::ABallPawn()
 
 	ConstructorHelpers::FClassFinder<UUserWidget> pauseMenuClass(TEXT("Class'/Game/GUI/Pause'"));
 	pauseMenuBlueprint = pauseMenuClass.Class;
-	    
+
 }
 
 // Called when the game starts or when spawned
@@ -87,7 +87,12 @@ void ABallPawn::BeginPlay()
 	Super::BeginPlay();
 
 	ballCollision->AddImpulse(initialVelocity);
-	trigger = GetWorld()->SpawnActor<APawnCastingTrigger>(GetActorLocation(), FRotator());
+	FActorSpawnParameters params;
+	trigger = GetWorld()->SpawnActor<APawnCastingTrigger>(
+		APawnCastingTrigger::StaticClass() ,
+		GetActorLocation() ,
+		FRotator(0) ,
+		params );
 	trigger->SetBallPawn(this);
 	bInvincible = false;
 	spring->SetLockPosition(GetActorLocation());
@@ -151,7 +156,7 @@ void ABallPawn::TransitionBallToProperLocation(const FVector& position, const FV
 	auto up = FVector::CrossProduct(clearedZVelocity, initVec);
 	currentTransitionSpeed = _transitionSpeed;
 
-	//when the ball is rolling towards the same direction 
+	//when the ball is rolling towards the same direction
 	//as the new velocity, only transition the ball
 	//if the ball has not passed the tile
 	auto notPassedTile = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(initVec, newVelDir))) < 10.0f;
@@ -176,7 +181,7 @@ void ABallPawn::UpdateResetTransition(float dt)
 		auto vec = GetActorLocation() - lastAnchorPosition;
 		auto moveDelta = -transitionNormal * currentTransitionSpeed * dt;
 
-	
+
 		auto dot = FVector::DotProduct(vec, transitionNormal);
 		auto reachedPos = dot <= 0.0f;
 

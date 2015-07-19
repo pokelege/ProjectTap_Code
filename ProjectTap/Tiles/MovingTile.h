@@ -22,10 +22,9 @@ public:
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
 		UCurveFloat* moveCurve = nullptr;
-#if WITH_EDITOR
+
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
 		int32 currentEditorPathIndex = 0;
-#endif
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
 		float speed = 50.0f;

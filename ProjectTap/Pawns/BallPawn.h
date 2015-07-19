@@ -23,7 +23,7 @@ public:
 		class UUserWidget* pauseMenuInstance = nullptr;
 
 	UPROPERTY( VisibleAnywhere , BlueprintReadWrite , Category = Ball )
-		class UBlueprint* pauseMenuBlueprint = nullptr;
+		class UClass* pauseMenuBlueprint = nullptr;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
 		UCurveFloat* dieSequence;
@@ -42,8 +42,8 @@ private:
 	UMaterialInstanceDynamic* material = nullptr;	
 	float currentDieTime = 0;
 public:
-	float currentTransitionSpeed = 300.0f;
-	const float DEFUALT_TRANSITION_SPEED = 300.0f;
+	float currentTransitionSpeed = 200.0f;
+	const float DEFUALT_TRANSITION_SPEED = 200.0f;
 private:
 	bool dying = false;
 	bool bInvincible = false;

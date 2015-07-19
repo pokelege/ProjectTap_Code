@@ -40,6 +40,7 @@ void UTilesManager::HighLightTile(ATile* tile)
 	if (tile != prevHighlighted && prevHighlighted != nullptr)
 	{
 		prevHighlighted->CancelHighlight();
+		prevHighlighted = nullptr;
 	}
 
 	if (tile != nullptr && !tile->isActivated())
@@ -133,9 +134,15 @@ void UTilesManager::AddTile(AStrongBlockingTile* tile)
 
 void UTilesManager::AddTile(ADraggableMoveTile* tile)
 {
-	if (tile != nullptr && currDraggableTile == nullptr)
+	if (currDraggableTile != nullptr)
+	{
+		currDraggableTile->RemoveFocus();
+	}
+
+	currDraggableTile = tile;
+
+	if (tile != nullptr)
 	{		
-		currDraggableTile = tile;
 		SetDraggableMoveTileCurrent();		
 	}
 }

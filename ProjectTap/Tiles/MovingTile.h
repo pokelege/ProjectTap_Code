@@ -55,6 +55,8 @@ public:
 
 	void UpdateCurrentLocation();
 
+	void DeleteCurrentLocation();
+
 	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
 
 #endif 

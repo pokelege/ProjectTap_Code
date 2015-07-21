@@ -52,12 +52,12 @@ APortalTile::APortalTile()
 
 void APortalTile::AdjustOrientationAndTriggerBoxes()
 {
-	bluePortalTrigger->SetRelativeLocation(FVector(-4.0f,0.f,0.f));
-	orangePortalTrigger->SetRelativeLocation(FVector(4.f,0.f,0.f));
+	bluePortalTrigger->SetRelativeLocation(FVector(-10.0f,0.f,0.f));
+	orangePortalTrigger->SetRelativeLocation(FVector(10.f,0.f,0.f));
 
-	bluePortalTrigger->SetBoxExtent(FVector(5.f, 25.f, 30.f));
+	bluePortalTrigger->SetBoxExtent(FVector(10.f, 25.f, 30.f));
 
-	orangePortalTrigger->SetBoxExtent(FVector(5.f,25.f,30.f));
+	orangePortalTrigger->SetBoxExtent(FVector(10.f,25.f,30.f));
 
 	orangePortalTrigger->SetCollisionResponseToAllChannels(ECR_Ignore);
 	orangePortalTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -105,7 +105,7 @@ void APortalTile::GeneratePortalCollision()
 	right->SetBoxExtent(FVector(40.000000,2.000000,40.000000));
 	top->SetRelativeLocation(FVector(0.000000,0.000000,38.000000));
 	top->SetBoxExtent(FVector(40.000000,40.000000,2.000000));
-	bottom->SetRelativeLocation(FVector(0.000000,0.000000,-38.000000));
+	bottom->SetRelativeLocation(FVector(0.000000,0.000000,-42.000000));
 	bottom->SetBoxExtent(FVector(40.000000,40.000000,2.000000));
 }
 

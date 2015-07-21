@@ -27,7 +27,7 @@ public:
 		float dragTolerance = 300.0f;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
-		float dragMoveSpeed = 150.0f;
+		float dragMoveSpeed = 500.0f;
 private:
 	float cameraRayLength = 0.0f;
 	float mousePressTimer = 0.0f;
@@ -36,6 +36,7 @@ private:
 	bool destinationOccupied = false;
 	bool reachGoalNextFrame = false;
 	bool isSelected = false;
+	bool isMouseDown = false;
 public:
 
 	// Sets default values for this actor's properties

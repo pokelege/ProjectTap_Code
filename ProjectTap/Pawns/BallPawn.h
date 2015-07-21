@@ -14,6 +14,12 @@ class PROJECTTAP_API ABallPawn : public APawn
 	//transits to the center of a tile
 	FVector transitionNormal;
 	FVector lastAnchorPosition;	
+
+	void UpdateSweepForDeflectiveTile();
+
+private:
+	friend class ADeflectiveTile;
+	FVector currentNormal;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
 		FVector initialVelocity = FVector( 0.0f , 0.0f , 0.0f );
@@ -87,7 +93,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category=ToggleMenu)
 	void togglePauseMenu();
-
 
 	void setCamera(class ABallPlayerStart* playerStart);
 	UProjectTapCameraComponent* GetCamera();

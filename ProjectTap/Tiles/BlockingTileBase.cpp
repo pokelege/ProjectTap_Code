@@ -2,7 +2,7 @@
 
 #include "ProjectTap.h"
 #include "BlockingTileBase.h"
-
+#include "../Pawns/BallPawn.h"
 
 // Sets default values
 ABlockingTileBase::ABlockingTileBase()
@@ -55,6 +55,7 @@ void ABlockingTileBase::Tick( float DeltaTime )
 	else if (!activated)
 	{
 		pos.Z = original.Z;
+		Enable();
 	}
 
 	SetActorLocation(pos);
@@ -81,4 +82,21 @@ void ABlockingTileBase::activate()
 {
 	Super::activate();
 	activateSound->Play();
+}
+
+void ABlockingTileBase::OnHit(class AActor* OtherActor,
+class UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse,
+	const FHitResult& Hit)
+{
+	auto pos = GetActorLocation();
+	bool canRise = pos.Z - original.Z < move_distance_tolerance;
+
+	if (canRise)
+	{
+		if (auto ball = Cast<ABallPawn>(OtherActor))
+		{
+			ball->Kill();
+		}
+	}
 }

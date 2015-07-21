@@ -46,7 +46,9 @@ void ADraggableMoveTile::Initialize()
 {
 	if (currentVertex != nullptr)
 	{
-		SetActorLocation(currentVertex->GetActorLocation());
+		auto newLocation = currentVertex->GetActorLocation();
+		newLocation.Z -= 10.0f;
+		SetActorLocation(newLocation);
 		currentVertex->SetOccupied(true);
 	}
 
@@ -200,6 +202,7 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 								const FVector& camRayDirection)
 {
 	if (isMoving) return;
+	isMouseDown = true;
 	if (isSelected && currentVertex != nullptr)
 	{
 		//use hit point as a camera ray
@@ -306,11 +309,12 @@ void ADraggableMoveTile::click()
 void ADraggableMoveTile::RemoveFocus()
 {
 	//if this mouse release results in a click event
-	if (!isSelected)
+	if (!isSelected && isMouseDown)
 	{
 		click();
 	}
 
+	isMouseDown = false;
 	isSelected = false;
 
 	bool canMove = canSnap && !destinationOccupied && goalVertex != nullptr;

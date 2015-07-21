@@ -181,18 +181,6 @@ void ALaser::checkLaserCollisions(float dt)
 				}
 			}
 
-			//if the laser hits blocking tile then make it go down faster
-			if (!typeFound)
-			{
-				auto blockingTile = Cast<ABlockingTile>(hitActor);
-				if (blockingTile != nullptr)
-				{
-					typeFound = true;
-					blockingTile->ApplyActivationTimeFactor(0.5f);
-				}
-
-			}
-
 			//if the laser hits turret then kills it
 			if (!typeFound)
 			{

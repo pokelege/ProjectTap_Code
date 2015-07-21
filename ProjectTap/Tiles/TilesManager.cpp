@@ -43,7 +43,7 @@ void UTilesManager::HighLightTile(ATile* tile)
 		prevHighlighted = nullptr;
 	}
 
-	if (tile != nullptr && !tile->isActivated())
+	if (tile != nullptr && !tile->isActivated() && tile->IsEnabled())
 	{
 		prevHighlighted = tile;
 		if (Cast<ABaseRampTile>(tile) == nullptr)

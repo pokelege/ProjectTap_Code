@@ -37,11 +37,12 @@ ABallPawn::ABallPawn()
 
 	ballCollision->SetCollisionProfileName(TEXT("Custom"));
 
+
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
-	ballCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ballCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);	
 	ballCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	ballCollision->GetBodyInstance()->bOverrideMass = true;
 	ballCollision->GetBodyInstance()->MassInKg = 10.0f;
@@ -55,7 +56,7 @@ ABallPawn::ABallPawn()
 
 	ballMesh->SetStaticMesh(tempMesh.Object);
 	ballMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
-	ballMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ballMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
 
 	ballMesh->SetSimulatePhysics(false);
 
@@ -78,7 +79,6 @@ ABallPawn::ABallPawn()
 
 	ConstructorHelpers::FClassFinder<UUserWidget> pauseMenuClass(TEXT("Class'/Game/GUI/Pause'"));
 	pauseMenuBlueprint = pauseMenuClass.Class;
-
 }
 
 // Called when the game starts or when spawned
@@ -144,8 +144,26 @@ void ABallPawn::Tick( float DeltaTime )
 	}
 
 	UpdateResetTransition(DeltaTime);
+	UpdateSweepForDeflectiveTile();
 }
 
+void ABallPawn::UpdateSweepForDeflectiveTile()
+{
+	FHitResult hit;
+	auto start = GetActorLocation();
+	auto castDirection = ADeflectiveTile::clampShortAxis(ballCollision->GetPhysicsLinearVelocity(), true);
+	auto end = start +  castDirection * 1000.0f;
+	ballCollision->SweepComponent(hit, start, end, ballCollision->GetCollisionShape());
+	if (hit.bBlockingHit)
+	{
+
+		auto deflectiveTile = Cast<ADeflectiveTile>(hit.Actor.Get());
+		if (deflectiveTile != nullptr)
+		{
+			deflectiveTile->OnHit(this, GetRootPrimitiveComponent(), hit.ImpactNormal, hit);
+		}
+	}
+}
 
 void ABallPawn::TransitionBallToProperLocation(const FVector& position, const FVector& newVelDir, float _transitionSpeed)
 {

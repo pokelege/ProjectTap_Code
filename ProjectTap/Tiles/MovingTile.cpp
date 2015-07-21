@@ -181,6 +181,27 @@ void AMovingTile::EditorKeyPressed(FKey Key, EInputEvent Event)
 		{
 			UpdateCurrentLocation();
 		}
+		else if (keyname.Equals("C"))
+		{
+			DeleteCurrentLocation();
+		}
+	}
+}
+
+void AMovingTile::DeleteCurrentLocation()
+{
+	if (currentEditorPathIndex >= 0 && currentEditorPathIndex < path.Num())
+	{
+		path.RemoveAt(currentEditorPathIndex);
+		if (path.Num() == 0)
+		{
+			currentEditorPathIndex = -1;
+		}
+		else
+		{
+			currentEditorPathIndex = 0;			
+			SetActorLocation(path[currentEditorPathIndex]);
+		}
 	}
 }
 

@@ -52,6 +52,20 @@ void AGraph::PostLoad()
 void AGraph::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (auto& mesh : edgeMeshes)
+	{
+		auto newLocation = mesh->GetComponentLocation();
+		newLocation.Z -= 10.0f;
+		mesh->SetWorldLocation(newLocation);
+	}
+
+	for (auto& mesh : vertexMeshes)
+	{
+		auto newLocation = mesh->GetComponentLocation();
+		newLocation.Z -= 10.0f;
+		mesh->SetWorldLocation(newLocation);
+	}
 }
 #if WITH_EDITOR
 void AGraph::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)

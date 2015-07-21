@@ -65,9 +65,12 @@ void AMouseController::PlayerTick(float DeltaTime)
 
 	if (raycasted)
 	{
-		SendGroupedBlockingTile(hit);
-		SendDraggableMoveTile(hit);
 		checkObjectHighlight(hit);
+	}
+
+	if (bCheckForSwipe)
+	{
+		SendGroupedBlockingTile(hit);
 	}
 
 	btManager.Tick(DeltaTime);

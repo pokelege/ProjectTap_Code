@@ -46,7 +46,7 @@ ATurretPawn::ATurretPawn()
 	laserTag->AttachTo( baseMesh );
 
 	explosionParticle = CreateDefaultSubobject<UParticleSystemComponent>( TEXT( "Turret Explosion Tag" ) );
-	ConstructorHelpers::FObjectFinder<UParticleSystem> explosionParticleTemplate( TEXT( "/Game/StarterContent/Particles/P_Explosion" ) );
+	ConstructorHelpers::FObjectFinder<UParticleSystem> explosionParticleTemplate( TEXT( "/Game/Particles/P_Explosion" ) );
 	explosionParticle->SetTemplate( explosionParticleTemplate.Object );
 	explosionParticle->AttachTo( TurretGunMesh );
 

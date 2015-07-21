@@ -48,8 +48,8 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	virtual void activate() {}
-	virtual void deactivate() {}
+	virtual void activate() override;
+	virtual void deactivate() override;
 
 	virtual void HighlightTile() override;
 	virtual void HighlightEdge() override;

@@ -246,6 +246,7 @@ void UTilesManager::MouseRelease()
 	if (currDraggableTile != nullptr)
 	{
 		currDraggableTile->RemoveFocus();
+		currDraggableTile->deactivate();
 		currDraggableTile = nullptr;
 	}
 

@@ -175,20 +175,23 @@ void ADraggableMoveTile::CancelHighlightEdge()
 
 void ADraggableMoveTile::processMouseEvents()
 {
-	auto dt = GetWorld()->GetDeltaSeconds();
-	mousePressTimer += dt;
+	if (isMouseDown)
+	{
+		auto dt = GetWorld()->GetDeltaSeconds();
+		mousePressTimer += dt;
 
-	if (mousePressTimer >= 0.2f)
-	{
-		isSelected = true;
-		mousePressTimer = 0.0f;
-	}
-	else
-	{
-		anchorHitPoint = GetActorLocation();
-		newGoalPos = GetActorLocation();
-		canSnap = false;
-		isMoving = false;
+		if (mousePressTimer >= 0.2f)
+		{
+			isSelected = true;
+			mousePressTimer = 0.0f;
+		}
+		else
+		{
+			anchorHitPoint = GetActorLocation();
+			newGoalPos = GetActorLocation();
+			canSnap = false;
+			isMoving = false;
+		}
 	}
 
 	if (!isMoving || mousePressTimer > 0.0f)
@@ -197,12 +200,21 @@ void ADraggableMoveTile::processMouseEvents()
 	}
 }
 
+void ADraggableMoveTile::activate()
+{
+	isMouseDown = true;
+}
+
+void ADraggableMoveTile::deactivate()
+{
+	isMouseDown = false;
+}
+
 void ADraggableMoveTile::DragTo(const FHitResult& hit,
 								const FVector& cameraLocation,
 								const FVector& camRayDirection)
 {
 	if (isMoving) return;
-	isMouseDown = true;
 	if (isSelected && currentVertex != nullptr)
 	{
 		//use hit point as a camera ray
@@ -314,7 +326,6 @@ void ADraggableMoveTile::RemoveFocus()
 		click();
 	}
 
-	isMouseDown = false;
 	isSelected = false;
 
 	bool canMove = canSnap && !destinationOccupied && goalVertex != nullptr;

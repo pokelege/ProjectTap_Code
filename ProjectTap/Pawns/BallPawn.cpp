@@ -47,6 +47,7 @@ ABallPawn::ABallPawn()
 	ballCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	ballCollision->GetBodyInstance()->bOverrideMass = true;
 	ballCollision->GetBodyInstance()->MassInKg = 10.0f;
+	ballCollision->BodyInstance.bUseCCD = true;
 
 	//tileOverlapCollision->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(TEXT("/Game/Models/Ball"));

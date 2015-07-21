@@ -38,6 +38,7 @@ ABallPawn::ABallPawn()
 	ballCollision->SetCollisionProfileName(TEXT("Custom"));
 
 
+
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
@@ -79,6 +80,7 @@ ABallPawn::ABallPawn()
 
 	ConstructorHelpers::FClassFinder<UUserWidget> pauseMenuClass(TEXT("Class'/Game/GUI/Pause'"));
 	pauseMenuBlueprint = pauseMenuClass.Class;
+
 }
 
 // Called when the game starts or when spawned
@@ -335,3 +337,4 @@ bool ABallPawn::isDying()
 {
 	return dying;
 }
+

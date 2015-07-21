@@ -51,11 +51,12 @@ void ABlockingTileBase::Tick( float DeltaTime )
 	else if (!activated && canDesend)
 	{
 		pos.Z -= move_speed * DeltaTime;
-	}
-	else if (!activated)
-	{
-		pos.Z = original.Z;
-		Enable();
+		canDesend = pos.Z - original.Z > FLT_EPSILON;
+		if (!canDesend)
+		{
+			Enable();
+			pos.Z = original.Z;
+		}
 	}
 
 	SetActorLocation(pos);
@@ -91,12 +92,15 @@ class UPrimitiveComponent* OtherComp,
 {
 	auto pos = GetActorLocation();
 	bool canRise = pos.Z - original.Z < move_distance_tolerance;
-
-	if (canRise)
+	if (auto ball = Cast<ABallPawn>(OtherActor))
 	{
-		if (auto ball = Cast<ABallPawn>(OtherActor))
+		if (activated && canRise )
 		{
-			ball->Kill();
+			{
+				ball->Kill();
+			}
 		}
+
+		ball->AddVelocity(FVector::ZeroVector, true);
 	}
 }

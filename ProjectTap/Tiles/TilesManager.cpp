@@ -37,7 +37,7 @@ void UTilesManager::DeactivateGroupedBlockingTiles()
 
 void UTilesManager::HighLightTile(ATile* tile)
 {
-	if (tile != prevHighlighted && prevHighlighted != nullptr)
+	if (tile != prevHighlighted && prevHighlighted != nullptr && tile != nullptr && tile->IsEnabled())
 	{
 		prevHighlighted->CancelHighlight();
 		prevHighlighted = nullptr;

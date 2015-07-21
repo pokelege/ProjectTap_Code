@@ -8,6 +8,9 @@
 #include "ProjectTapGameMode.h"
 #include "General/ProjectTapCameraComponent.h"
 #include "ProjectTapGameState.h"
+#include "Tiles/BlockingTile.h"
+#include "Tiles/StrongBlockingTile.h"
+#include "Tiles/GroupedBlockingTile.h"
 
 AMouseController::AMouseController(const FObjectInitializer& initializer):Super(initializer)
 {
@@ -89,9 +92,6 @@ void AMouseController::NotifyMousePressed()
 	FHitResult hit;
 	GetHitResultUnderCursor(ECC_Visibility, false, hit);
 	ActivateOtherTiles(hit);
-	SendStrongBlockingTile(hit);
-	SendBlockingTile(hit);
-	SendGroupedBlockingTile(hit);
 	EnableSwipeCheck(hit);
 }
 
@@ -101,7 +101,7 @@ void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 	bool found = false;
 
 	auto tile = Cast<ATile>(hit.Actor.Get());
-	if (tile != nullptr)
+	if (tile != nullptr && tile->IsEnabled())
 	{
 		tile->activate();
 		found = true;
@@ -151,11 +151,11 @@ void AMouseController::SendDraggableMoveTile(const FHitResult& hit)
 void AMouseController::SendBlockingTile(const FHitResult& hit)
 {
 
-	auto bt = Cast<ABlockingTile>(hit.Actor.Get());
 	auto type = hit.Actor.Get();
+	auto bt = Cast<ABlockingTile>(type);
 	bool canContinue = true;
 
-	if (bt != nullptr)
+	if (bt != nullptr && bt->IsEnabled())
 	{
 		canContinue = false;
 		btManager.AddTile(bt);
@@ -165,7 +165,7 @@ void AMouseController::SendBlockingTile(const FHitResult& hit)
 void AMouseController::SendStrongBlockingTile(const FHitResult& hit)
 {
 	auto sbt = Cast<AStrongBlockingTile>(hit.Actor.Get());
-	if (sbt != nullptr)
+	if (sbt != nullptr && sbt->IsEnabled())
 	{
 		btManager.AddTile(sbt);
 	}
@@ -175,7 +175,7 @@ void AMouseController::SendStrongBlockingTile(const FHitResult& hit)
 void AMouseController::SendGroupedBlockingTile(const FHitResult& hit)
 {
 	auto gbt = Cast<AGroupedBlockingTile>(hit.Actor.Get());
-	if (gbt != nullptr)
+	if (gbt != nullptr && gbt->IsEnabled())
 	{
 		btManager.SetEnableSwipeCheck(true);
 		btManager.AddTile(gbt);

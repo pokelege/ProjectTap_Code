@@ -18,13 +18,11 @@ class PROJECTTAP_API AMagnetTile : public ATile, public ICarriable
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Magnet )
 	class UParticleSystemComponent* magnetParticle = nullptr;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Magnet )
-		UStaticMeshComponent* distortionMesh = nullptr;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 		UAudioComponent* magnetSound = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
-	float length = 99999.0f;
+	float length = 5000.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float targetVelocity = 1000.0f;
 

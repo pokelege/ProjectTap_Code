@@ -94,6 +94,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category=ToggleMenu)
 	void togglePauseMenu();
 
+	UFUNCTION()
+	void OnHit(class AActor* OtherActor,
+	class UPrimitiveComponent* OtherComp,
+		FVector NormalImpulse,
+		const FHitResult& Hit);
+
 	void setCamera(class ABallPlayerStart* playerStart);
 	UProjectTapCameraComponent* GetCamera();
+
+
 };

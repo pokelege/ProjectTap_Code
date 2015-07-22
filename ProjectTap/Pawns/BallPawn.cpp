@@ -13,6 +13,7 @@
 #include "General/ProjectTapCameraComponent.h"
 #include "General/ProjectTapCamera.h"
 #include "Tiles/DeflectiveTile.h"
+#include "Tiles/BlockingTileBase.h"
 
 // Sets default values
 ABallPawn::ABallPawn()
@@ -326,6 +327,25 @@ void ABallPawn::setCamera(ABallPlayerStart* playerStart)
 		spring->bEnableCameraLag = playerStart->lagCamera;
 		spring->CameraLagSpeed = playerStart->lagSpeed;
 		spring->CameraLagMaxDistance = playerStart->lagMaxDistance;
+	}
+}
+
+void ABallPawn::OnHit(class AActor* OtherActor,
+					  class UPrimitiveComponent* OtherComp,
+					  FVector NormalImpulse,
+					  const FHitResult& Hit)
+
+{
+	if (auto tile = Cast<ABlockingTileBase>(OtherActor))
+	{
+		if (tile->CanKillBall())
+		{
+			Kill();
+		}
+		else if (tile->CanStopBall())
+		{
+			AddVelocity(FVector::ZeroVector, true);
+		}
 	}
 }
 

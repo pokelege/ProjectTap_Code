@@ -15,7 +15,6 @@ AGroupedBlockingTile::AGroupedBlockingTile()
 
 	BoxCollision->SetWorldScale3D(FVector(1));
 	BoxCollision->SetBoxExtent(FVector(20.0f, 20.0f, 80.0f));
-	BoxCollision->OnComponentHit.AddDynamic(this, &ABlockingTileBase::OnHit);
 
 }
 

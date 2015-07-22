@@ -3,13 +3,14 @@
 #pragma once
 
 #include "Tiles/BaseRampTile.h"
+#include "ICarriable.h"
 #include "JumpTile.generated.h"
 
 /**
  *
  */
 UCLASS()
-class PROJECTTAP_API AJumpTile : public ABaseRampTile
+class PROJECTTAP_API AJumpTile : public ABaseRampTile, public ICarriable
 {
 	GENERATED_BODY()
 
@@ -34,6 +35,8 @@ public:
 #endif
 
 	void SetWaitForBall();
+
+	OffsetInfo getOffsetInfo() override;
 
 	virtual void BeginPlay() override;
 

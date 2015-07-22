@@ -17,7 +17,6 @@ AStrongBlockingTile::AStrongBlockingTile()
 	BoxCollision->SetBoxExtent(FVector(80.0f, 80.0f, 80.0f));
 	move_speed = 400.0f;
 	move_distance_tolerance = 150.0f;
-	BoxCollision->OnComponentHit.AddDynamic(this, &ABlockingTileBase::OnHit);
 }
 
 // Called when the game starts or when spawned

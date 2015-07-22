@@ -11,6 +11,7 @@
 #include "Tiles/BlockingTile.h"
 #include "Tiles/StrongBlockingTile.h"
 #include "Tiles/GroupedBlockingTile.h"
+#include "Tiles/DraggableMoveTile.h"
 
 AMouseController::AMouseController(const FObjectInitializer& initializer):Super(initializer)
 {
@@ -68,6 +69,10 @@ void AMouseController::PlayerTick(float DeltaTime)
 
 	if (raycasted)
 	{
+		FVector origin;
+		FVector direction;
+		GetCameraRay(origin, direction);
+		btManager.SetCameraRay(hit, origin, direction);
 		checkObjectHighlight(hit);
 	}
 
@@ -100,12 +105,55 @@ void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 {
 	bool found = false;
 
-	auto tile = Cast<ATile>(hit.Actor.Get());
-	if (tile != nullptr && tile->IsEnabled())
+	auto tile = Cast<ADraggableMoveTile>(hit.Actor.Get());
+	if (tile != nullptr)
 	{
-		tile->activate();
+		btManager.AddTile(tile);
 		found = true;
 	}
+
+	if (!found)
+	{
+		auto tile = Cast<AGroupedBlockingTile>(hit.Actor.Get());
+		if (tile != nullptr && tile->IsEnabled())
+		{
+			btManager.AddTile(tile);
+			found = true;
+		}
+	}
+
+	if (!found)
+	{
+		auto tile = Cast<AStrongBlockingTile>(hit.Actor.Get());
+		if (tile != nullptr && tile->IsEnabled())
+		{
+			btManager.AddTile(tile);
+			found = true;
+		}
+	}
+
+	if (!found)
+	{
+		auto tile = Cast<ABlockingTile>(hit.Actor.Get());
+		if (tile != nullptr && tile->IsEnabled())
+		{
+			btManager.AddTile(tile);
+			found = true;
+		}
+	}
+
+
+
+	if (!found)
+	{
+		auto tile = Cast<ATile>(hit.Actor.Get());
+		if (tile != nullptr && tile->IsEnabled())
+		{
+			tile->activate();
+			found = true;
+		}
+	}
+
 }
 
 
@@ -140,11 +188,6 @@ void AMouseController::SendDraggableMoveTile(const FHitResult& hit)
 	{
 		btManager.AddTile(dm);
 	}
-
-	FVector origin;
-	FVector direction;
-	GetCameraRay(origin, direction);
-	btManager.SetCameraRay(hit, origin, direction);
 }
 
 

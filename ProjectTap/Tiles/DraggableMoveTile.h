@@ -27,10 +27,11 @@ public:
 		float dragTolerance = 300.0f;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
-		float dragMoveSpeed = 500.0f;
+		float dragMoveSpeed = 400.0f;
 private:
 	float cameraRayLength = 0.0f;
 	float mousePressTimer = 0.0f;
+	float mouseClickTime = .2f;
 	bool isMoving = false;
 	bool canSnap = false;
 	bool destinationOccupied = false;
@@ -77,6 +78,8 @@ private:
 										  FVector& hitPoint );
 
 	void processMouseEvents();
+
+	void resetIndicator();
 
 	void click();
 };

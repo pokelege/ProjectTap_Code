@@ -18,16 +18,25 @@ class PROJECTTAP_API AMagnetTile : public ATile, public ICarriable
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Magnet )
 	class UParticleSystemComponent* magnetParticle = nullptr;
+	
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
-		UAudioComponent* magnetSound = nullptr;
+	UAudioComponent* magnetSound = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float length = 5000.0f;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float targetVelocity = 1000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float centerTolerance = 0.001f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
+	float verticalForceMultiplier = 1.4f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
+	bool isVertical = false;
+
 	AMagnetTile();
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;

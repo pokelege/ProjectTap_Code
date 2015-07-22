@@ -129,6 +129,11 @@ void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
 			prim->AddRelativeLocation(toAdd);
 		}
 	}
+	if (isVertical)
+	{
+		targetVelocity *= verticalForceMultiplier;
+	}
+
 	prim->AddImpulse(targetVelocity * -GetActorForwardVector());
 }
 

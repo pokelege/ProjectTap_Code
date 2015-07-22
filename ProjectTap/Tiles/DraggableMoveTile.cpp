@@ -66,13 +66,15 @@ void ADraggableMoveTile::Initialize()
 	{
 		BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 	}
+
+	resetIndicator();
 }
 
 
 void ADraggableMoveTile::Tick( float DeltaTime )
 {
 	Super::Tick(DeltaTime);
-
+	processMouseEvents();
 	UpdateDragMove(DeltaTime);
 	UpdateIndicator();
 }
@@ -180,25 +182,26 @@ void ADraggableMoveTile::processMouseEvents()
 		auto dt = GetWorld()->GetDeltaSeconds();
 		mousePressTimer += dt;
 
-		if (mousePressTimer >= 0.2f)
+		if (mousePressTimer >= mouseClickTime)
 		{
 			isSelected = true;
-			mousePressTimer = 0.0f;
-		}
-		else
-		{
-			anchorHitPoint = GetActorLocation();
-			newGoalPos = GetActorLocation();
-			canSnap = false;
-			isMoving = false;
 		}
 	}
 
-	if (!isMoving || mousePressTimer > 0.0f)
+	if (mousePressTimer > .0f && !isMouseDown)
 	{
-		deactivate();
+		RemoveFocus();
 	}
 }
+
+void ADraggableMoveTile::resetIndicator()
+{
+	anchorHitPoint = GetActorLocation();
+	newGoalPos = GetActorLocation();
+	canSnap = false;
+	isMoving = false;
+}
+
 
 void ADraggableMoveTile::activate()
 {
@@ -265,10 +268,6 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 			newGoalPos = GetActorLocation() + moveRay;
 		}
 	}
-	else
-	{
-		processMouseEvents();
-	}
 }
 
 
@@ -276,7 +275,6 @@ void ADraggableMoveTile::UpdateDragMove(float dt)
 {
 	if (isMoving)
 	{
-		activate();
 		auto moveDir = (newGoalPos - GetActorLocation()).GetSafeNormal();
 		auto reachedPos = FVector::DotProduct(currDir, moveDir) < 0.0f;
 
@@ -285,6 +283,8 @@ void ADraggableMoveTile::UpdateDragMove(float dt)
 			SetActorLocation(newGoalPos);
 			isMoving = false;
 			reachGoalNextFrame = false;
+			resetIndicator();
+
 		}
 		else if (moveDir.SizeSquared() > 0.1f)
 		{
@@ -305,23 +305,19 @@ FVector ADraggableMoveTile::calculateCurrentDir()
 }
 
 void ADraggableMoveTile::click()
-{
+{	
 	if (auto carry = Cast<ATile>(carryOn))
 	{
 		carry->activate();
 	}
 
-	if (!isMoving)
-	{
-		deactivate();
-	}
 	mousePressTimer = 0.0f;
 }
 
 void ADraggableMoveTile::RemoveFocus()
 {
-	//if this mouse release results in a click event
-	if (!isSelected && isMouseDown)
+	bool isClick = mousePressTimer <= mouseClickTime && mousePressTimer > 0.0f;
+	if (isClick)
 	{
 		click();
 	}
@@ -338,4 +334,5 @@ void ADraggableMoveTile::RemoveFocus()
 		goalVertex = nullptr;
 	}
 
+	mousePressTimer = 0.0f;
 }

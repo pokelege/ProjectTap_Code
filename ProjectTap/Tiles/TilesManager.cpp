@@ -134,12 +134,17 @@ void UTilesManager::AddTile(AStrongBlockingTile* tile)
 
 void UTilesManager::AddTile(ADraggableMoveTile* tile)
 {
-	if (currDraggableTile != nullptr)
+	
+	if (currDraggableTile != tile)
 	{
-		currDraggableTile->RemoveFocus();
-	}
+		if (currDraggableTile != nullptr)
+		{
+			currDraggableTile->RemoveFocus();
+		}
 
-	currDraggableTile = tile;
+		currDraggableTile = tile;
+		currDraggableTile->activate();
+	}
 
 	if (tile != nullptr)
 	{		
@@ -245,7 +250,6 @@ void UTilesManager::MouseRelease()
 	
 	if (currDraggableTile != nullptr)
 	{
-		currDraggableTile->RemoveFocus();
 		currDraggableTile->deactivate();
 		currDraggableTile = nullptr;
 	}

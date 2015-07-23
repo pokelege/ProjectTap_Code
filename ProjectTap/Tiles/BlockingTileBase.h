@@ -32,15 +32,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds)override;
 
+	bool CanKillBall();
+
+	bool CanStopBall();
+
 	void deactivate() override;
 	void activate() override;
 
 
-	UFUNCTION()
-	void OnHit(class AActor* OtherActor,
-		class UPrimitiveComponent* OtherComp,
-		FVector NormalImpulse,
-		const FHitResult& Hit);
+
+
 protected:
 	virtual void lerpMaterialColorForCoolDown( const float& beta );
 };

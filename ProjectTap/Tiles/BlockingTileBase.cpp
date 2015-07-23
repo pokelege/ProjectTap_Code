@@ -85,22 +85,14 @@ void ABlockingTileBase::activate()
 	activateSound->Play();
 }
 
-void ABlockingTileBase::OnHit(class AActor* OtherActor,
-class UPrimitiveComponent* OtherComp,
-	FVector NormalImpulse,
-	const FHitResult& Hit)
+bool ABlockingTileBase::CanKillBall()
 {
-	auto pos = GetActorLocation();
-	bool canRise = pos.Z - original.Z < move_distance_tolerance;
-	if (auto ball = Cast<ABallPawn>(OtherActor))
-	{
-		if (activated && canRise )
-		{
-			{
-				ball->Kill();
-			}
-		}
+	auto canKillBall = false;
 
-		ball->AddVelocity(FVector::ZeroVector, true);
-	}
+	return canKillBall;
+}
+
+bool ABlockingTileBase::CanStopBall()
+{
+	return activated;
 }

@@ -32,6 +32,7 @@ protected:
 	float time = 0;
 public:
 	ABaseRampTile();
+
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
 

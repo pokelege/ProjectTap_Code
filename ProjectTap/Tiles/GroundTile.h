@@ -14,7 +14,7 @@ public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Mesh )
 	class UBoxComponent* Collision = nullptr;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Mesh )
-	class USceneComponent* Meshes = nullptr;
+	TArray<UStaticMeshComponent*> Meshes;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Mesh )
 	class UStaticMesh* Mesh = nullptr;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Size )

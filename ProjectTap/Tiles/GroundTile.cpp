@@ -2,7 +2,7 @@
 
 #include "ProjectTap.h"
 #include "GroundTile.h"
-
+#include "UnrealType.h"
 
 // Sets default values
 AGroundTile::AGroundTile()
@@ -20,7 +20,6 @@ AGroundTile::AGroundTile()
 	Collision->SetMobility( EComponentMobility::Static );
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh( *FName( "/Game/Models/GroundTiles/1x1" ).ToString() );
 	Mesh = mesh.Object;
-	Meshes = CreateDefaultSubobject<USceneComponent>( TEXT( "Meshes" ) );
 	Generate();
 }
 
@@ -28,9 +27,8 @@ void AGroundTile::Generate( bool isEditor )
 {
 	FVector boxExtent( ( float ) NumTilesX * MeshScaleX , ( float ) NumTilesY * MeshScaleY , MeshScaleZ );
 	Collision->SetBoxExtent( boxExtent );
-	TArray<USceneComponent*> children;
-	Meshes->GetChildrenComponents( true , children );
 	auto meshesIndex = 0;
+	auto lastMeshesSize = Meshes.Num();
 	for ( int x = 1; x <= NumTilesX; ++x )
 	{
 		for ( int y = 1; y <= NumTilesY; ++y )
@@ -47,21 +45,22 @@ void AGroundTile::Generate( bool isEditor )
 			}
 			if ( ignoreMesh ) continue;
 			UStaticMeshComponent* newMesh = nullptr;
-			if ( meshesIndex < children.Num() )
+			if ( meshesIndex < lastMeshesSize )
 			{
-				newMesh = Cast<UStaticMeshComponent>( children[meshesIndex++] );
-				FString newName( FString( "X" ).Append( FString::FromInt( x ) ).Append( "Y" ).Append( FString::FromInt( y ) ) );
-				newMesh->Rename( *newName );
+				newMesh = Cast<UStaticMeshComponent>( Meshes[meshesIndex++] );
+				//FString newName( FString( "X" ).Append( FString::FromInt( x ) ).Append( "Y" ).Append( FString::FromInt( y ) ) );
+				//newMesh->Rename( *newName );
 			}
 			else if ( isEditor )
 			{
-				newMesh = NewObject<UStaticMeshComponent>( this , FName( *FString( "X" ).Append( FString::FromInt( x ) ).Append( "Y" ).Append( FString::FromInt( y ) ) ) );
+				newMesh = NewObject<UStaticMeshComponent>( this ); //, FName( *FString( "X" ).Append( FString::FromInt( x ) ).Append( "Y" ).Append( FString::FromInt( y ) ) ) );
 				newMesh->RegisterComponent();
 			}
-			else newMesh = CreateDefaultSubobject<UStaticMeshComponent>( FName( *FString( "X" ).Append( FString::FromInt( x ) ).Append( "Y" ).Append( FString::FromInt( y ) ) ) );
-			newMesh->AttachTo( Meshes );
+			else newMesh = CreateDefaultSubobject<UStaticMeshComponent>( FName( *FString::FromInt( rand() ) ) );//FName( *FString( "X" ).Append( FString::FromInt( x ) ).Append( "Y" ).Append( FString::FromInt( y ) ) ) );
 			newMesh->SetMobility( EComponentMobility::Static );
 			newMesh->SetStaticMesh( Mesh );
+			newMesh->AttachTo( GetRootComponent() );
+			Meshes.Add(newMesh);
 			FVector translation( 0 );
 			//todo optimize if possible
 			translation.X = ( ( x - 1 ) * ( MeshScaleX * 2.0f ) ) - ( ( ( NumTilesX - 1 ) * ( MeshScaleX * 2.0f ) ) / 2.0f );
@@ -70,16 +69,19 @@ void AGroundTile::Generate( bool isEditor )
 		}
 	}
 
-	while ( meshesIndex > children.Num() )
+	while ( meshesIndex > Meshes.Num() )
 	{
-		children[meshesIndex]->DestroyComponent(false);
+		Meshes[meshesIndex]->DestroyComponent( false );
 	}
 }
 
 #if WITH_EDITOR
 void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )
 {
-	//todo optimize
-	Generate( true );
+	if ( PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "NumTilesX" ) ) ||
+		 PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "NumTilesY" ) ) ||
+		 PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "MeshScaleX" ) ) ||
+		 PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "MeshScaleX" ) ) )
+		 Generate( true );
 }
 #endif

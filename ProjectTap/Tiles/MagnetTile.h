@@ -36,13 +36,12 @@ public:
 	float centerTolerance = 0.001f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
-	float verticalForceMultiplier = 1.4f;
+	float verticalForceMultiplier = 1.01f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	bool isVertical = false;
 
 	AMagnetTile();
-	AMagnetTile(int32 depth);
+
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
 	OffsetInfo getOffsetInfo() override;
@@ -59,14 +58,16 @@ private:
 	FVector GetClampedForwardVector(bool infiniteLength = false);
 
 	void UpdateBallPawnSearch(AActor* actor);
-	void UpdatePortalSearch(AActor* actor);
+	void UpdatePortalSearch(AActor* actor, const FHitResult& hit);
+
+	void SetDepth(int32 depth);
 
 	AActor* GetMagnetHitActor(FHitResult& hit);
 	void CastMagnetRay(FHitResult& hit);
 	void PullBall( class ABallPawn* ball );
 	bool IsMaster();
 	void SpawnSubMagnet(const FVector& start, 
-						const FVector& end);
+						const FVector& dir);
 	void KillSubMagnet();
 
 	bool CanSpawnSubMagnet();

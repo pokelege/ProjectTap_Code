@@ -6,7 +6,7 @@
 #include "ProjectTapGameState.h"
 #include "Engine/GameInstance.h"
 #include "Particles/ParticleEmitter.h"
-#include "Tiles/PortalTile.h"
+#include "PortalTile.h"
 #include "DeflectiveTile.h"
 
 
@@ -40,21 +40,16 @@ AMagnetTile::AMagnetTile() : ATile()
 	magnetSound->AttachTo(BoxCollision);
 }
 
-AMagnetTile::AMagnetTile(int32 depth)
+void AMagnetTile::SetDepth(int32 depth)
 {
-	if (depth > 0)
+	currentDepth = depth;
+
+	if (currentDepth > 0)
 	{
-		ConstructorHelpers::FObjectFinder<UParticleSystem> particle(*FName("/Game/Particles/P_Magnet").ToString());
-		magnetParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Magnet particle"));
-		magnetParticle->SetTemplate(particle.Object);
-		magnetParticle->AttachTo(GetRootComponent());
-		magnetParticle->SetVisibility(false);
-
-		auto pc = Cast<UPrimitiveComponent>(RootComponent);
-		pc->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
-		delegate.BindUFunction(this, TEXT("OnBeginHit"));
-		BoxCollision->OnComponentHit.Add(delegate);
-
+		TileMesh->SetHiddenInGame(true);
+		auto emitter = magnetParticle->EmitterInstances[0];
+		BoxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
 	}
 }
 
@@ -68,6 +63,12 @@ void AMagnetTile::BeginPlay()
 	magnetParticle->SetVisibility(true);
 	magnetParticle->DeactivateSystem();
 	magnetParticle->Deactivate();
+
+	auto forward = GetClampedForwardVector();
+	if (forward.Z == -1.0f)
+	{
+		isVertical = true;
+	}
 }
 
 OffsetInfo AMagnetTile::getOffsetInfo()
@@ -83,14 +84,27 @@ void AMagnetTile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	if (!activated)return;
-	
-	FHitResult hit;
-	auto hitActor = GetMagnetHitActor(hit);
-	
-	//update magnet particle 	
-	magnetEndPos = hit.bBlockingHit ? hit.ImpactPoint : GetClampedForwardVector(true) + GetActorLocation();
-	magnetParticle->EmitterInstances[0]->SetBeamTargetPoint(magnetEndPos, 0);
+	if (enabled)
+	{
+		FHitResult hit;
+		auto hitActor = GetMagnetHitActor(hit);
+		bool hitBall = false;
+		bool hitPortal = false;
+		if (isActivated())
+		{
+			UpdateBallPawnSearch(hitActor);
+			UpdatePortalSearch(hitActor, hit);
+		}
+
+		auto emitter = magnetParticle->EmitterInstances[0];
+		if (emitter != nullptr)
+		{
+			//update magnet particle 	
+			magnetEndPos = hit.bBlockingHit ? hit.ImpactPoint : GetClampedForwardVector(true) + GetActorLocation();
+			magnetParticle->EmitterInstances[0]->SetBeamTargetPoint(magnetEndPos, 0);
+		}
+	}
+
 }
 
 FVector AMagnetTile::GetClampedForwardVector(bool infiniteLength)
@@ -108,15 +122,19 @@ void AMagnetTile::UpdateBallPawnSearch(AActor* actor)
 	if ((pawn != nullptr) && !pawn->isDying())
 	{
 		PullBall(pawn);
+		KillSubMagnet();
 	}
 }
 
-void AMagnetTile::UpdatePortalSearch(AActor* actor)
+void AMagnetTile::UpdatePortalSearch(AActor* actor, const FHitResult& hit)
 {
 	auto portal = Cast<APortalTile>(actor);
-	if (portal != nullptr)
+	if (portal != nullptr && CanSpawnSubMagnet())
 	{
-		auto 
+		auto hitPortalTrigger = hit.GetComponent();
+		FVector subMagnetTileDir, subMagnetTilePos;
+		portal->GetMagnetPortalTransportedLocation(hitPortalTrigger, subMagnetTileDir, subMagnetTilePos);
+		SpawnSubMagnet(subMagnetTilePos, subMagnetTileDir);
 	}
 }
 
@@ -152,6 +170,7 @@ class UPrimitiveComponent* OtherComp,
 		{
 			material->SetScalarParameterValue(TEXT("KilledBall"), 1);
 		}
+		Disable();
 	}
 }
 
@@ -193,22 +212,37 @@ void AMagnetTile::PullBall(ABallPawn* ball)
 
 void AMagnetTile::deactivate()
 {
-	if (!activated) return;
 	Super::deactivate();
+	if (magnetParticle->IsActive())
+	{
+		magnetParticle->DeactivateSystem();
+		magnetParticle->Deactivate();
+	}
 
-	magnetParticle->DeactivateSystem();
-	magnetParticle->Deactivate();
-	magnetSound->Stop();
+	if (IsMaster())
+	{
+		magnetSound->Stop();
+	}
+
+	KillSubMagnet();
 }
 
 void AMagnetTile::activate()
 {
-	if (activated) return;
+
 	Super::activate();
-	magnetParticle->Activate(true);
-	magnetParticle->ActivateSystem();
-	magnetParticle->EmitterInstances[0]->SetBeamTargetPoint(magnetParticle->GetComponentLocation(), 0);
-	magnetSound->Play();
+	if (!magnetParticle->IsActive())
+	{
+		magnetParticle->Activate(true);
+		magnetParticle->ActivateSystem();
+		magnetParticle->EmitterInstances[0]->SetBeamTargetPoint(magnetParticle->GetComponentLocation(), 0);
+	}
+
+	if (IsMaster())
+	{
+		magnetSound->Play();
+	}
+
 }
 
 bool AMagnetTile::IsMaster()
@@ -217,17 +251,26 @@ bool AMagnetTile::IsMaster()
 }
 
 void AMagnetTile::SpawnSubMagnet(const FVector& start,
-	const FVector& end)
+	const FVector& dir)
 {
-	
+	auto rotation = FRotationMatrix::MakeFromX(dir);
+	//offset
+	auto newPos = start + dir * 20.0f;
+	subMagnet = GetWorld()->SpawnActor<AMagnetTile>(newPos, rotation.Rotator());
+	subMagnet->SetDepth(currentDepth + 1);
+	subMagnet->targetVelocity = targetVelocity;
+	subMagnet->verticalForceMultiplier = verticalForceMultiplier;
+	subMagnet->activate();
 }
 
 void AMagnetTile::KillSubMagnet()
 {
 	if (subMagnet != nullptr)
 	{
+		subMagnet->deactivate();
 		subMagnet->KillSubMagnet();
-		Destroy();
+		subMagnet->Destroy();
+		subMagnet = nullptr;
 	}
 }
 

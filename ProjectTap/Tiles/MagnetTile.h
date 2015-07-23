@@ -15,6 +15,10 @@ class PROJECTTAP_API AMagnetTile : public ATile, public ICarriable
 	GENERATED_BODY()
 
 	TScriptDelegate<FWeakObjectPtr> delegate;
+	AMagnetTile* subMagnet = nullptr;
+	static const int32 MAX_DEPTH;
+	int32 currentDepth = 0;
+	FVector magnetEndPos;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Magnet )
 	class UParticleSystemComponent* magnetParticle = nullptr;
@@ -38,19 +42,32 @@ public:
 	bool isVertical = false;
 
 	AMagnetTile();
+	AMagnetTile(int32 depth);
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
 	OffsetInfo getOffsetInfo() override;
 
 	UFUNCTION()
-		void OnBeginHit( class AActor* OtherActor ,
-	class UPrimitiveComponent* OtherComp ,
+	void OnBeginHit( class AActor* OtherActor ,
+		class UPrimitiveComponent* OtherComp ,
 		FVector NormalImpulse ,
 		const FHitResult& Hit );
 
 	virtual void deactivate() override;
 	virtual void activate() override;
 private:
-	class ABallPawn* FindBallPawn();
-	void PullBall( class ABallPawn* ball , float DeltaTime );
+	FVector GetClampedForwardVector(bool infiniteLength = false);
+
+	void UpdateBallPawnSearch(AActor* actor);
+	void UpdatePortalSearch(AActor* actor);
+
+	AActor* GetMagnetHitActor(FHitResult& hit);
+	void CastMagnetRay(FHitResult& hit);
+	void PullBall( class ABallPawn* ball );
+	bool IsMaster();
+	void SpawnSubMagnet(const FVector& start, 
+						const FVector& end);
+	void KillSubMagnet();
+
+	bool CanSpawnSubMagnet();
 };

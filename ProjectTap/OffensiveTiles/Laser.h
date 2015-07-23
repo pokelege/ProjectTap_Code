@@ -11,7 +11,7 @@ UCLASS()
 class PROJECTTAP_API ALaser : public AActor , public ICarriable
 {
 	GENERATED_BODY()
-		static const int MAX_DEPTH;
+	static const int MAX_DEPTH;
 	FDelegateHandle OnGameStateChangedDelegateHandle;
 	FVector currHitPoint;
 public:

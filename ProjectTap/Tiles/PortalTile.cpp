@@ -5,6 +5,7 @@
 #include "OffensiveTiles/Laser.h"
 #include "Pawns/BallPawn.h"
 #include "Pawns/PawnCastingTrigger.h"
+#include "MagnetTile.h"
 
 APortalTile::APortalTile()
 {
@@ -63,7 +64,7 @@ void APortalTile::AdjustOrientationAndTriggerBoxes()
 	orangePortalTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	orangePortalTrigger->bGenerateOverlapEvents = true;
 	orangePortalTrigger->SetNotifyRigidBodyCollision(false);
-	orangePortalTrigger->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	orangePortalTrigger->SetCollisionObjectType(ECC_Portal);
 	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Overlap);
 	orangePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECR_Block);
 
@@ -71,7 +72,7 @@ void APortalTile::AdjustOrientationAndTriggerBoxes()
 	bluePortalTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	bluePortalTrigger->bGenerateOverlapEvents = true;
 	bluePortalTrigger->SetNotifyRigidBodyCollision(false);
-	bluePortalTrigger->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	bluePortalTrigger->SetCollisionObjectType(ECC_Portal);
 	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Overlap);
 	bluePortalTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECR_Block);
 }
@@ -303,6 +304,12 @@ void APortalTile::GetLaserPortalTransportedLocation(UPrimitiveComponent* hit4Ppo
 		}
 	}
 }
+
+void APortalTile::GetMagnetPortalTransportedLocation(UPrimitiveComponent* hitPportalTrigger, FVector& newDir, FVector& newPos)
+{
+	GetLaserPortalTransportedLocation(hitPportalTrigger, newDir, newPos);
+}
+
 
 void APortalTile::SetColor( const FVector& color )
 {

@@ -6,6 +6,7 @@
 #include "ICarriable.h"
 #include "PortalTile.generated.h"
 
+#define ECC_Portal ECollisionChannel::ECC_EngineTraceChannel1
 /**
  * blue portal faces positive X axis
  */
@@ -90,13 +91,16 @@ private:
 
 	void TransportBallToOrange(class ABallPawn* pawn);
 	void TransportBallToBlue(ABallPawn* pawn);
+	
 	void AdjustOrientationAndTriggerBoxes();
 
 	void SetMeshCollisionProperty( UBoxComponent* box );
 	void GeneratePortalCollision();
+	void ProcessBallEndfOverlap(AActor* actor);
 
 	friend class ALaser;
-	void GetLaserPortalTransportedLocation(UPrimitiveComponent* hit4PportalTrigger, FVector& newDir, FVector& newPos);
+	friend class AMagnetTile;
+	void GetLaserPortalTransportedLocation(UPrimitiveComponent* hitPportalTrigger, FVector& newDir, FVector& newPos);
+	void GetMagnetPortalTransportedLocation(UPrimitiveComponent* hitPportalTrigger, FVector& newDir, FVector& newPos);
 
-	void ProcessBallEndfOverlap(AActor* actor);
 };

@@ -6,10 +6,16 @@
 #include "ProjectTapGameState.h"
 #include "Engine/GameInstance.h"
 #include "Particles/ParticleEmitter.h"
+#include "Tiles/PortalTile.h"
+#include "DeflectiveTile.h"
+
+
+const int32 AMagnetTile::MAX_DEPTH = 8;
 
 AMagnetTile::AMagnetTile() : ATile()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*FName("/Game/Models/Magnet").ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
 	TileMesh->SetMobility(EComponentMobility::Static);
@@ -34,10 +40,31 @@ AMagnetTile::AMagnetTile() : ATile()
 	magnetSound->AttachTo(BoxCollision);
 }
 
+AMagnetTile::AMagnetTile(int32 depth)
+{
+	if (depth > 0)
+	{
+		ConstructorHelpers::FObjectFinder<UParticleSystem> particle(*FName("/Game/Particles/P_Magnet").ToString());
+		magnetParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Magnet particle"));
+		magnetParticle->SetTemplate(particle.Object);
+		magnetParticle->AttachTo(GetRootComponent());
+		magnetParticle->SetVisibility(false);
+
+		auto pc = Cast<UPrimitiveComponent>(RootComponent);
+		pc->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+		delegate.BindUFunction(this, TEXT("OnBeginHit"));
+		BoxCollision->OnComponentHit.Add(delegate);
+
+	}
+}
+
 void AMagnetTile::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorld()->GetFirstPlayerController()->InputComponent->BindAction("ActivateCube", IE_Released, this, &AMagnetTile::deactivate);
+	if (IsMaster())
+	{
+		GetWorld()->GetFirstPlayerController()->InputComponent->BindAction("ActivateCube", IE_Released, this, &AMagnetTile::deactivate);
+	}
 	magnetParticle->SetVisibility(true);
 	magnetParticle->DeactivateSystem();
 	magnetParticle->Deactivate();
@@ -55,17 +82,61 @@ OffsetInfo AMagnetTile::getOffsetInfo()
 void AMagnetTile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	if (!activated)return;
-	ABallPawn* pawn = FindBallPawn();
+	
+	FHitResult hit;
+	auto hitActor = GetMagnetHitActor(hit);
+	
+	//update magnet particle 	
+	magnetEndPos = hit.bBlockingHit ? hit.ImpactPoint : GetClampedForwardVector(true) + GetActorLocation();
+	magnetParticle->EmitterInstances[0]->SetBeamTargetPoint(magnetEndPos, 0);
+}
+
+FVector AMagnetTile::GetClampedForwardVector(bool infiniteLength)
+{
+	auto vec = ADeflectiveTile::clampShortAxis(GetActorForwardVector(), true);
+
+	return infiniteLength ? vec * length : vec;
+}
+
+
+void AMagnetTile::UpdateBallPawnSearch(AActor* actor)
+{
+	ABallPawn* pawn = Cast<ABallPawn>(actor);
+
 	if ((pawn != nullptr) && !pawn->isDying())
 	{
-		PullBall(pawn, DeltaTime);
-		magnetParticle->EmitterInstances[0]->SetBeamTargetPoint(pawn->GetActorLocation(), 0);
+		PullBall(pawn);
 	}
-	else
+}
+
+void AMagnetTile::UpdatePortalSearch(AActor* actor)
+{
+	auto portal = Cast<APortalTile>(actor);
+	if (portal != nullptr)
 	{
-		magnetParticle->EmitterInstances[0]->SetBeamTargetPoint(GetActorLocation() + (GetActorForwardVector() * length), 0);
+		auto 
 	}
+}
+
+AActor* AMagnetTile::GetMagnetHitActor(FHitResult& hit)
+{
+	FCollisionQueryParams queryParam;
+	queryParam.bFindInitialOverlaps = false;
+	queryParam.bReturnFaceIndex = true;
+	FCollisionObjectQueryParams objectParam;
+	objectParam.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
+	objectParam.AddObjectTypesToQuery(ECC_Portal);
+
+	auto pos = TileMesh->GetSocketLocation("Socket");
+
+	auto rayStart = pos + GetClampedForwardVector() * 2.0f;
+	auto laserVector = GetClampedForwardVector(true);
+
+	GetWorld()->LineTraceSingleByObjectType(hit, rayStart, pos + laserVector, objectParam, queryParam);
+	magnetEndPos = hit.ImpactPoint;
+	return hit.Actor.Get();
 }
 
 void AMagnetTile::OnBeginHit(class AActor* OtherActor,
@@ -84,28 +155,11 @@ class UPrimitiveComponent* OtherComp,
 	}
 }
 
-class ABallPawn* AMagnetTile::FindBallPawn()
-{
-	FHitResult hit;
-	FCollisionQueryParams queryParam;
-	queryParam.bFindInitialOverlaps = false;
-	queryParam.bReturnFaceIndex = true;
-	FCollisionObjectQueryParams objectParam;
-	objectParam.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
-
-	auto pos = TileMesh->GetSocketLocation("Socket");
-	auto rayStart = pos + GetActorForwardVector() * 2.0f;
-	auto laserVector = GetActorForwardVector() * length;
-
-	GetWorld()->LineTraceSingleByObjectType(hit, rayStart, pos + laserVector, objectParam, queryParam);
-	auto hitActor = hit.Actor.Get();
-	return Cast<ABallPawn>(hitActor);
-}
-
-void AMagnetTile::PullBall(class ABallPawn* ball, float DeltaTime)
+void AMagnetTile::PullBall(ABallPawn* ball)
 {
 	auto prim = Cast<UPrimitiveComponent>(ball->GetRootComponent());
 	UWorld* world = GetWorld();
+	auto DeltaTime = world->DeltaTimeSeconds;
 	AProjectTapGameState* gameState;
 	if (world != nullptr && (gameState = world->GetGameState<AProjectTapGameState>()) != nullptr && gameState->SetMagnetTile(this) != this)
 	{
@@ -155,4 +209,30 @@ void AMagnetTile::activate()
 	magnetParticle->ActivateSystem();
 	magnetParticle->EmitterInstances[0]->SetBeamTargetPoint(magnetParticle->GetComponentLocation(), 0);
 	magnetSound->Play();
+}
+
+bool AMagnetTile::IsMaster()
+{
+	return currentDepth == 0;
+}
+
+void AMagnetTile::SpawnSubMagnet(const FVector& start,
+	const FVector& end)
+{
+	
+}
+
+void AMagnetTile::KillSubMagnet()
+{
+	if (subMagnet != nullptr)
+	{
+		subMagnet->KillSubMagnet();
+		Destroy();
+	}
+}
+
+bool AMagnetTile::CanSpawnSubMagnet()
+{
+
+	return subMagnet == nullptr && currentDepth < MAX_DEPTH;
 }

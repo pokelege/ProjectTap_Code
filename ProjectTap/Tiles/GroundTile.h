@@ -10,8 +10,13 @@ class PROJECTTAP_API AGroundTile : public AActor
 {
 	GENERATED_BODY()
 private:
-	class UBoxComponent* Collision = nullptr;
 public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Mesh )
+	class UBoxComponent* Collision = nullptr;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Mesh )
+	class USceneComponent* Meshes = nullptr;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Mesh )
+	class UStaticMesh* Mesh = nullptr;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Size )
 		TArray<FVector> IgnoredMeshes;
 
@@ -28,6 +33,9 @@ public:
 		float MeshScaleZ = 80.0f;
 	// Sets default values for this actor's properties
 	AGroundTile();
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent ) override;
+#endif
 	private:
-		void Generate();
+		void Generate(bool isEditor = false);
 };

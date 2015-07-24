@@ -54,7 +54,6 @@ void ABlockingTileBase::Tick( float DeltaTime )
 		canDesend = pos.Z - original.Z > FLT_EPSILON;
 		if (!canDesend)
 		{
-			Enable();
 			pos.Z = original.Z;
 		}
 	}

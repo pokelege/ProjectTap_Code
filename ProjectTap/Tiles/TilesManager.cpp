@@ -65,12 +65,17 @@ void UTilesManager::HighLightTile(ATile* tile)
 		prevHighlighted->CancelHighlightTile();
 		prevHighlighted = nullptr;
 	}
+
+	if (tile != nullptr && !tile->IsEnabled())
+	{
+		tile->turnOffHighlight();
+	}
 }
 
 void UTilesManager::AddTile(AGroupedBlockingTile* tile)
 {
 
-	if (tile != nullptr)
+	if (tile != nullptr && tile->IsEnabled())
 	{
 		bool reached_size_limit = activatedGroupedBlocks.Num() >= grouped_size_limit;
 		bool hasBeenAdded = false;
@@ -98,7 +103,7 @@ void UTilesManager::AddTile(AGroupedBlockingTile* tile)
 
 void UTilesManager::AddTile(ABlockingTile* tile)
 {
-	if (tile != nullptr && !activatedBlocks.Contains(tile))
+	if (tile != nullptr && tile->IsEnabled() && !activatedBlocks.Contains(tile))
 	{
 		SetBlockingTileCurrent();
 
@@ -119,7 +124,7 @@ void UTilesManager::AddTile(ABlockingTile* tile)
 
 void UTilesManager::AddTile(AStrongBlockingTile* tile)
 {
-	if (tile != nullptr && tile != prevStrongBlockingTile)
+	if (tile != nullptr && tile->IsEnabled() && tile != prevStrongBlockingTile)
 	{
 		SetStrongBlockingTileCurrent();
 
@@ -147,8 +152,8 @@ void UTilesManager::AddTile(ADraggableMoveTile* tile)
 	}
 
 	if (tile != nullptr)
-	{		
-		SetDraggableMoveTileCurrent();		
+	{
+		SetDraggableMoveTileCurrent();
 	}
 }
 

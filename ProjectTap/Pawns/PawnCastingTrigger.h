@@ -6,6 +6,12 @@
 #include "CustomGameState.h"
 #include "PawnCastingTrigger.generated.h"
 
+enum class BallCastType : uint8
+{
+	CAST_RAMP = 0,
+	CAST_BLOCKING = 1
+};
+
 UCLASS()
 class PROJECTTAP_API APawnCastingTrigger : public AActor
 {
@@ -21,6 +27,7 @@ public:
 private:
 	bool canTrigger = true;
 public:
+	BallCastType castType = BallCastType::CAST_RAMP;
 
 	// Sets default values for this actor's properties
 	APawnCastingTrigger();
@@ -39,8 +46,10 @@ public:
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult & SweepResult);
+
 	UFUNCTION()
 	void OnStateChanged( const CustomGameState newState );
+
 private:
 	void SetBallPawn( ABallPawn* currentPawn );
 };

@@ -281,7 +281,7 @@ void ABallPawn::AddVelocity(const FVector& vel, bool clearForce)
 	if (clearForce)
 	{
 		float velZ = ballCollision->GetPhysicsLinearVelocity().Z;
-		ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, velZ));
+		ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, -9.8f));
 	}
 	ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
 	ballCollision->AddImpulse(vel);

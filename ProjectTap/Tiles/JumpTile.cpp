@@ -53,7 +53,7 @@ void AJumpTile::calculateImpulse()
 	float velocityZ = -GetWorld()->GetGravityZ() * t;
 	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 
-	auto startPos = ball->GetActorLocation();
+	auto startPos = GetActorLocation();
 	auto distance = FVector::Dist(target->GetActorLocation(), startPos);
 
 	//d = 1/2 * a *t^2
@@ -64,7 +64,9 @@ void AJumpTile::calculateImpulse()
 	auto forceZ = mass * velocityZ;
 
 	//impuls(change in momentum) = f * t
-	impulse = (dir * forceX + FVector(0.0f, 0.0f, forceZ)) * t;
+	auto horizontalVec = FVector(dir.X, dir.Y, .0f) * forceX;
+	auto verticalVec = FVector(.0f, .0f, forceZ);
+	impulse = (horizontalVec + verticalVec) * t;
 }
 
 void AJumpTile::HighlightEdge()

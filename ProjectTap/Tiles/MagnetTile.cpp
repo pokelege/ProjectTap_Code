@@ -47,7 +47,6 @@ void AMagnetTile::SetDepth( int32 depth )
 	if ( currentDepth > 0 )
 	{
 		TileMesh->SetHiddenInGame( true );
-		auto emitter = magnetParticle->EmitterInstances[0];
 		BoxCollision->SetCollisionEnabled( ECollisionEnabled::NoCollision );
 
 	}

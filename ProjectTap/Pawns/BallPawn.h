@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
+#include "PawnCastingTrigger.h"
 #include "BallPawn.generated.h"
 
 UCLASS()
@@ -13,10 +14,10 @@ class PROJECTTAP_API ABallPawn : public APawn
 	//these two vectors are used when the ball
 	//transits to the center of a tile
 	FVector transitionNormal;
-	FVector lastAnchorPosition;	
+	FVector lastAnchorPosition;		
 
 	void UpdateSweepForDeflectiveTile();
-
+	void SpawnCastingTrigger(BallCastType type);
 private:
 	friend class ADeflectiveTile;
 	FVector currentNormal;
@@ -43,7 +44,8 @@ public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
 	class UConstrainingSpringArmComponent* spring;
 private:
-	class APawnCastingTrigger* trigger = nullptr;
+	class APawnCastingTrigger* rampTrigger = nullptr;
+	class APawnCastingTrigger* blockingTrigger = nullptr;
 	class UProjectTapCameraComponent* cameraComponent = nullptr;
 	UMaterialInstanceDynamic* material = nullptr;	
 	float currentDieTime = 0;

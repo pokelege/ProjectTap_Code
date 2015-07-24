@@ -40,7 +40,6 @@ void ABlockingTile::Tick( float DeltaTime )
 		else
 		{
 			deactivate();
-			Disable();
 			time_counter = 0.0f;
 		}
 	}

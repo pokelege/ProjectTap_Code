@@ -6,7 +6,6 @@
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "Runtime/Engine/Classes/Engine/Blueprint.h"
 #include "ProjectTapGameState.h"
-#include "PawnCastingTrigger.h"
 #include "BallPlayerStart.h"
 #include "ConstrainingSpringArmComponent.h"
 #include "CustomGameState.h"
@@ -33,12 +32,12 @@ ABallPawn::ABallPawn()
 	ballCollision->SetSphereRadius(32.0f);
 
 	ballCollision->SetSimulatePhysics(true);
-
-	ballCollision->bGenerateOverlapEvents = true;
+	
+	ballCollision->SetNotifyRigidBodyCollision(true);
 
 	ballCollision->SetCollisionProfileName(TEXT("Custom"));
 
-
+	ballCollision->OnComponentHit.AddDynamic(this, &ABallPawn::OnHit);
 
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
@@ -91,13 +90,7 @@ void ABallPawn::BeginPlay()
 	Super::BeginPlay();
 
 	ballCollision->AddImpulse(initialVelocity);
-	FActorSpawnParameters params;
-	trigger = GetWorld()->SpawnActor<APawnCastingTrigger>(
-		APawnCastingTrigger::StaticClass() ,
-		GetActorLocation() ,
-		FRotator(0) ,
-		params );
-	trigger->SetBallPawn(this);
+	
 	bInvincible = false;
 	spring->SetLockPosition(GetActorLocation());
 	material = ballMesh->CreateDynamicMaterialInstance(0);
@@ -108,7 +101,29 @@ void ABallPawn::BeginPlay()
 		ctrl->InputComponent->BindAction("Pause", IE_Pressed, this, &ABallPawn::togglePauseMenu);
 		pauseMenuInstance = CreateWidget<UUserWidget>(ctrl, pauseMenuBlueprint);
 	}
+
+	SpawnCastingTrigger(BallCastType::CAST_BLOCKING);
+	SpawnCastingTrigger(BallCastType::CAST_RAMP);
 }
+
+void ABallPawn::SpawnCastingTrigger(BallCastType type)
+{
+	if (type == BallCastType::CAST_BLOCKING)
+	{
+		blockingTrigger = GetWorld()->SpawnActor<APawnCastingTrigger>();
+		blockingTrigger->SetBallPawn(this);
+		blockingTrigger->castType = type;
+		blockingTrigger->RootComponent->SetWorldScale3D(FVector(35.0f, 35.0f, 15.0f));
+	}
+
+	if (type == BallCastType::CAST_RAMP)
+	{
+		rampTrigger = GetWorld()->SpawnActor<APawnCastingTrigger>();
+		rampTrigger->SetBallPawn(this);
+		rampTrigger->castType = type;
+	}
+}
+
 
 // Called every frame
 void ABallPawn::Tick( float DeltaTime )
@@ -118,13 +133,19 @@ void ABallPawn::Tick( float DeltaTime )
 	{
 		Controller->InputComponent->BindAction("Pause", IE_Pressed, this, &ABallPawn::togglePauseMenu);
 	}
+
+	auto pos = GetActorLocation();
+	pos.Z -= 40.0f;
 	//udpate trigger position
-	if (trigger != nullptr)
+	if (blockingTrigger != nullptr)
 	{
-		auto pos = GetActorLocation();
-		pos.Z -= 40.0f;
-		trigger->SetActorLocation(pos);
+		blockingTrigger->SetActorLocation(pos);
 	}
+	if (rampTrigger != nullptr)
+	{
+		rampTrigger->SetActorLocation(pos);
+	}
+
 
 	AProjectTapGameState* gameState = GetWorld()->GetGameState<AProjectTapGameState>();
 	if(dying && gameState->GetState() == CustomGameState::GAME_STATE_DYING)
@@ -336,13 +357,10 @@ void ABallPawn::OnHit(class AActor* OtherActor,
 					  const FHitResult& Hit)
 
 {
-	if (auto tile = Cast<ABlockingTileBase>(OtherActor))
+	if (OtherActor->IsA(ABlockingTileBase::StaticClass()))
 	{
-		if (tile->CanKillBall())
-		{
-			Kill();
-		}
-		else if (tile->CanStopBall())
+		auto tile = Cast<ABlockingTileBase>(OtherActor);
+		if (tile->isActivated() && tile->IsEnabled())
 		{
 			AddVelocity(FVector::ZeroVector, true);
 		}

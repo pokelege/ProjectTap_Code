@@ -62,7 +62,7 @@ void APawnCastingTrigger::OnBeginTriggerOverlap(AActor* OtherActor,
 	if (castType == BallCastType::CAST_BLOCKING)
 	{
 		auto tile = Cast<ABlockingTileBase>(OtherActor);
-		if (tile != nullptr)
+		if (tile != nullptr && !tile->isActivated())
 		{
 			tile->deactivate();
 			tile->Disable();
@@ -92,7 +92,7 @@ void APawnCastingTrigger::OnEndTriggerOverlap(AActor* OtherActor,
 	if (castType == BallCastType::CAST_BLOCKING)
 	{
 		auto tile = Cast<ABlockingTileBase>(OtherActor);
-		if (tile != nullptr)
+		if (tile != nullptr && !tile->isActivated())
 		{
 			tile->Enable();
 			tile->CancelHighlight();

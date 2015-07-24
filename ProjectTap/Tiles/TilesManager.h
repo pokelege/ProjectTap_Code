@@ -23,7 +23,7 @@ class UTilesManager
 	class ADraggableMoveTile* currDraggableTile = nullptr;
 	class AMouseController* controller = nullptr;
 	unsigned char size_limit{ 1 };
-	unsigned char grouped_size_limit{ 6 };
+	unsigned char grouped_size_limit{ 50 };
 	CurrentTileType currentTileType{ CurrentTileType::NONE };
 	bool isMousePressed = false;
 public:

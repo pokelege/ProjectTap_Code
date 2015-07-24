@@ -32,12 +32,12 @@ ABallPawn::ABallPawn()
 	ballCollision->SetSphereRadius(32.0f);
 
 	ballCollision->SetSimulatePhysics(true);
-
-	ballCollision->bGenerateOverlapEvents = true;
+	
+	ballCollision->SetNotifyRigidBodyCollision(true);
 
 	ballCollision->SetCollisionProfileName(TEXT("Custom"));
 
-
+	ballCollision->OnComponentHit.AddDynamic(this, &ABallPawn::OnHit);
 
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
@@ -357,13 +357,10 @@ void ABallPawn::OnHit(class AActor* OtherActor,
 					  const FHitResult& Hit)
 
 {
-	if (auto tile = Cast<ABlockingTileBase>(OtherActor))
+	if (OtherActor->IsA(ABlockingTileBase::StaticClass()))
 	{
-		if (tile->CanKillBall())
-		{
-			Kill();
-		}
-		else if (tile->CanStopBall())
+		auto tile = Cast<ABlockingTileBase>(OtherActor);
+		if (tile->isActivated() && tile->IsEnabled())
 		{
 			AddVelocity(FVector::ZeroVector, true);
 		}

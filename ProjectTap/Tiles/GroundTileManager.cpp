@@ -39,6 +39,7 @@ void AGroundTileManager::Generate()
 			{
 				newGround = Cast<AGroundTile>( GroundTiles[meshesIndex++] );
 				newGround->AttachRootComponentToActor( this );
+				newGround->UpdateAttachedLocation();
 			}
 			else
 			{

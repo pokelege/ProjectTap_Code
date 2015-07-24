@@ -2,11 +2,11 @@
 
 #include "ProjectTap.h"
 #include "BaseRampTile.h"
-#include "../ProjectTapGameMode.h"
+#include "ProjectTapGameMode.h"
 #include "Pawns/BallPawn.h"
 
 const FName ABaseRampTile::BASE_RAMP_CURVE_PATH = FName("/Game/Curves/Ramp");
-
+const GroundableInfo ABaseRampTile::GroundableInfo = GroundableInfo(FVector(0,0,2), false)
 ABaseRampTile::ABaseRampTile() : ATile()
 {
 	if(BoxCollision)
@@ -34,6 +34,11 @@ ABaseRampTile::ABaseRampTile() : ATile()
 
 	CancelHighlight();
 	Disable();
+}
+
+const GroundableInfo* ABaseRampTile::GetGroundableInfo() const
+{
+	return &ABaseRampTile::GroundableInfo;
 }
 
 void ABaseRampTile::Tick(float DeltaTime)

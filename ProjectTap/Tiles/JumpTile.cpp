@@ -50,7 +50,7 @@ void AJumpTile::calculateImpulse()
 	//vf = vi + at
 	//vf == 0
 	//vi = -at
-	float velocityZ = -GetWorld()->GetGravityZ() * t;
+	float verticalAcceleration = -GetWorld()->GetGravityZ();
 	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 
 	auto startPos = GetActorLocation();
@@ -61,7 +61,7 @@ void AJumpTile::calculateImpulse()
 	auto horizontaAcceleration = 2 * distance / FMath::Square(2 * t);//t *2 because ball goes up and down
 	auto mass = ball->ballCollision->GetMass();
 	auto forceX = mass * horizontaAcceleration;
-	auto forceZ = mass * velocityZ;
+	auto forceZ = mass * verticalAcceleration;
 
 	//impuls(change in momentum) = f * t
 	auto horizontalVec = FVector(dir.X, dir.Y, .0f) * forceX;

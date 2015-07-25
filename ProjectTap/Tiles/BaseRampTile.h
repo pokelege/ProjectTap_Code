@@ -4,14 +4,13 @@
 
 #include "Tiles/Tile.h"
 #include "CustomGameState.h"
-#include "IGroundable.h"
 #include "BaseRampTile.generated.h"
 
 /**
  *
  */
 UCLASS()
-class PROJECTTAP_API ABaseRampTile : public ATile, public IGroundable
+class PROJECTTAP_API ABaseRampTile : public ATile
 {
 	GENERATED_BODY()
 

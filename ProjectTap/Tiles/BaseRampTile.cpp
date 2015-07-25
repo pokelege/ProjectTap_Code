@@ -6,7 +6,7 @@
 #include "Pawns/BallPawn.h"
 
 const FName ABaseRampTile::BASE_RAMP_CURVE_PATH = FName("/Game/Curves/Ramp");
-const GroundableInfo ABaseRampTile::groundableInfo = GroundableInfo(FVector(0,0,2), false);
+const GroundableInfo ABaseRampTile::groundableInfo = GroundableInfo(FVector(0,0,-2), false);
 ABaseRampTile::ABaseRampTile() : ATile()
 {
 	if(BoxCollision)

@@ -45,6 +45,9 @@ void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChange
 	{
 		if ( ActorToAttach != nullptr )
 		{
+			auto otherTile = Cast<AGroundTile>(ActorToAttach->ParentComponentActor.Get());
+			if(otherTile != nullptr && otherTile != this)
+				otherTile->ActorToAttach = nullptr;
 			ActorToAttach->AttachRootComponentToActor(this);
 			UpdateAttachedLocation();
 			ActorToAttach->SetActorRelativeRotation(FRotator(0));

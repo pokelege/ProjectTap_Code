@@ -9,7 +9,7 @@ UCLASS()
 class PROJECTTAP_API AGroundTileManager : public AActor
 {
 	GENERATED_BODY()
-	
+
 private:
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Mesh )
@@ -23,6 +23,8 @@ public:
 		const float MeshScaleX = 40.0f;
 		const float MeshScaleY = 40.0f;
 		const float MeshScaleZ = 80.0f;
+		UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Generate)
+		bool ApplyProperties_Button;
 	// Sets default values for this actor's properties
 	AGroundTileManager();
 #if WITH_EDITOR

@@ -26,7 +26,7 @@ void AGroundTile::UpdateAttachedLocation()
 		if ( ( groundableActor = Cast<IGroundable>( ActorToAttach ) ) != nullptr )
 		{
 			auto stuff = groundableActor->GetGroundableInfo();
-			ActorToAttach->AddActorLocalTransform( stuff->offset );
+			ActorToAttach->AddActorLocalOffset( stuff->offset );
 			GroundVisible = stuff->defaultGroundVisibility;
 			Mesh->SetVisibility( GroundVisible );
 		}

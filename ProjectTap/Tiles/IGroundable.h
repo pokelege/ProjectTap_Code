@@ -9,14 +9,14 @@ struct GroundableInfo
 {
 	FVector offset = FVector(0); //Extra offset after setting to ground
 	bool defaultGroundVisibility = true; //Ground visiblility
-	GroundableInfo( FVector& offset, bool defaultGroundVisibility = true )
+	GroundableInfo( FVector theOffset, bool theDefaultGroundVisibility = true )
 	{
-		this->offset = offset;
-		this->defaultGroundVisibility = defaultGroundVisibility;
+		this->offset = theOffset;
+		this->defaultGroundVisibility = theDefaultGroundVisibility;
 	}
 };
 /**
- * 
+ *
  */
 UINTERFACE( MinimalAPI )
 class UGroundable : public UInterface

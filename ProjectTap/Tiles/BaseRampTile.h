@@ -4,19 +4,20 @@
 
 #include "Tiles/Tile.h"
 #include "CustomGameState.h"
+#include "IGroundable.h"
 #include "BaseRampTile.generated.h"
 
 /**
  *
  */
 UCLASS()
-class PROJECTTAP_API ABaseRampTile : public ATile
+class PROJECTTAP_API ABaseRampTile : public ATile, public IGroundable
 {
 	GENERATED_BODY()
-	
+
 	friend class APawnCastingTrigger;
 	static const FName BASE_RAMP_CURVE_PATH;
-
+	static const GroundableInfo groundableInfo;
 protected:
 	FDelegateHandle OnGameStateChangedDelegateHandle;
 	class ABallPawn* ball = nullptr;
@@ -35,7 +36,7 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
-
+	virtual const struct GroundableInfo* GetGroundableInfo() const override;
 	virtual void activate() override;
 	virtual void HighlightEdge() override;
 	virtual void CancelHighlightEdge() override;

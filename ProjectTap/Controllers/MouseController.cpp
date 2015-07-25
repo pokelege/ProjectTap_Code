@@ -105,39 +105,39 @@ void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 {
 	bool found = false;
 
-	auto tile = Cast<ADraggableMoveTile>(hit.Actor.Get());
-	if (tile != nullptr)
+	auto DraggableMoveTile = Cast<ADraggableMoveTile>(hit.Actor.Get());
+	if (DraggableMoveTile != nullptr)
 	{
-		btManager.AddTile(tile);
+		btManager.AddTile(DraggableMoveTile);
 		found = true;
 	}
 
 	if (!found)
 	{
-		auto tile = Cast<AGroupedBlockingTile>(hit.Actor.Get());
-		if (tile != nullptr && tile->IsEnabled())
+		auto GroupedBlockingTile = Cast<AGroupedBlockingTile>(hit.Actor.Get());
+		if (GroupedBlockingTile != nullptr && GroupedBlockingTile->IsEnabled())
 		{
-			btManager.AddTile(tile);
+			btManager.AddTile(GroupedBlockingTile);
 			found = true;
 		}
 	}
 
 	if (!found)
 	{
-		auto tile = Cast<AStrongBlockingTile>(hit.Actor.Get());
-		if (tile != nullptr && tile->IsEnabled())
+		auto StrongBlockingTile = Cast<AStrongBlockingTile>(hit.Actor.Get());
+		if (StrongBlockingTile != nullptr && StrongBlockingTile->IsEnabled())
 		{
-			btManager.AddTile(tile);
+			btManager.AddTile(StrongBlockingTile);
 			found = true;
 		}
 	}
 
 	if (!found)
 	{
-		auto tile = Cast<ABlockingTile>(hit.Actor.Get());
-		if (tile != nullptr && tile->IsEnabled())
+		auto BlockingTile = Cast<ABlockingTile>(hit.Actor.Get());
+		if (BlockingTile != nullptr && BlockingTile->IsEnabled())
 		{
-			btManager.AddTile(tile);
+			btManager.AddTile(BlockingTile);
 			found = true;
 		}
 	}

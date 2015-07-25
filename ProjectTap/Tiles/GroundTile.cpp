@@ -3,6 +3,7 @@
 #include "ProjectTap.h"
 #include "GroundTile.h"
 #include "UnrealType.h"
+#include "IGroundable.h"
 // Sets default values
 AGroundTile::AGroundTile()
 {
@@ -11,8 +12,25 @@ AGroundTile::AGroundTile()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Meshes" ) );
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh( *FName( "/Game/Models/GroundTiles/1x1" ).ToString() );
 	Mesh->SetStaticMesh( mesh.Object );
+	Mesh->SetMobility( EComponentMobility::Static );
 	SetRootComponent( Mesh );
 	Mesh->SetVisibility( GroundVisible );
+}
+
+void AGroundTile::UpdateAttachedLocation()
+{
+	if ( ActorToAttach != nullptr )
+	{
+		ActorToAttach->SetActorRelativeLocation( FVector( 0 , 0 , 80 ) );
+		IGroundable* groundableActor;
+		if ( ( groundableActor = Cast<IGroundable>( ActorToAttach ) ) != nullptr )
+		{
+			auto stuff = groundableActor->GetGroundableInfo();
+			ActorToAttach->AddActorLocalOffset( stuff->offset );
+			GroundVisible = stuff->defaultGroundVisibility;
+			Mesh->SetVisibility( GroundVisible );
+		}
+	}
 }
 
 #if WITH_EDITOR
@@ -28,7 +46,7 @@ void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChange
 		if ( ActorToAttach != nullptr )
 		{
 			ActorToAttach->AttachRootComponentToActor(this);
-			ActorToAttach->SetActorRelativeLocation(FVector(0,0,80));
+			UpdateAttachedLocation();
 			ActorToAttach->SetActorRelativeRotation(FRotator(0));
 			ActorToAttach->SetActorRelativeScale3D(FVector(1));
 		}

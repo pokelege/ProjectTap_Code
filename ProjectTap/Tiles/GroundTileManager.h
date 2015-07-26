@@ -15,9 +15,9 @@ public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Mesh )
 	class UBoxComponent* Collision = nullptr;
 
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Size , meta = ( UIMin = "1.0" , UIMax = "10.0" ) )
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Size )
 		int32 NumTilesX = 0;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Size , meta = ( UIMin = "1.0" , UIMax = "10.0" ) )
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Size )
 		int32 NumTilesY = 0;
 
 		const float MeshScaleX = 40.0f;

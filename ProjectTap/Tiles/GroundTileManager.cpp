@@ -68,7 +68,7 @@ void AGroundTileManager::Generate()
 #if WITH_EDITOR
 void AGroundTileManager::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )
 {
-	if(PropertyChangedEvent.Property->GetNameCPP().Equals("ApplyProperties_Button"))
+	if(PropertyChangedEvent.Property != nullptr && PropertyChangedEvent.Property->GetNameCPP().Equals("ApplyProperties_Button"))
 		Generate();
 	Super::PostEditChangeProperty( PropertyChangedEvent );
 }

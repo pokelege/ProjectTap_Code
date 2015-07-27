@@ -15,7 +15,7 @@ class PROJECTTAP_API AJumpTile : public ABaseRampTile, public ICarriable
 	GENERATED_BODY()
 
 	static const FName JUMP_MESH_PATH;
-	FVector impulse;
+	FVector jumpVelocity;
 	bool isBallComing = false;
 public:
 

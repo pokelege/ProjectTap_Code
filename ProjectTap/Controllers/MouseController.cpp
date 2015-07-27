@@ -142,8 +142,6 @@ void AMouseController::ActivateOtherTiles(const FHitResult& hit)
 		}
 	}
 
-
-
 	if (!found)
 	{
 		auto tile = Cast<ATile>(hit.Actor.Get());

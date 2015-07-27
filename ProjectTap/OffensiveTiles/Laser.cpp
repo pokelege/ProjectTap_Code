@@ -106,7 +106,7 @@ void ALaser::checkLaserCollisions(float dt)
 	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
 	if ( !canHitBall ) queryParam.AddIgnoredActor( GetWorld()->GetGameState<AProjectTapGameState>()->GetPlayer() );
 	auto pos = GetActorLocation();
-	auto rayStart = pos + dir * 2.0f;
+	auto rayStart = pos + dir * 5.0f;
 	auto laserVector = dir * length;
 	auto laserEmitter = laserParticle->EmitterInstances[0];
 	//ray cast to see if laser hits anything

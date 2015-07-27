@@ -117,6 +117,8 @@ void APortalTile::SetMeshCollisionProperty(UBoxComponent* box)
 	box->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 	box->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	box->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	box->SetCollisionObjectType(ECC_Portal);
+
 }
 
 void APortalTile::BeginPlay()

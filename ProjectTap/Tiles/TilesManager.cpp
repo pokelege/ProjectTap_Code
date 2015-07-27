@@ -251,6 +251,7 @@ void UTilesManager::SetDraggableMoveTileCurrent()
 void UTilesManager::MouseRelease()
 {
 	DeactivateStrongBlockingTile();
+	DeactivateGroupedBlockingTiles();
 	SetEnableSwipeCheck(false);
 	
 	if (currDraggableTile != nullptr)

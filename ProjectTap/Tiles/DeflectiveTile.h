@@ -59,6 +59,7 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void turnOffHighlight(bool offTile = true, bool offEdge = true) override;
 	virtual OffsetInfo getOffsetInfo() override;
 
 	//for a 3D vector, this function will find the axis with largest value

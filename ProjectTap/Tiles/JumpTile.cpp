@@ -37,36 +37,42 @@ void AJumpTile::activate()
 	target->SetWaitForBall();
 
 	calculateImpulse();
-	ball->ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
+	ball->ballCollision->SetPhysicsLinearVelocity(jumpVelocity);
 	ball->ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
-	ball->ballCollision->AddImpulse(impulse);
 }
 
 void AJumpTile::calculateImpulse()
 {
 	//h = 1/2*a*t^2
 	//t = sqrt(2h/a)
-	float t = FMath::Sqrt(2 * height  / -GetWorld()->GetGravityZ()); 
+	float t_up = FMath::Sqrt(2 * height  / -GetWorld()->GetGravityZ()); 
+
+	float fall_height = GetActorLocation().Z + height - target->GetActorLocation().Z;
+	float t_down = FMath::Sqrt(2 * fall_height / -GetWorld()->GetGravityZ());
+
+	float t = t_up + t_down;
+
 	//vf = vi + at
 	//vf == 0
 	//vi = -at
-	float verticalAcceleration = -GetWorld()->GetGravityZ();
+	float verticalVelocity = -GetWorld()->GetGravityZ() * t_up;
 	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 
-	auto startPos = GetActorLocation();
-	auto distance = FVector::Dist(target->GetActorLocation(), startPos);
+	auto startPos = FVector(GetActorLocation().X, GetActorLocation().Y, .0f);// GetActorLocation().Z);
+	auto targetPos = FVector(target->GetActorLocation().X, target->GetActorLocation().Y, .0f);// target->GetActorLocation().Y);
+	auto distance = FVector::Dist(targetPos, startPos);
 
 	//d = 1/2 * a *t^2
 	//a = 2d / t^2
-	auto horizontaAcceleration = 2 * distance / FMath::Square(2 * t);//t *2 because ball goes up and down
-	auto mass = ball->ballCollision->GetMass();
-	auto forceX = mass * horizontaAcceleration;
-	auto forceZ = mass * verticalAcceleration;
+	auto horizontalSpeed = distance / t;
+	//auto mass = ball->ballCollision->GetMass();
+	//auto forceX = mass * horizontaAcceleration;
+	//auto forceZ = mass * verticalAcceleration;
 
 	//impuls(change in momentum) = f * t
-	auto horizontalVec = FVector(dir.X, dir.Y, .0f) * forceX;
-	auto verticalVec = FVector(.0f, .0f, forceZ);
-	impulse = (horizontalVec + verticalVec) * t;
+	dir.Z = 0.0f;
+	auto horizontalVec = dir * horizontalSpeed;
+	jumpVelocity = horizontalVec + FVector(.0f, .0f, verticalVelocity);
 }
 
 void AJumpTile::HighlightEdge()

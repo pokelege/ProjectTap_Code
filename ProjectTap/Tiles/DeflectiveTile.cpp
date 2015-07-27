@@ -179,6 +179,11 @@ void ADeflectiveTile::Spin(float dt)
 
 }
 
+void ADeflectiveTile::turnOffHighlight(bool offTile , bool offEdge )
+{
+	Super::turnOffHighlightEdge();
+}
+
 
 void ADeflectiveTile::activate()
 {

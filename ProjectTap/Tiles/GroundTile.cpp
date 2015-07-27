@@ -37,6 +37,7 @@ void AGroundTile::UpdateAttachedLocation()
 void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )
 {
 	Super::PostEditChangeProperty( PropertyChangedEvent );
+	if(PropertyChangedEvent.Property == nullptr) return;
 	if ( PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "GroundVisible" ) ) )
 	{
 		Mesh->SetVisibility( GroundVisible );

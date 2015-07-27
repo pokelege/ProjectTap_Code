@@ -2,6 +2,9 @@
 
 #include "ProjectTap.h"
 #include "Tile.h"
+
+const GroundableInfo ATile::groundableInfo = GroundableInfo(FVector(0,0,-80), false);
+
 // Sets default values
 ATile::ATile()
 {
@@ -21,6 +24,11 @@ ATile::ATile()
 	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	BoxCollision->SetNotifyRigidBodyCollision(true);
 	CancelHighlight();
+}
+
+const GroundableInfo* ATile::GetGroundableInfo() const
+{
+	return &ATile::groundableInfo;
 }
 
 void ATile::activate()

@@ -29,7 +29,7 @@ void AGroundTileManager::Generate()
 		if ( ActorItr->IsAttachedTo(this) ) GroundTiles.Add(*ActorItr);
 	}
 	auto meshesIndex = 0;
-	
+
 	for ( int x = 1; x <= NumTilesX; ++x )
 	{
 		for ( int y = 1; y <= NumTilesY; ++y )
@@ -39,6 +39,7 @@ void AGroundTileManager::Generate()
 			{
 				newGround = Cast<AGroundTile>( GroundTiles[meshesIndex++] );
 				newGround->AttachRootComponentToActor( this );
+				newGround->UpdateAttachedLocation();
 			}
 			else
 			{
@@ -49,8 +50,10 @@ void AGroundTileManager::Generate()
 			}
 			FVector translation( 0 );
 			//todo optimize if possible
-			translation.X = ( ( x - 1 ) * ( MeshScaleX * 2.0f ) ) - ( ( ( NumTilesX - 1 ) * ( MeshScaleX * 2.0f ) ) / 2.0f );
-			translation.Y = ( ( y - 1 ) * ( MeshScaleY * 2.0f ) ) - ( ( ( NumTilesY - 1 ) * ( MeshScaleY * 2.0f ) ) / 2.0f );
+			//translation.X = ( ( x - 1 ) * ( MeshScaleX * 2.0f ) ) - ( ( ( NumTilesX - 1 ) * ( MeshScaleX * 2.0f ) ) / 2.0f );
+			translation.X = MeshScaleX * ((2.0f * x) - NumTilesX - 1);
+			//translation.Y = ( ( y - 1 ) * ( MeshScaleY * 2.0f ) ) - ( ( ( NumTilesY - 1 ) * ( MeshScaleY * 2.0f ) ) / 2.0f );
+			translation.Y = MeshScaleY * ((2.0f * y) - NumTilesY - 1);
 			newGround->SetActorRelativeLocation(translation);
 			newGround->SetActorRelativeRotation(FRotator(0));
 			newGround->SetActorRelativeScale3D(FVector(1));
@@ -65,8 +68,8 @@ void AGroundTileManager::Generate()
 #if WITH_EDITOR
 void AGroundTileManager::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )
 {
-	//todo optimize
-	Generate();
+	if(PropertyChangedEvent.Property != nullptr && PropertyChangedEvent.Property->GetNameCPP().Equals("ApplyProperties_Button"))
+		Generate();
 	Super::PostEditChangeProperty( PropertyChangedEvent );
 }
 #endif

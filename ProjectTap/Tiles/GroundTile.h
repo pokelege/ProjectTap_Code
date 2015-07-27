@@ -19,6 +19,7 @@ public:
 		bool GroundVisible = true;
 	// Sets default values for this actor's properties
 	AGroundTile();
+	void UpdateAttachedLocation();
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent ) override;
 #endif

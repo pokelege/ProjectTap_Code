@@ -12,7 +12,6 @@ ABlockingTile::ABlockingTile( )
 	FName path("/Game/Models/BlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	BoxCollision->SetBoxExtent(FVector(40.0f,40.0f,80.0f));
 	//BoxCollision->OnComponentHit.AddDynamic(this, &ABlockingTileBase::OnHit);
 }
 

@@ -3,15 +3,18 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "IGroundable.h"
 #include "Tile.generated.h"
 
 UCLASS()
 /// <summary>
 /// The base tile
 /// </summary>
-class PROJECTTAP_API ATile : public AActor
+class PROJECTTAP_API ATile : public AActor, public IGroundable
 {
 	GENERATED_BODY()
+private:
+	static const GroundableInfo groundableInfo;
 protected:
 	UMaterialInstanceDynamic* material = nullptr;
 public:
@@ -72,5 +75,5 @@ public:
 
 	//called when the tile is on the moving tile
 	virtual void SetLocationWhenCarried( FVector& location );
-
+	virtual const struct GroundableInfo* GetGroundableInfo() const override;
 };

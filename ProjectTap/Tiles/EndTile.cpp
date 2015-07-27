@@ -25,6 +25,8 @@ void AEndTile::StartTransporting()
 		transportScalingCurve->GetTimeRange(minTime, transportScalingCurveDuration);
 	}
 	transporting = true;
+
+	BoxCollision->bGenerateOverlapEvents = true;
 }
 
 void AEndTile::PlayTransport(const float &DeltaTime)
@@ -145,23 +147,17 @@ void AEndTile::OnGameStateChanged( const CustomGameState gameState )
 	}
 }
 
-void AEndTile::OnBeginHit(class AActor* OtherActor,
-						  class UPrimitiveComponent* OtherComp,
-						  FVector NormalImpulse,
-						  const FHitResult& Hit)
+void AEndTile::EndLevel(ABallPawn* ball)
 {
-	if (Cast<ABallPawn>(OtherActor) != nullptr)
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+	if ( gameState && CanTransport )
 	{
-		UWorld* world = GetWorld();
-		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-		if ( gameState && CanTransport )
-		{
-			gameState->SetGameState( CustomGameState::GAME_STATE_WINNING );
-			targetBall = Cast<ABallPawn>(OtherActor);
-			auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
-			pc->SetSimulatePhysics(false);
-			pc->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-			StartTransporting();
-		}
+		gameState->SetGameState( CustomGameState::GAME_STATE_WINNING );
+		targetBall = ball;
+		auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
+		pc->SetSimulatePhysics(false);
+		pc->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		StartTransporting();
 	}
 }

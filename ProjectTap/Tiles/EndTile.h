@@ -47,10 +47,7 @@ public:
 		void OnGameStateChanged( const CustomGameState gameState );
 
 	UFUNCTION()
-	void OnBeginHit(class AActor* OtherActor,
-					class UPrimitiveComponent* OtherComp,
-					FVector NormalImpulse,
-					const FHitResult& Hit);
+		void EndLevel(class ABallPawn* ball);
 private:
 	void StartTransporting();
 	void PlayTransport( const float& DeltaTime );

@@ -240,14 +240,14 @@ void ADeflectiveTile::OnHit(class AActor* OtherActor,
 							FVector NormalImpulse,
 							const FHitResult& Hit)
 {
-
 	if (auto ball = Cast<ABallPawn>(OtherActor))
 	{
 		if (ballCanTouch)
 		{
+			auto incomingSpeed = Cast<USphereComponent>(ball->RootComponent)->GetPhysicsLinearVelocity().Size();
 			auto incomingVector = clampShortAxis(GetActorLocation() - ball->GetActorLocation());
 			auto newDir = FMath::GetReflectionVector(incomingVector, NormalImpulse).GetSafeNormal();
-			auto newVel = deflectingSpeed * clampShortAxis(newDir);
+			auto newVel = (additionalDeflectingSpeed + incomingSpeed) * clampShortAxis(newDir);
 			ball->ballCollision->SetPhysicsAngularVelocity(FVector::ZeroVector);
 			ball->ballCollision->SetPhysicsLinearVelocity(newVel);
 			ball->TransitionBallToProperLocation(GetActorLocation() + newDir * 70.0f, newVel);

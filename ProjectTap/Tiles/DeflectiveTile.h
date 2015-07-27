@@ -21,6 +21,8 @@ UCLASS()
 class PROJECTTAP_API ADeflectiveTile : public ATile, public ICarriable
 {
 	GENERATED_BODY()
+private:
+	static const GroundableInfo groundableInfo;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
 		USceneComponent* frameCollisionsComponent = nullptr;
@@ -74,4 +76,5 @@ public:
 
 	void Spin(float dt);
 	void UpdateEdgeHighlight( float dt );
+	virtual const struct GroundableInfo* GetGroundableInfo() const override;
 };

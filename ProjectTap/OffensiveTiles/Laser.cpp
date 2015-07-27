@@ -14,6 +14,7 @@
 
 #define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
 const int ALaser::MAX_DEPTH = 8;
+const GroundableInfo ALaser::groundableInfo = GroundableInfo(FVector(0,0,40), true);
 // Sets default values
 ALaser::ALaser()
 {
@@ -34,19 +35,23 @@ ALaser::ALaser()
 	ConstructorHelpers::FObjectFinder<UParticleSystem> particleSparkAssets(TEXT("/Game/Particles/P_LaserSparks"));
 	laserSparkParticle->SetTemplate(particleSparkAssets.Object);
 
-	debugArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("arrow"));
-	debugArrow->AttachTo(RootComponent);
-
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("laser emitter"));
 	mesh->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> laserEmitterMesh(TEXT("/Game/Models/TurretGun"));
 	mesh->SetStaticMesh(laserEmitterMesh.Object);
 	mesh->SetCastShadow(false);
 
+	mesh->SetWorldScale3D(FVector(10.0f));
+
 	ConstructorHelpers::FObjectFinder<USoundWave> laserEmitSoundFile( TEXT( "/Game/Sound/S_LaserLoop" ) );
 	laserEmitSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Laser Emit Sound" ) );
 	laserEmitSound->SetSound( laserEmitSoundFile.Object );
 	laserEmitSound->AttachTo( GetRootComponent() );
+}
+
+const GroundableInfo* ALaser::GetGroundableInfo() const
+{
+	return &ALaser::groundableInfo;
 }
 
 // Called when the game starts or when spawned
@@ -237,10 +242,13 @@ void ALaser::checkLaserCollisions(float dt)
 	}
 
 	//only root laser can have an emitter mesh
-	if (currentDepth == 0)
+	if (currentDepth != 0)
 	{
 		//update laser emitter rotation
-		mesh->SetWorldScale3D(FVector(10.0f));
+		mesh->SetVisibility(false);
+	}
+	else
+	{
 		mesh->SetWorldRotation(dir.Rotation());
 	}
 }

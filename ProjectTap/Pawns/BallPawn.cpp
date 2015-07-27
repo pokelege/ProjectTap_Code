@@ -32,7 +32,7 @@ ABallPawn::ABallPawn()
 	ballCollision->SetSphereRadius(32.0f);
 
 	ballCollision->SetSimulatePhysics(true);
-	
+
 	ballCollision->SetNotifyRigidBodyCollision(true);
 
 	ballCollision->SetCollisionProfileName(TEXT("Custom"));
@@ -43,7 +43,7 @@ ABallPawn::ABallPawn()
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 	ballCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
-	ballCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);	
+	ballCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	ballCollision->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	ballCollision->GetBodyInstance()->bOverrideMass = true;
 	ballCollision->GetBodyInstance()->MassInKg = 10.0f;
@@ -58,7 +58,7 @@ ABallPawn::ABallPawn()
 
 	ballMesh->SetStaticMesh(tempMesh.Object);
 	ballMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
-	ballMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
+	ballMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	ballMesh->SetSimulatePhysics(false);
 
@@ -90,7 +90,7 @@ void ABallPawn::BeginPlay()
 	Super::BeginPlay();
 
 	ballCollision->AddImpulse(initialVelocity);
-	
+
 	bInvincible = false;
 	spring->SetLockPosition(GetActorLocation());
 	material = ballMesh->CreateDynamicMaterialInstance(0);
@@ -185,7 +185,7 @@ void ABallPawn::UpdateSweepForDeflectiveTile()
 		auto deflectiveTile = Cast<ADeflectiveTile>(hit.Actor.Get());
 		if (deflectiveTile != nullptr)
 		{
-			deflectiveTile->OnHit(this, GetRootPrimitiveComponent(), hit.ImpactNormal, hit);
+			deflectiveTile->OnHit(this, Cast<UPrimitiveComponent>(GetRootComponent()), hit.ImpactNormal, hit);
 		}
 	}
 }

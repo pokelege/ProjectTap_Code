@@ -4,15 +4,15 @@
 #include "DeflectiveTile.h"
 #include "Pawns/BallPawn.h"
 
+const GroundableInfo ADeflectiveTile::groundableInfo = GroundableInfo(FVector(0,0,40), true);
 
 ADeflectiveTile::ADeflectiveTile()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	BoxCollision->SetWorldScale3D(FVector(1.0f, 1.0f, 0.5f));
 	FName path("/Game/Models/DeflectiveTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	BoxCollision->SetBoxExtent(FVector(4,36,76));
+	BoxCollision->SetBoxExtent(FVector(4,36,36));
 
 	frameCollisionsComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Frame collisions"));
 	frameCollisionsComponent->AttachTo(RootComponent);
@@ -22,26 +22,26 @@ ADeflectiveTile::ADeflectiveTile()
 	box1->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	box1->AttachTo(frameCollisionsComponent);
 	box1->SetBoxExtent(FVector(8.000000,36.000000,5.000000));
-	box1->SetRelativeLocation(FVector(0,0,78));
+	box1->SetRelativeLocation(FVector(0,0,38));
 	UBoxComponent* box2 = CreateDefaultSubobject<UBoxComponent>(TEXT("Frame bottom"));
 	box2->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	box2->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	box2->AttachTo(frameCollisionsComponent);
 	box2->SetBoxExtent(FVector(8.000000,36.000000,5.000000));
-	box2->SetRelativeLocation(FVector(0,0,-78));
+	box2->SetRelativeLocation(FVector(0,0,-38));
 
 	UBoxComponent* box3 = CreateDefaultSubobject<UBoxComponent>(TEXT("Frame right"));
 	box3->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	box3->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	box3->AttachTo(frameCollisionsComponent);
-	box3->SetBoxExtent(FVector(8.000000,5.000000,80.000000));
+	box3->SetBoxExtent(FVector(8.000000,5.000000,40.000000));
 	box3->SetRelativeLocation(FVector(0,38,0));
 
 	UBoxComponent* box4 = CreateDefaultSubobject<UBoxComponent>(TEXT("Frame left"));
 	box4->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	box4->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	box4->AttachTo(frameCollisionsComponent);
-	box4->SetBoxExtent(FVector(8.000000,5.000000,80.000000));
+	box4->SetBoxExtent(FVector(8.000000,5.000000,40.000000));
 	box4->SetRelativeLocation(FVector(0,-38,0));
 
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
@@ -61,6 +61,11 @@ ADeflectiveTile::ADeflectiveTile()
 	ballDeflectSound->SetSound( ballDeflectSoundFile.Object );
 	ballDeflectSound->bAutoActivate = false;
 	ballDeflectSound->AttachTo( BoxCollision );
+}
+
+const GroundableInfo* ADeflectiveTile::GetGroundableInfo() const
+{
+	return &ADeflectiveTile::groundableInfo;
 }
 
 
@@ -204,7 +209,7 @@ FVector ADeflectiveTile::clampShortAxis(const FVector& vec, bool resetValueToOne
 	float abs_x = FMath::Abs(vec.X);
 	float abs_y = FMath::Abs(vec.Y);
 	float abs_z = FMath::Abs(vec.Z);
-	
+
 	auto abs_longest = FMath::Max3(abs_x, abs_y, abs_z);
 
 	FVector newVec;

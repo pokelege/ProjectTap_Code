@@ -65,9 +65,6 @@ void AJumpTile::calculateImpulse()
 	//d = 1/2 * a *t^2
 	//a = 2d / t^2
 	auto horizontalSpeed = distance / t;
-	//auto mass = ball->ballCollision->GetMass();
-	//auto forceX = mass * horizontaAcceleration;
-	//auto forceZ = mass * verticalAcceleration;
 
 	//impuls(change in momentum) = f * t
 	dir.Z = 0.0f;

@@ -11,6 +11,7 @@
 const FName ATurretPawn::BASE_MESH = FName( "/Game/Models/TurretBase" );
 const FName ATurretPawn::GUN_MESH = FName( "/Game/Models/TurretGun" );
 const float ATurretPawn::MAX_HEALTH = 10.0f;
+const GroundableInfo ATurretPawn::groundableInfo = GroundableInfo(FVector(0,0,40), true);
 // Sets default values
 ATurretPawn::ATurretPawn()
 {
@@ -20,7 +21,7 @@ ATurretPawn::ATurretPawn()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> baseMeshSource( *BASE_MESH.ToString() );
 
 	UBoxComponent* collisionBox = CreateDefaultSubobject<UBoxComponent>( TEXT( "Turret Collision" ) );
-	collisionBox->SetBoxExtent( FVector( 1 , 1 , 3 ) );
+	collisionBox->SetBoxExtent( FVector( 40 , 40 , 120 ) );
 	this->SetRootComponent( collisionBox );
 	collisionBox->SetCollisionEnabled( ECollisionEnabled::QueryAndPhysics );
 	collisionBox->bGenerateOverlapEvents = false;
@@ -37,7 +38,7 @@ ATurretPawn::ATurretPawn()
 	TurretGunMesh->SetStaticMesh( gunMesh.Object );
 	TurretGunMesh->AttachTo( baseMesh );
 	FTransform transform;
-	transform.SetLocation( FVector( 0 , 0 , 2 ) );
+	transform.SetLocation( FVector( 0 , 0 , 80 ) );
 	TurretGunMesh->SetRelativeTransform( transform );
 
 	laserTag = CreateDefaultSubobject<UParticleSystemComponent>( TEXT( "Turret Laser Tag" ) );
@@ -50,12 +51,6 @@ ATurretPawn::ATurretPawn()
 	explosionParticle->SetTemplate( explosionParticleTemplate.Object );
 	explosionParticle->AttachTo( TurretGunMesh );
 
-	auto laserPrimitive = Cast<UPrimitiveComponent>( laserTag );
-	FTransform laserWorldTransform = laserPrimitive->GetComponentTransform();
-
-	auto explosionPrimitive = Cast<UPrimitiveComponent>( explosionParticle );
-	FTransform explosionWorldTransform = explosionPrimitive->GetComponentTransform();
-
 	ConstructorHelpers::FObjectFinder<USoundBase> explosionSoundFile( TEXT( "/Game/Sound/S_Explosion" ) );
 	explosionSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Explosion Sound" ) );
 	explosionSound->SetSound( explosionSoundFile.Object );
@@ -67,11 +62,11 @@ ATurretPawn::ATurretPawn()
 	fireSound->SetSound( fireSoundFile.Object );
 	fireSound->bAutoActivate = false;
 	fireSound->AttachTo( TurretGunMesh );
+}
 
-	auto pc = Cast<UPrimitiveComponent>( RootComponent );
-	pc->SetWorldScale3D( FVector( 40.0f , 40.0f , 40.0f ) );
-	laserPrimitive->SetWorldScale3D( laserWorldTransform.GetScale3D() );
-	explosionPrimitive->SetWorldScale3D( explosionWorldTransform.GetScale3D() );
+const GroundableInfo* ATurretPawn::GetGroundableInfo() const
+{
+	return &ATurretPawn::groundableInfo;
 }
 
 // Called when the game starts or when spawned

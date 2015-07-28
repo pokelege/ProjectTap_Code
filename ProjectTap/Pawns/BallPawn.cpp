@@ -292,14 +292,29 @@ void ABallPawn::AddVelocity(const FVector& vel, const FVector& resetPos, bool cl
 {
 	TransitionBallToProperLocation(resetPos, vel);
 
-	if (clearForce)
+	auto originalVelocity = ballCollision->GetPhysicsLinearVelocity();
+	originalVelocity.Z = .0f;
+
+	auto noZNewVelocity = vel;
+	noZNewVelocity.Z = .0f;
+
+	auto dot = FVector::DotProduct(originalVelocity, noZNewVelocity);
+	auto angle = FMath::RadiansToDegrees(FMath::Acos(dot));
+
+	auto newVel = vel;
+	if (angle <= 10.0f)
 	{
-		ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
-		ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
+		newVel += newVel * .5f;
 	}
 
-	ballCollision->AddImpulse(vel);
+	if (clearForce)
+	{
+		ballCollision->SetPhysicsAngularVelocity(FVector(0.0f, 0.0f, 0.0f));
+		ballCollision->SetPhysicsLinearVelocity(FVector(0.0f, 0.0f, 0.0f));
+	}
 
+	newVel.Z = vel.Z;
+	ballCollision->AddImpulse(newVel);
 }
 
 

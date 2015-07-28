@@ -12,7 +12,6 @@ ARamp::ARamp(): ABaseRampTile()
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*RAMP_MESH_PATH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-	forceMultiplier = 2000.0f;
 }
 
 void ARamp::BeginPlay()

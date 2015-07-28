@@ -30,7 +30,7 @@ public:
 	float length = 5000.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
-	float targetVelocity = 400.0f;
+	float attractionSpeed = 80.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Magnet)
 	float centerTolerance = 0.001f;

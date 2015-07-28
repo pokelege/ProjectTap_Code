@@ -14,7 +14,6 @@ class PROJECTTAP_API AEndTile : public ATile
 
 	static const FName END_MESH;
 	TScriptDelegate<FWeakObjectPtr> delegate;
-	FDelegateHandle OnGameStateChangedDelegateHandle;
 	FVector targetBallLastPosition;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Level )
@@ -44,7 +43,7 @@ public:
 	virtual void Tick( float DeltaTime ) override;
 
 	UFUNCTION()
-		void OnGameStateChanged( const CustomGameState gameState );
+	virtual void OnGameStateChanged( const CustomGameState gameState ) override;
 
 	UFUNCTION()
 		void EndLevel(class ABallPawn* ball);

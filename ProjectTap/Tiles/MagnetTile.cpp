@@ -223,7 +223,7 @@ void AMagnetTile::deactivate()
 
 void AMagnetTile::activate()
 {
-	if ( activated ) return;
+	if ( activated || !canActivate ) return;
 	Super::activate();
 	magnetParticle->Activate( true );
 	magnetParticle->ActivateSystem();

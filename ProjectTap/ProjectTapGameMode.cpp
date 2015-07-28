@@ -46,7 +46,7 @@ void AProjectTapGameMode::StartPlay()
 		FTransform playerTransform = playerStart->GetTransform();
 		if ( ABallPlayerStart* realPlayerStart = Cast<ABallPlayerStart>( playerStart ) )
 		{
-			auto possibleCamera = Cast<UProjectTapCameraComponent>( realPlayerStart->camera->GetComponentByClass( UProjectTapCameraComponent::StaticClass() ) );
+			auto possibleCamera = realPlayerStart->camera == nullptr ? nullptr : Cast<UProjectTapCameraComponent>( realPlayerStart->camera->GetComponentByClass( UProjectTapCameraComponent::StaticClass() ) );
 			FActorSpawnParameters params;
 			ball = world->SpawnActor<ABallPawn>(
 				ABallPawn::StaticClass() ,

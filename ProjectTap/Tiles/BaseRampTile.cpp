@@ -62,9 +62,6 @@ void ABaseRampTile::Tick(float DeltaTime)
 void ABaseRampTile::BeginPlay()
 {
 	Super::BeginPlay();
-	UWorld* world = GetWorld();
-	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
 }
 
 void ABaseRampTile::activate()
@@ -109,8 +106,9 @@ void ABaseRampTile::CancelHighlightTile()
 		material->SetScalarParameterValue("LerpBaseColorHighlighted", 0);
 	}
 }
-void ABaseRampTile::OnStateChanged( const CustomGameState newState )
+void ABaseRampTile::OnGameStateChanged( const CustomGameState newState )
 {
+	Super::OnGameStateChanged(newState);
 	if ( newState == CustomGameState::GAME_STATE_PLAYING && lastPauseBall != nullptr )
 	{
 		Enable();

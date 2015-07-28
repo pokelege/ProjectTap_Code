@@ -35,6 +35,9 @@ public:
 		UCurveFloat* dieSequence;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
+		UCurveFloat* heartBeatSequence;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
 		UStaticMeshComponent* ballMesh;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
@@ -48,6 +51,7 @@ private:
 	class UProjectTapCameraComponent* cameraComponent = nullptr;
 	UMaterialInstanceDynamic* material = nullptr;	
 	float currentDieTime = 0;
+	float currentHeartTime = 0;
 public:
 	float currentTransitionSpeed = 200.0f;
 	const float DEFUALT_TRANSITION_SPEED = 200.0f;

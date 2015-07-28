@@ -41,7 +41,7 @@ ALaser::ALaser()
 	mesh->SetStaticMesh(laserEmitterMesh.Object);
 	mesh->SetCastShadow(false);
 
-	mesh->SetWorldScale3D(FVector(10.0f));
+	mesh->SetWorldScale3D(FVector(0.3f));
 
 	ConstructorHelpers::FObjectFinder<USoundWave> laserEmitSoundFile( TEXT( "/Game/Sound/S_LaserLoop" ) );
 	laserEmitSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Laser Emit Sound" ) );

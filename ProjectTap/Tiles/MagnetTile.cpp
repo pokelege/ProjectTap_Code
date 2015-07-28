@@ -181,14 +181,7 @@ void AMagnetTile::PullBall( ABallPawn* ball )
 	AProjectTapGameState* gameState;
 	if ( world != nullptr && ( gameState = world->GetGameState<AProjectTapGameState>() ) != nullptr && gameState->SetMagnetTile( this ) != this )
 	{
-		FVector linear = prim->GetPhysicsLinearVelocity();
-		linear.X = 0;
-		linear.Y = 0;
-		FVector angular = prim->GetPhysicsAngularVelocity();
-		angular.X = 0;
-		angular.Y = 0;
-		angular.Z = 0;
-		prim->SetPhysicsLinearVelocity( linear );
+		FVector angular = FVector::ZeroVector;
 		prim->SetPhysicsAngularVelocity( angular );
 		float distanceAtNormal = FVector::DotProduct( ball->GetActorLocation() - GetActorLocation() , GetActorForwardVector() );
 		FVector normalLoc = ( distanceAtNormal * GetActorForwardVector() ) + GetActorLocation();
@@ -203,10 +196,11 @@ void AMagnetTile::PullBall( ABallPawn* ball )
 	}
 	if ( isVertical )
 	{
-		targetVelocity *= verticalForceMultiplier;
+		attractionSpeed *= verticalForceMultiplier;
 	}
-
-	prim->AddImpulse( targetVelocity * -GetActorForwardVector() );
+	float originalSpeed = prim->GetPhysicsLinearVelocity().Size();
+	float newSpeed = attractionSpeed + originalSpeed;
+	prim->SetPhysicsLinearVelocity(newSpeed * -GetActorForwardVector());
 }
 
 void AMagnetTile::deactivate()
@@ -229,7 +223,7 @@ void AMagnetTile::deactivate()
 
 void AMagnetTile::activate()
 {
-	if ( activated ) return;
+	if ( activated || !canActivate ) return;
 	Super::activate();
 	magnetParticle->Activate( true );
 	magnetParticle->ActivateSystem();
@@ -254,7 +248,7 @@ void AMagnetTile::SpawnSubMagnet( const FVector& start ,
 	auto newPos = start + dir * 20.0f;
 	subMagnet = GetWorld()->SpawnActor<AMagnetTile>( newPos , rotation.Rotator() );
 	subMagnet->SetDepth( currentDepth + 1 );
-	subMagnet->targetVelocity = targetVelocity;
+	subMagnet->attractionSpeed = attractionSpeed;
 	subMagnet->verticalForceMultiplier = verticalForceMultiplier;
 	subMagnet->activate();
 }

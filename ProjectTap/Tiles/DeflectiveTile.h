@@ -40,7 +40,7 @@ public:
 		float rotationDuration = 2.0f;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
-		float deflectingSpeed = 500.0f;
+		float additionalDeflectingSpeed = 300.0f;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
 		float currentRotation = 45;

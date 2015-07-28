@@ -29,7 +29,7 @@ public:
 	Direction rotationDirection = Direction::XPlus;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	float forceMultiplier= 2000.0f;
+	float forceMultiplier= 3000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 		float additionalZForce = 3000.0f;

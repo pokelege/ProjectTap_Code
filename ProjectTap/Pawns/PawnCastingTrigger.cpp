@@ -7,6 +7,7 @@
 #include "Tiles/BaseRampTile.h"
 #include "ProjectTapGameState.h"
 #include "Engine/GameInstance.h"
+#include "../Tiles/EndTile.h"
 
 // Sets default values
 APawnCastingTrigger::APawnCastingTrigger()
@@ -77,6 +78,15 @@ void APawnCastingTrigger::OnBeginTriggerOverlap(AActor* OtherActor,
 			ramp->ball = currentPawn;
 			ramp->Enable();
 			ramp->HighlightTile();
+		}
+
+		if (ramp == nullptr)
+		{
+			auto endTile = Cast<AEndTile>(OtherActor);
+			if (endTile != nullptr)
+			{
+				endTile->EndLevel(currentPawn);
+			}
 		}
 	}
 

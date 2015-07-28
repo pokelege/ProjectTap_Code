@@ -3,16 +3,18 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
+#include "Tiles/IGroundable.h"
 #include "TurretPawn.generated.h"
 
 UCLASS()
-class PROJECTTAP_API ATurretPawn : public APawn
+class PROJECTTAP_API ATurretPawn : public APawn, public IGroundable
 {
 	GENERATED_BODY()
 
 	static const FName BASE_MESH;
 	static const FName GUN_MESH;
 	static const float MAX_HEALTH;
+	static const GroundableInfo groundableInfo;
 
 	FDelegateHandle OnPlayerChangedDelegateHandle;
 	FVector nozzleLocal;
@@ -92,6 +94,8 @@ public:
 
 	UFUNCTION()
 		void OnPlayerChanged( ABallPawn* newPlayer );
+
+	virtual const struct GroundableInfo* GetGroundableInfo() const override;
 private:
 	void UpdateLaserTag( float dt );
 	void UpdateTurretDamage( float dt );

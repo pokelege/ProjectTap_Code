@@ -8,6 +8,42 @@
 
 const FName AEndTile::END_MESH = FName("/Game/Models/EndTile");
 
+AEndTile::AEndTile() : ATile()
+{
+	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh( *END_MESH.ToString() );
+	TileMesh->SetStaticMesh( mesh.Object );
+	TileMesh->SetMobility( EComponentMobility::Static );
+	if ( BoxCollision )
+	{
+		BoxCollision->SetBoxExtent( FVector( 40 , 40 , 80 ) , false );
+	}
+
+	auto particleComponent = CreateDefaultSubobject<UParticleSystemComponent>( TEXT( "Particle" ) );
+	ConstructorHelpers::FObjectFinder<UParticleSystem> particle( TEXT( "/Game/Particles/P_EndTile" ) );
+	particleComponent->SetTemplate( particle.Object );
+	particleComponent->AttachTo( BoxCollision );
+	particleComponent->SetRelativeLocation( FVector( 0 , 0 , 80 ) );
+
+	ConstructorHelpers::FObjectFinder<UCurveVector> ballToSocketCurveAsset( TEXT( "/Game/Curves/BallToSocketCurve" ) );
+	ConstructorHelpers::FObjectFinder<UCurveVector> transportScalingCurveAsset( TEXT( "/Game/Curves/TransportScalingCurve" ) );
+	soundToPlayCurve = ConstructorHelpers::FObjectFinder<UCurveFloat>( TEXT( "/Game/Curves/SoundToPlayCurve" ) ).Object;
+	ballToSocketCurve = ballToSocketCurveAsset.Object;
+	transportScalingCurve = transportScalingCurveAsset.Object;
+	delegate.BindUFunction( this , TEXT( "OnBeginHit" ) );
+	BoxCollision->OnComponentHit.Add( delegate );
+
+	ConstructorHelpers::FObjectFinder<USoundBase> sound1( TEXT( "/Game/Sound/S_Warp1" ) );
+	ConstructorHelpers::FObjectFinder<USoundBase> sound2( TEXT( "/Game/Sound/S_Warp2" ) );
+	ConstructorHelpers::FObjectFinder<USoundBase> sound3( TEXT( "/Game/Sound/S_Warp3" ) );
+	sounds.Add( sound1.Object );
+	sounds.Add( sound2.Object );
+	sounds.Add( sound3.Object );
+	audioPlayer = CreateDefaultSubobject<UAudioComponent>( TEXT( "Audio Player" ) );
+	audioPlayer->bAutoActivate = false;
+	audioPlayer->AttachTo( particleComponent );
+	BoxCollision->bGenerateOverlapEvents = true;
+}
+
 void AEndTile::StartTransporting()
 {
 	targetBall->setInvincibility(true);
@@ -69,59 +105,14 @@ void AEndTile::PlayTransport(const float &DeltaTime)
 	}
 }
 
-AEndTile::AEndTile() : ATile()
-{
-	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*END_MESH.ToString());
-	TileMesh->SetStaticMesh(mesh.Object);
-	TileMesh->SetMobility( EComponentMobility::Static );
-	if(BoxCollision)
-	{
-		BoxCollision->SetBoxExtent(FVector(40,40,80), false);
-	}
-
-	auto particleComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particle"));
-	ConstructorHelpers::FObjectFinder<UParticleSystem> particle(TEXT("/Game/Particles/P_EndTile"));
-	particleComponent->SetTemplate(particle.Object);
-	particleComponent->AttachTo(BoxCollision);
-	particleComponent->SetRelativeLocation(FVector(0,0,80));
-
-	ConstructorHelpers::FObjectFinder<UCurveVector> ballToSocketCurveAsset(TEXT("/Game/Curves/BallToSocketCurve"));
-	ConstructorHelpers::FObjectFinder<UCurveVector> transportScalingCurveAsset(TEXT("/Game/Curves/TransportScalingCurve"));
-	soundToPlayCurve = ConstructorHelpers::FObjectFinder<UCurveFloat>( TEXT( "/Game/Curves/SoundToPlayCurve" ) ).Object;
-	ballToSocketCurve = ballToSocketCurveAsset.Object;
-	transportScalingCurve = transportScalingCurveAsset.Object;
-	delegate.BindUFunction(this, TEXT("OnBeginHit"));
-	BoxCollision->OnComponentHit.Add(delegate);
-
-	ConstructorHelpers::FObjectFinder<USoundBase> sound1( TEXT( "/Game/Sound/S_Warp1" ) );
-	ConstructorHelpers::FObjectFinder<USoundBase> sound2( TEXT( "/Game/Sound/S_Warp2" ) );
-	ConstructorHelpers::FObjectFinder<USoundBase> sound3( TEXT( "/Game/Sound/S_Warp3" ) );
-	sounds.Add( sound1.Object );
-	sounds.Add( sound2.Object );
-	sounds.Add( sound3.Object );
-	audioPlayer = CreateDefaultSubobject<UAudioComponent>( TEXT( "Audio Player" ) );
-	audioPlayer->bAutoActivate = false;
-	audioPlayer->AttachTo( particleComponent );
-}
-
 void AEndTile::BeginDestroy()
 {
-	UWorld* world = GetWorld();
-	AProjectTapGameState* gameState;
-	if ( world != nullptr && ( gameState = world->GetGameState<AProjectTapGameState>()) != nullptr )
-	{
-		gameState->GameStateChanged.Remove( OnGameStateChangedDelegateHandle );
-		OnGameStateChangedDelegateHandle.Reset();
-	}
 	Super::BeginDestroy();
 }
 
 void AEndTile::BeginPlay()
 {
 	Super::BeginPlay();
-	UWorld* world = GetWorld();
-	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnGameStateChanged" ) );
 }
 
 void AEndTile::Tick(float DeltaTime)
@@ -135,6 +126,7 @@ void AEndTile::Tick(float DeltaTime)
 
 void AEndTile::OnGameStateChanged( const CustomGameState gameState )
 {
+	Super::OnGameStateChanged(gameState);
 	switch(gameState)
 	{
 		case CustomGameState::GAME_STATE_PLAYING:
@@ -145,23 +137,17 @@ void AEndTile::OnGameStateChanged( const CustomGameState gameState )
 	}
 }
 
-void AEndTile::OnBeginHit(class AActor* OtherActor,
-						  class UPrimitiveComponent* OtherComp,
-						  FVector NormalImpulse,
-						  const FHitResult& Hit)
+void AEndTile::EndLevel(ABallPawn* ball)
 {
-	if (Cast<ABallPawn>(OtherActor) != nullptr)
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+	if ( gameState && CanTransport )
 	{
-		UWorld* world = GetWorld();
-		AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-		if ( gameState && CanTransport )
-		{
-			gameState->SetGameState( CustomGameState::GAME_STATE_WINNING );
-			targetBall = Cast<ABallPawn>(OtherActor);
-			auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
-			pc->SetSimulatePhysics(false);
-			pc->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-			StartTransporting();
-		}
+		gameState->SetGameState( CustomGameState::GAME_STATE_WINNING );
+		targetBall = ball;
+		auto pc = Cast<UPrimitiveComponent>(targetBall->GetRootComponent());
+		pc->SetSimulatePhysics(false);
+		pc->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		StartTransporting();
 	}
 }

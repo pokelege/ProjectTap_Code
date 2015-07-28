@@ -42,5 +42,5 @@ public:
 	virtual void HighlightTile() override;
 	virtual void CancelHighlightTile() override;
 	UFUNCTION()
-	void OnStateChanged( const CustomGameState newState );
+		virtual void OnGameStateChanged( const CustomGameState gameState ) override;
 };

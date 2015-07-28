@@ -56,9 +56,9 @@ void AJumpTile::calculateImpulse()
 	//vf == 0
 	//vi = -at
 	float verticalVelocity = -GetWorld()->GetGravityZ() * t_up;
-	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	auto dir = (target->GetActorLocation() - ball->GetActorLocation()).GetSafeNormal();
 
-	auto startPos = FVector(GetActorLocation().X, GetActorLocation().Y, .0f);// GetActorLocation().Z);
+	auto startPos = FVector(ball->GetActorLocation().X, ball->GetActorLocation().Y, .0f);// GetActorLocation().Z);
 	auto targetPos = FVector(target->GetActorLocation().X, target->GetActorLocation().Y, .0f);// target->GetActorLocation().Y);
 	auto distance = FVector::Dist(targetPos, startPos);
 

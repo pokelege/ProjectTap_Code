@@ -20,7 +20,7 @@ class PROJECTTAP_API AJumpTile : public ABaseRampTile, public ICarriable
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
-	float height = 400;
+	float height = 380.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
 	float ballLandingForceStrength = 2000.0f;

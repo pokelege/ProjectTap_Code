@@ -37,12 +37,13 @@ void UTilesManager::DeactivateGroupedBlockingTiles()
 
 void UTilesManager::HighLightTile(ATile* tile)
 {
-	if (tile != prevHighlighted && prevHighlighted != nullptr)
+	if (tile != prevHighlighted && prevHighlighted != nullptr && tile != nullptr && tile->IsEnabled())
 	{
 		prevHighlighted->CancelHighlight();
+		prevHighlighted = nullptr;
 	}
 
-	if (tile != nullptr && !tile->isActivated())
+	if (tile != nullptr && !tile->isActivated() && tile->IsEnabled())
 	{
 		prevHighlighted = tile;
 		if (Cast<ABaseRampTile>(tile) == nullptr)
@@ -64,12 +65,17 @@ void UTilesManager::HighLightTile(ATile* tile)
 		prevHighlighted->CancelHighlightTile();
 		prevHighlighted = nullptr;
 	}
+
+	if (tile != nullptr && !tile->IsEnabled())
+	{
+		tile->turnOffHighlight();
+	}
 }
 
 void UTilesManager::AddTile(AGroupedBlockingTile* tile)
 {
 
-	if (tile != nullptr)
+	if (tile != nullptr && tile->IsEnabled())
 	{
 		bool reached_size_limit = activatedGroupedBlocks.Num() >= grouped_size_limit;
 		bool hasBeenAdded = false;
@@ -97,7 +103,7 @@ void UTilesManager::AddTile(AGroupedBlockingTile* tile)
 
 void UTilesManager::AddTile(ABlockingTile* tile)
 {
-	if (tile != nullptr && !activatedBlocks.Contains(tile))
+	if (tile != nullptr && tile->IsEnabled() && !activatedBlocks.Contains(tile))
 	{
 		SetBlockingTileCurrent();
 
@@ -118,7 +124,7 @@ void UTilesManager::AddTile(ABlockingTile* tile)
 
 void UTilesManager::AddTile(AStrongBlockingTile* tile)
 {
-	if (tile != nullptr && tile != prevStrongBlockingTile)
+	if (tile != nullptr && tile->IsEnabled() && tile != prevStrongBlockingTile)
 	{
 		SetStrongBlockingTileCurrent();
 
@@ -133,10 +139,21 @@ void UTilesManager::AddTile(AStrongBlockingTile* tile)
 
 void UTilesManager::AddTile(ADraggableMoveTile* tile)
 {
-	if (tile != nullptr && currDraggableTile == nullptr)
-	{		
+	
+	if (currDraggableTile != tile)
+	{
+		if (currDraggableTile != nullptr)
+		{
+			currDraggableTile->RemoveFocus();
+		}
+
 		currDraggableTile = tile;
-		SetDraggableMoveTileCurrent();		
+		currDraggableTile->activate();
+	}
+
+	if (tile != nullptr)
+	{
+		SetDraggableMoveTileCurrent();
 	}
 }
 
@@ -234,11 +251,12 @@ void UTilesManager::SetDraggableMoveTileCurrent()
 void UTilesManager::MouseRelease()
 {
 	DeactivateStrongBlockingTile();
+	DeactivateGroupedBlockingTiles();
 	SetEnableSwipeCheck(false);
 	
 	if (currDraggableTile != nullptr)
 	{
-		currDraggableTile->RemoveFocus();
+		currDraggableTile->deactivate();
 		currDraggableTile = nullptr;
 	}
 

@@ -2,11 +2,11 @@
 
 #include "ProjectTap.h"
 #include "BaseRampTile.h"
-#include "../ProjectTapGameMode.h"
+#include "ProjectTapGameMode.h"
 #include "Pawns/BallPawn.h"
 
 const FName ABaseRampTile::BASE_RAMP_CURVE_PATH = FName("/Game/Curves/Ramp");
-
+const GroundableInfo ABaseRampTile::groundableInfo = GroundableInfo(FVector(0,0,-2), false);
 ABaseRampTile::ABaseRampTile() : ATile()
 {
 	if(BoxCollision)
@@ -16,8 +16,9 @@ ABaseRampTile::ABaseRampTile() : ATile()
 	}
 	BoxCollision->SetCollisionResponseToAllChannels( ECollisionResponse::ECR_Ignore );
 	BoxCollision->SetCollisionResponseToChannel( ECollisionChannel::ECC_Pawn , ECR_Overlap );
-	BoxCollision->SetCollisionResponseToChannel( ECollisionChannel::ECC_WorldDynamic , ECR_Overlap );
-	BoxCollision->SetCollisionResponseToChannel( ECollisionChannel::ECC_Visibility , ECR_Block ); 
+	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECR_Overlap);
+	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECR_Overlap);
+	BoxCollision->SetCollisionResponseToChannel( ECollisionChannel::ECC_Visibility , ECR_Block );
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(*BASE_RAMP_CURVE_PATH.ToString());
 	if(curve.Object != nullptr) rotationSequence = curve.Object;
 	offset = CreateDefaultSubobject<USceneComponent>( TEXT( "Ramp offset" ) );
@@ -33,6 +34,11 @@ ABaseRampTile::ABaseRampTile() : ATile()
 
 	CancelHighlight();
 	Disable();
+}
+
+const GroundableInfo* ABaseRampTile::GetGroundableInfo() const
+{
+	return &ABaseRampTile::groundableInfo;
 }
 
 void ABaseRampTile::Tick(float DeltaTime)
@@ -56,9 +62,6 @@ void ABaseRampTile::Tick(float DeltaTime)
 void ABaseRampTile::BeginPlay()
 {
 	Super::BeginPlay();
-	UWorld* world = GetWorld();
-	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
-	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
 }
 
 void ABaseRampTile::activate()
@@ -103,8 +106,9 @@ void ABaseRampTile::CancelHighlightTile()
 		material->SetScalarParameterValue("LerpBaseColorHighlighted", 0);
 	}
 }
-void ABaseRampTile::OnStateChanged( const CustomGameState newState )
+void ABaseRampTile::OnGameStateChanged( const CustomGameState newState )
 {
+	Super::OnGameStateChanged(newState);
 	if ( newState == CustomGameState::GAME_STATE_PLAYING && lastPauseBall != nullptr )
 	{
 		Enable();

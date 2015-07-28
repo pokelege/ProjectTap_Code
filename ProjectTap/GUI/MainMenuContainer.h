@@ -12,10 +12,10 @@ UCLASS()
 class PROJECTTAP_API AMainMenuContainer : public AActor
 {
 	GENERATED_BODY()
-		FVector hiddenLocation = FVector( 810.0f , -2390.0f , 510.0f );
-	FVector mainMenuShowLocation = FVector( 810.0f , -270.0f , 510.0f );
-	FVector optionMenuShowLocation = FVector( 800.0f , -530.0f , 290.0f );
-	FVector levelSelectMenuShowLocation = FVector( 820.0f , -530.0f , 250.0f );
+	FVector hiddenLocation = FVector( 810.0f , -2390.0f , 510.0f );
+	FVector mainMenuShowLocation = FVector( 810.0f , -270.0f , 490.0f );
+	FVector optionMenuShowLocation = FVector( 800.0f , -530.0f , 270.0f );
+	FVector levelSelectMenuShowLocation = FVector( 820.0f , -530.0f , 230.0f );
 	FVector creditMenuShowLocation = FVector();
 	AActor* currentMenu = nullptr;
 public:

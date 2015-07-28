@@ -11,6 +11,7 @@
 const FName ATurretPawn::BASE_MESH = FName( "/Game/Models/TurretBase" );
 const FName ATurretPawn::GUN_MESH = FName( "/Game/Models/TurretGun" );
 const float ATurretPawn::MAX_HEALTH = 10.0f;
+const GroundableInfo ATurretPawn::groundableInfo = GroundableInfo(FVector(0,0,40), true);
 // Sets default values
 ATurretPawn::ATurretPawn()
 {
@@ -20,7 +21,7 @@ ATurretPawn::ATurretPawn()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> baseMeshSource( *BASE_MESH.ToString() );
 
 	UBoxComponent* collisionBox = CreateDefaultSubobject<UBoxComponent>( TEXT( "Turret Collision" ) );
-	collisionBox->SetBoxExtent( FVector( 1 , 1 , 3 ) );
+	collisionBox->SetBoxExtent( FVector( 40 , 40 , 120 ) );
 	this->SetRootComponent( collisionBox );
 	collisionBox->SetCollisionEnabled( ECollisionEnabled::QueryAndPhysics );
 	collisionBox->bGenerateOverlapEvents = false;
@@ -37,7 +38,7 @@ ATurretPawn::ATurretPawn()
 	TurretGunMesh->SetStaticMesh( gunMesh.Object );
 	TurretGunMesh->AttachTo( baseMesh );
 	FTransform transform;
-	transform.SetLocation( FVector( 0 , 0 , 2 ) );
+	transform.SetLocation( FVector( 0 , 0 , 80 ) );
 	TurretGunMesh->SetRelativeTransform( transform );
 
 	laserTag = CreateDefaultSubobject<UParticleSystemComponent>( TEXT( "Turret Laser Tag" ) );
@@ -46,15 +47,9 @@ ATurretPawn::ATurretPawn()
 	laserTag->AttachTo( baseMesh );
 
 	explosionParticle = CreateDefaultSubobject<UParticleSystemComponent>( TEXT( "Turret Explosion Tag" ) );
-	ConstructorHelpers::FObjectFinder<UParticleSystem> explosionParticleTemplate( TEXT( "/Game/StarterContent/Particles/P_Explosion" ) );
+	ConstructorHelpers::FObjectFinder<UParticleSystem> explosionParticleTemplate( TEXT( "/Game/Particles/P_Explosion" ) );
 	explosionParticle->SetTemplate( explosionParticleTemplate.Object );
 	explosionParticle->AttachTo( TurretGunMesh );
-
-	auto laserPrimitive = Cast<UPrimitiveComponent>( laserTag );
-	FTransform laserWorldTransform = laserPrimitive->GetComponentTransform();
-
-	auto explosionPrimitive = Cast<UPrimitiveComponent>( explosionParticle );
-	FTransform explosionWorldTransform = explosionPrimitive->GetComponentTransform();
 
 	ConstructorHelpers::FObjectFinder<USoundBase> explosionSoundFile( TEXT( "/Game/Sound/S_Explosion" ) );
 	explosionSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Explosion Sound" ) );
@@ -67,11 +62,11 @@ ATurretPawn::ATurretPawn()
 	fireSound->SetSound( fireSoundFile.Object );
 	fireSound->bAutoActivate = false;
 	fireSound->AttachTo( TurretGunMesh );
+}
 
-	auto pc = Cast<UPrimitiveComponent>( RootComponent );
-	pc->SetWorldScale3D( FVector( 40.0f , 40.0f , 40.0f ) );
-	laserPrimitive->SetWorldScale3D( laserWorldTransform.GetScale3D() );
-	explosionPrimitive->SetWorldScale3D( explosionWorldTransform.GetScale3D() );
+const GroundableInfo* ATurretPawn::GetGroundableInfo() const
+{
+	return &ATurretPawn::groundableInfo;
 }
 
 // Called when the game starts or when spawned
@@ -125,7 +120,7 @@ bool ATurretPawn::FoundPlayerToHit()
 		hit = FHitResult();
 		GetWorld()->LineTraceSingleByObjectType( hit , rayStart , pos + laserVector , objectParam , queryParam );
 	}
-	return Cast<ABallPawn>( hit.GetActor() ) != nullptr;
+	return Cast<ABallPawn>( hit.GetActor() ) != nullptr && !Cast<ABallPawn>( hit.GetActor() )->isDying();
 }
 
 void ATurretPawn::Fire()
@@ -163,20 +158,21 @@ void ATurretPawn::Tick( float DeltaTime )
 	currentFireCooldown += DeltaTime;
 	laserTag->EmitterInstances[0]->SetBeamSourcePoint( nozzleLocalUpdatable , 0 );
 	fireSound->SetWorldLocation( nozzleLocalUpdatable );
-
+	bool found = false;
 	if ( FoundPlayerToHit() )
 	{
 		auto targetVector = ( target->GetActorLocation() - TurretGunMesh->GetComponentLocation() ).GetSafeNormal();
 		auto targetRotation = targetVector.Rotation();
-		if ( FMath::Abs<float>( targetRotation.Yaw ) <= rotation )
+		if ( targetRotation.GetNormalized().Yaw <= GetActorRotation().GetNormalized().Yaw + rotation && targetRotation.GetNormalized().Yaw >= GetActorRotation().GetNormalized().Yaw - rotation )
 		{
-			TurretGunMesh->SetRelativeRotation( FMath::RInterpTo( TurretGunMesh->GetRelativeTransform().Rotator() , targetRotation , DeltaTime , ballSightedRotateSpeed ) );
+			found = true;
+			TurretGunMesh->SetWorldRotation( FMath::RInterpTo( TurretGunMesh->GetComponentTransform().Rotator() , targetRotation , DeltaTime , ballSightedRotateSpeed ) );
 			auto dot = FVector::DotProduct( TurretGunMesh->GetForwardVector() , targetVector );
 			if ( dot > 0 && 1.0f - dot < maxErrorToShoot )
 				AttemptToFire( DeltaTime );
 		}
 	}
-	else
+	if (!found )
 	{
 		currentTime += ( DeltaTime * idleRotateSpeed );
 		regularRotation = FRotator( 0 , FMath::Sin( currentTime ) * ( rotation * 0.5f ) , 0 );

@@ -14,15 +14,17 @@ class PROJECTTAP_API AEndTile : public ATile
 
 	static const FName END_MESH;
 	TScriptDelegate<FWeakObjectPtr> delegate;
-	FDelegateHandle OnGameStateChangedDelegateHandle;
 	FVector targetBallLastPosition;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Level )
 		FName loadLevelName = FName( "MainMenu" );
-
+private:
+	TArray<USoundBase*> sounds;
+	UAudioComponent* audioPlayer = nullptr;
+	UCurveFloat* soundToPlayCurve = nullptr;
+public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Transport )
 		UCurveVector* ballToSocketCurve = nullptr;
-
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Transport )
 		UCurveVector* transportScalingCurve = nullptr;
 private:
@@ -41,13 +43,10 @@ public:
 	virtual void Tick( float DeltaTime ) override;
 
 	UFUNCTION()
-		void OnGameStateChanged( const CustomGameState gameState );
+	virtual void OnGameStateChanged( const CustomGameState gameState ) override;
 
 	UFUNCTION()
-	void OnBeginHit(class AActor* OtherActor,
-					class UPrimitiveComponent* OtherComp,
-					FVector NormalImpulse,
-					const FHitResult& Hit);
+		void EndLevel(class ABallPawn* ball);
 private:
 	void StartTransporting();
 	void PlayTransport( const float& DeltaTime );

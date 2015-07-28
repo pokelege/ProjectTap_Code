@@ -11,14 +11,13 @@ ADraggableMoveTile::ADraggableMoveTile()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	arrowMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow mesh"));
-	
+
 	SetRootComponent(TileMesh);
 	TileMesh->DetachFromParent();
 	BoxCollision->AttachChildren.Remove(TileMesh);
 	BoxCollision->AttachTo(TileMesh);
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh( TEXT( "/Game/Models/SM_DragTile" ) );
 	TileMesh->SetStaticMesh( mesh.Object );
@@ -34,7 +33,7 @@ ADraggableMoveTile::ADraggableMoveTile()
 	indicatorParticle->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UParticleSystem> particleAssets(TEXT("/Game/Particles/P_IndicatorParticle"));
 	indicatorParticle->SetTemplate(particleAssets.Object);
-	
+
 }
 
 void ADraggableMoveTile::BeginPlay()
@@ -47,12 +46,14 @@ void ADraggableMoveTile::Initialize()
 {
 	if (currentVertex != nullptr)
 	{
-		SetActorLocation(currentVertex->GetActorLocation());
-		currentVertex->SetOccupied(true);		
+		auto newLocation = currentVertex->GetActorLocation();
+		newLocation.Z -= 10.0f;
+		SetActorLocation(newLocation);
+		currentVertex->SetOccupied(true);
 	}
 
 	if (carryOn != nullptr)
-	{		
+	{
 		if (auto actor = Cast<ICarriable>(carryOn))
 		{
 			auto scale = actor->getOffsetInfo().scaleForCollision;
@@ -61,13 +62,19 @@ void ADraggableMoveTile::Initialize()
 			BoxCollision->AddLocalOffset(offset);
 		}
 	}
+	else
+	{
+		BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+	}
+
+	resetIndicator();
 }
 
 
 void ADraggableMoveTile::Tick( float DeltaTime )
 {
 	Super::Tick(DeltaTime);
-
+	processMouseEvents();
 	UpdateDragMove(DeltaTime);
 	UpdateIndicator();
 }
@@ -114,12 +121,12 @@ bool ADraggableMoveTile::cameraRayIntersectWithTilePlane(
 	bool hitPlane = false;
 	auto planeNormal = GetActorUpVector();
 	auto demon = FMath::Abs(FVector::DotProduct(dir, planeNormal));
-	
+
 	if (demon > FLT_EPSILON)
 	{
 		auto t = FVector::DotProduct(camlocation - GetActorLocation(), planeNormal) / demon;
 		hitPlane = t >= 0;
-		if (hitPlane) 
+		if (hitPlane)
 		{
 			hitPoint = camlocation + dir * t;
 		}
@@ -170,39 +177,53 @@ void ADraggableMoveTile::CancelHighlightEdge()
 
 void ADraggableMoveTile::processMouseEvents()
 {
-	auto dt = GetWorld()->GetDeltaSeconds();	
-	mousePressTimer += dt;
-	
-	if (mousePressTimer >= 0.2f)
+	if (isMouseDown)
 	{
-		isSelected = true;
-		mousePressTimer = 0.0f;
-	}
-	else
-	{
-		anchorHitPoint = GetActorLocation();
-		newGoalPos = GetActorLocation();
-		canSnap = false;
-		isMoving = false;
+		auto dt = GetWorld()->GetDeltaSeconds();
+		mousePressTimer += dt;
+
+		if (mousePressTimer >= mouseClickTime)
+		{
+			isSelected = true;
+		}
 	}
 
-	if (!isMoving || mousePressTimer > 0.0f)
+	if (mousePressTimer > .0f && !isMouseDown)
 	{
-		deactivate();
+		RemoveFocus();
 	}
 }
 
-void ADraggableMoveTile::DragTo(const FHitResult& hit, 
+void ADraggableMoveTile::resetIndicator()
+{
+	anchorHitPoint = GetActorLocation();
+	newGoalPos = GetActorLocation();
+	canSnap = false;
+	isMoving = false;
+}
+
+
+void ADraggableMoveTile::activate()
+{
+	isMouseDown = true;
+}
+
+void ADraggableMoveTile::deactivate()
+{
+	isMouseDown = false;
+}
+
+void ADraggableMoveTile::DragTo(const FHitResult& hit,
 								const FVector& cameraLocation,
 								const FVector& camRayDirection)
-{	
+{
 	if (isMoving) return;
 	if (isSelected && currentVertex != nullptr)
 	{
 		//use hit point as a camera ray
 		auto camRay = FVector();
 
-		auto bCamRayHit = cameraRayIntersectWithTilePlane(cameraLocation, camRayDirection, camRay);		
+		auto bCamRayHit = cameraRayIntersectWithTilePlane(cameraLocation, camRayDirection, camRay);
 
 		auto moveRay = camRay - anchorHitPoint;
 		auto deltaLength = moveRay.SizeSquared();
@@ -230,13 +251,13 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 				canSnap = false;
 				goalVertex = nullptr;
 			}
-			
+
 			if (canSnap)
 			{
 				newGoalPos = mostPossibleVertex->GetActorLocation();
 				goalVertex = mostPossibleVertex;
 			}
-			else 
+			else
 			{
 				newGoalPos = camRay;
 			}
@@ -247,26 +268,23 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 			newGoalPos = GetActorLocation() + moveRay;
 		}
 	}
-	else
-	{
-		processMouseEvents();
-	}
 }
 
 
 void ADraggableMoveTile::UpdateDragMove(float dt)
 {
 	if (isMoving)
-	{		
-		activate();
+	{
 		auto moveDir = (newGoalPos - GetActorLocation()).GetSafeNormal();
 		auto reachedPos = FVector::DotProduct(currDir, moveDir) < 0.0f;
-	
+
 		if (reachedPos || reachGoalNextFrame)
 		{
 			SetActorLocation(newGoalPos);
 			isMoving = false;
 			reachGoalNextFrame = false;
+			resetIndicator();
+
 		}
 		else if (moveDir.SizeSquared() > 0.1f)
 		{
@@ -274,7 +292,7 @@ void ADraggableMoveTile::UpdateDragMove(float dt)
 			SetActorLocation(GetActorLocation() + deltaMovement);
 
 			auto nextFramePos = GetActorLocation() + deltaMovement;
-			auto moveDir = (newGoalPos - nextFramePos).GetSafeNormal();
+			moveDir = (newGoalPos - nextFramePos).GetSafeNormal();
 			reachGoalNextFrame = FVector::DotProduct(currDir, moveDir) < 0.0f;
 		}
 	}
@@ -287,23 +305,19 @@ FVector ADraggableMoveTile::calculateCurrentDir()
 }
 
 void ADraggableMoveTile::click()
-{
+{	
 	if (auto carry = Cast<ATile>(carryOn))
 	{
 		carry->activate();
 	}
 
-	if (!isMoving)
-	{
-		deactivate();
-	}
 	mousePressTimer = 0.0f;
 }
 
 void ADraggableMoveTile::RemoveFocus()
 {
-	//if this mouse release results in a click event
-	if (!isSelected) 
+	bool isClick = mousePressTimer <= mouseClickTime && mousePressTimer > 0.0f;
+	if (isClick)
 	{
 		click();
 	}
@@ -320,4 +334,5 @@ void ADraggableMoveTile::RemoveFocus()
 		goalVertex = nullptr;
 	}
 
+	mousePressTimer = 0.0f;
 }

@@ -22,10 +22,9 @@ public:
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
 		UCurveFloat* moveCurve = nullptr;
-#if WITH_EDITOR
+
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
 		int32 currentEditorPathIndex = 0;
-#endif
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
 		float speed = 50.0f;
@@ -55,6 +54,8 @@ public:
 	void AddCurrentLocation();
 
 	void UpdateCurrentLocation();
+
+	void DeleteCurrentLocation();
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
 

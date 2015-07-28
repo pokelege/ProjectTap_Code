@@ -15,10 +15,11 @@ class PROJECTTAP_API AMouseController : public APlayerController
 	GENERATED_BODY()
 		UTilesManager btManager;
 	class UProjectTapCameraComponent* currentCamera = nullptr;
-	float raycastElapseTime = 0.05f;
+	float raycastElapseTime = 0.01f;
 	float raycastElapseTimeCounter = 0.0f;
 	bool raycasted = false;
 	bool bCheckForSwipe = false;
+
 public:
 	AMouseController( const FObjectInitializer& initializer );
 	virtual void BeginPlay() override;

@@ -333,9 +333,9 @@ void AMainMenuContainer::ChangeSettings(const FString& graphicsSetting,
 									    const FString& resolution,
 										bool fullScreen)
 {
-	auto screenMode = fullScreen ? EWindowMode::Fullscreen : EWindowMode::Windowed ;
+	auto screenMode = EWindowMode::Windowed ;
 	auto settings = GEngine->GameUserSettings;
-
+	settings->SetFullscreenMode(screenMode);
 	auto resoPoint = getResolutionByString(resolution);
 	settings->SetScreenResolution(resoPoint);
 	SetGraphicsScalability(graphicsSetting, settings);

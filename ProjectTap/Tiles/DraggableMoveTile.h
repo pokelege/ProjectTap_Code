@@ -27,15 +27,17 @@ public:
 		float dragTolerance = 300.0f;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
-		float dragMoveSpeed = 150.0f;
+		float dragMoveSpeed = 400.0f;
 private:
 	float cameraRayLength = 0.0f;
 	float mousePressTimer = 0.0f;
+	float mouseClickTime = .2f;
 	bool isMoving = false;
 	bool canSnap = false;
 	bool destinationOccupied = false;
 	bool reachGoalNextFrame = false;
 	bool isSelected = false;
+	bool isMouseDown = false;
 public:
 
 	// Sets default values for this actor's properties
@@ -46,6 +48,9 @@ public:
 
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
+
+	virtual void activate() override;
+	virtual void deactivate() override;
 
 	virtual void HighlightTile() override;
 	virtual void HighlightEdge() override;
@@ -73,6 +78,8 @@ private:
 										  FVector& hitPoint );
 
 	void processMouseEvents();
+
+	void resetIndicator();
 
 	void click();
 };

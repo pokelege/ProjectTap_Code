@@ -17,7 +17,6 @@ AMovingTile::AMovingTile()
 	
 	TileMesh->SetStaticMesh(mesh.Object);
 	BoxCollision->SetWorldScale3D(FVector(1));
-
 	BoxCollision->SetBoxExtent(FVector(40.0f, 40.0f, 10.0f));
 
 
@@ -182,6 +181,27 @@ void AMovingTile::EditorKeyPressed(FKey Key, EInputEvent Event)
 		{
 			UpdateCurrentLocation();
 		}
+		else if (keyname.Equals("C"))
+		{
+			DeleteCurrentLocation();
+		}
+	}
+}
+
+void AMovingTile::DeleteCurrentLocation()
+{
+	if (currentEditorPathIndex >= 0 && currentEditorPathIndex < path.Num())
+	{
+		path.RemoveAt(currentEditorPathIndex);
+		if (path.Num() == 0)
+		{
+			currentEditorPathIndex = -1;
+		}
+		else
+		{
+			currentEditorPathIndex = 0;			
+			SetActorLocation(path[currentEditorPathIndex]);
+		}
 	}
 }
 
@@ -222,9 +242,8 @@ void AMovingTile::PostEditChangeProperty(FPropertyChangedEvent & PropertyChanged
 				auto newLocation = path[currentEditorPathIndex];
 				SetActorLocation(newLocation);
 			}
-#if WITH_EDITOR
 			Super::PostEditChange();
-#endif
+
 		}
 	}
 }

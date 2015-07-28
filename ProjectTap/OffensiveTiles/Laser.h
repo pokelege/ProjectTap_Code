@@ -4,14 +4,17 @@
 
 #include "GameFramework/Actor.h"
 #include "Tiles/ICarriable.h"
+#include "Tiles/IGroundable.h"
 #include "CustomGameState.h"
 #include "Laser.generated.h"
 
 UCLASS()
-class PROJECTTAP_API ALaser : public AActor , public ICarriable
+class PROJECTTAP_API ALaser : public AActor , public ICarriable, public IGroundable
 {
 	GENERATED_BODY()
-		static const int MAX_DEPTH;
+private:
+	static const GroundableInfo groundableInfo;
+	static const int MAX_DEPTH;
 	FDelegateHandle OnGameStateChangedDelegateHandle;
 	FVector currHitPoint;
 public:
@@ -28,9 +31,6 @@ public:
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Laser )
 		UParticleSystemComponent* laserSparkParticle = nullptr;
-
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Laser )
-		UArrowComponent* debugArrow = nullptr;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 		UAudioComponent* laserEmitSound = nullptr;
@@ -64,6 +64,8 @@ public:
 
 	//this method will set the ray to a location with infinite length and given direction
 	void SetLaserLocationWithDefaultDirection( const FVector& location );
+
+	virtual const struct GroundableInfo* GetGroundableInfo() const override;
 private:
 	void checkLaserCollisions( float dt );
 

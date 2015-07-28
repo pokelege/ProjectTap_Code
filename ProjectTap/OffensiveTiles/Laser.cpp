@@ -14,6 +14,7 @@
 
 #define printonscreen(text) if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5, FColor::White,text)
 const int ALaser::MAX_DEPTH = 8;
+const GroundableInfo ALaser::groundableInfo = GroundableInfo(FVector(0,0,40), true);
 // Sets default values
 ALaser::ALaser()
 {
@@ -34,19 +35,23 @@ ALaser::ALaser()
 	ConstructorHelpers::FObjectFinder<UParticleSystem> particleSparkAssets(TEXT("/Game/Particles/P_LaserSparks"));
 	laserSparkParticle->SetTemplate(particleSparkAssets.Object);
 
-	debugArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("arrow"));
-	debugArrow->AttachTo(RootComponent);
-
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("laser emitter"));
 	mesh->AttachTo(RootComponent);
 	ConstructorHelpers::FObjectFinder<UStaticMesh> laserEmitterMesh(TEXT("/Game/Models/TurretGun"));
 	mesh->SetStaticMesh(laserEmitterMesh.Object);
 	mesh->SetCastShadow(false);
 
+	mesh->SetWorldScale3D(FVector(0.3f));
+
 	ConstructorHelpers::FObjectFinder<USoundWave> laserEmitSoundFile( TEXT( "/Game/Sound/S_LaserLoop" ) );
 	laserEmitSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Laser Emit Sound" ) );
 	laserEmitSound->SetSound( laserEmitSoundFile.Object );
 	laserEmitSound->AttachTo( GetRootComponent() );
+}
+
+const GroundableInfo* ALaser::GetGroundableInfo() const
+{
+	return &ALaser::groundableInfo;
 }
 
 // Called when the game starts or when spawned
@@ -106,7 +111,7 @@ void ALaser::checkLaserCollisions(float dt)
 	FCollisionObjectQueryParams objectParam = objectParam.DefaultObjectQueryParam;
 	if ( !canHitBall ) queryParam.AddIgnoredActor( GetWorld()->GetGameState<AProjectTapGameState>()->GetPlayer() );
 	auto pos = GetActorLocation();
-	auto rayStart = pos + dir * 2.0f;
+	auto rayStart = pos + dir * 5.0f;
 	auto laserVector = dir * length;
 	auto laserEmitter = laserParticle->EmitterInstances[0];
 	//ray cast to see if laser hits anything
@@ -181,18 +186,6 @@ void ALaser::checkLaserCollisions(float dt)
 				}
 			}
 
-			//if the laser hits blocking tile then make it go down faster
-			if (!typeFound)
-			{
-				auto blockingTile = Cast<ABlockingTile>(hitActor);
-				if (blockingTile != nullptr)
-				{
-					typeFound = true;
-					blockingTile->ApplyActivationTimeFactor(0.5f);
-				}
-
-			}
-
 			//if the laser hits turret then kills it
 			if (!typeFound)
 			{
@@ -249,10 +242,13 @@ void ALaser::checkLaserCollisions(float dt)
 	}
 
 	//only root laser can have an emitter mesh
-	if (currentDepth == 0)
+	if (currentDepth != 0)
 	{
 		//update laser emitter rotation
-		mesh->SetWorldScale3D(FVector(10.0f));
+		mesh->SetVisibility(false);
+	}
+	else
+	{
 		mesh->SetWorldRotation(dir.Rotation());
 	}
 }
@@ -300,7 +296,7 @@ OffsetInfo ALaser::getOffsetInfo()
 {
 	OffsetInfo data;
 	data.offsetForCollision = FVector(0.0f, 0.0f, 10.0f);
-	data.scaleForCollision = FVector(1.0f, 1.0f, 2.0f);
+	data.scaleForCollision = FVector(1.0f, 1.0f, 5.0f);
 	data.offsetForCarryOn = FVector(0.0f, 0.0f, 20.0f);
 	return data;
 }

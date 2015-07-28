@@ -3,6 +3,7 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
+#include "PawnCastingTrigger.h"
 #include "BallPawn.generated.h"
 
 UCLASS()
@@ -13,7 +14,12 @@ class PROJECTTAP_API ABallPawn : public APawn
 	//these two vectors are used when the ball
 	//transits to the center of a tile
 	FVector transitionNormal;
-	FVector lastAnchorPosition;	
+	FVector lastAnchorPosition;		
+
+	void SpawnCastingTrigger(BallCastType type);
+private:
+	friend class ADeflectiveTile;
+	FVector currentNormal;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
 		FVector initialVelocity = FVector( 0.0f , 0.0f , 0.0f );
@@ -23,10 +29,13 @@ public:
 		class UUserWidget* pauseMenuInstance = nullptr;
 
 	UPROPERTY( VisibleAnywhere , BlueprintReadWrite , Category = Ball )
-		class UBlueprint* pauseMenuBlueprint = nullptr;
+		class UClass* pauseMenuBlueprint = nullptr;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
 		UCurveFloat* dieSequence;
+
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
+		UCurveFloat* heartBeatSequence;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
 		UStaticMeshComponent* ballMesh;
@@ -37,13 +46,15 @@ public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
 	class UConstrainingSpringArmComponent* spring;
 private:
-	class APawnCastingTrigger* trigger = nullptr;
+	class APawnCastingTrigger* rampTrigger = nullptr;
+	class APawnCastingTrigger* blockingTrigger = nullptr;
 	class UProjectTapCameraComponent* cameraComponent = nullptr;
 	UMaterialInstanceDynamic* material = nullptr;	
 	float currentDieTime = 0;
+	float currentHeartTime = 0;
 public:
-	float currentTransitionSpeed = 300.0f;
-	const float DEFUALT_TRANSITION_SPEED = 300.0f;
+	float currentTransitionSpeed = 200.0f;
+	const float DEFUALT_TRANSITION_SPEED = 200.0f;
 private:
 	bool dying = false;
 	bool bInvincible = false;
@@ -88,7 +99,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category=ToggleMenu)
 	void togglePauseMenu();
 
+	UFUNCTION()
+	void OnHit(class AActor* OtherActor,
+	class UPrimitiveComponent* OtherComp,
+		FVector NormalImpulse,
+		const FHitResult& Hit);
 
 	void setCamera(class ABallPlayerStart* playerStart);
 	UProjectTapCameraComponent* GetCamera();
+
+
 };

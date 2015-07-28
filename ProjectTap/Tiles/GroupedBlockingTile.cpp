@@ -13,15 +13,12 @@ AGroupedBlockingTile::AGroupedBlockingTile()
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
 
-	BoxCollision->SetWorldScale3D(FVector(1));
-	BoxCollision->SetBoxExtent(FVector(20.0f, 20.0f, 80.0f));
 }
 
 // Called when the game starts or when spawned
 void AGroupedBlockingTile::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame

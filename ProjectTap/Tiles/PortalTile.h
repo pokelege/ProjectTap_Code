@@ -4,21 +4,23 @@
 
 #include "Tile.h"
 #include "ICarriable.h"
+#include "CustomColor.h"
 #include "PortalTile.generated.h"
 
+#define ECC_Portal ECollisionChannel::ECC_EngineTraceChannel1
 /**
  * blue portal faces positive X axis
  */
 UCLASS()
-class PROJECTTAP_API APortalTile : public ATile, public ICarriable
+class PROJECTTAP_API APortalTile : public ATile , public ICarriable
 {
 	GENERATED_BODY()
-
+private:
+	static const GroundableInfo groundableInfo;
 	TScriptDelegate<FWeakObjectPtr> beginBlueOverlap;
 	TScriptDelegate<FWeakObjectPtr> endBlueOverlap;
 	TScriptDelegate<FWeakObjectPtr> beginOrangeOverlap;
 	TScriptDelegate<FWeakObjectPtr> endOrangeOverlap;
-	FVector baseColor;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Portal )
 		APortalTile* otherPortal = nullptr;
@@ -28,13 +30,15 @@ public:
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Portal )
 		UBoxComponent* orangePortalTrigger = nullptr;
+
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
 		UAudioComponent* teleportSound = nullptr;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Portal )
 		float velocityMultiplier = 1.0f;
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Portal )
+		CustomColor color = CustomColor::Tomato;
 private:
-	bool colorSet = false;
 	bool leftBluePortal = false;
 	bool leftOrangePortal = false;
 	bool enteredPortal = false;
@@ -42,13 +46,15 @@ public:
 	
 	APortalTile();
 
-	void SetColor( const FVector& color );
-	bool GetColorSet();
-
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 	OffsetInfo getOffsetInfo() override;
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
+#endif
+
 
 	UFUNCTION()
 	void OnBlueBeginTriggerOverlap(class AActor* OtherActor,
@@ -81,17 +87,21 @@ public:
 
 	void Enable() override;
 
+	virtual const struct GroundableInfo* GetGroundableInfo() const override;
 private:
 
 	void TransportBallToOrange(class ABallPawn* pawn);
 	void TransportBallToBlue(ABallPawn* pawn);
+	
 	void AdjustOrientationAndTriggerBoxes();
 
 	void SetMeshCollisionProperty( UBoxComponent* box );
 	void GeneratePortalCollision();
+	void ProcessBallEndfOverlap(AActor* actor);
 
 	friend class ALaser;
-	void GetLaserPortalTransportedLocation(UPrimitiveComponent* hit4PportalTrigger, FVector& newDir, FVector& newPos);
+	friend class AMagnetTile;
+	void GetLaserPortalTransportedLocation(UPrimitiveComponent* hitPportalTrigger, FVector& newDir, FVector& newPos);
+	void GetMagnetPortalTransportedLocation(UPrimitiveComponent* hitPportalTrigger, FVector& newDir, FVector& newPos);
 
-	void ProcessBallEndfOverlap(AActor* actor);
 };

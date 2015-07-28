@@ -3,17 +3,24 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+#include "IGroundable.h"
+#include "CustomGameState.h"
 #include "Tile.generated.h"
 
 UCLASS()
 /// <summary>
 /// The base tile
 /// </summary>
-class PROJECTTAP_API ATile : public AActor
+class PROJECTTAP_API ATile : public AActor, public IGroundable
 {
 	GENERATED_BODY()
+private:
+	static const GroundableInfo groundableInfo;
 protected:
+	FDelegateHandle OnGameStateChangedDelegateHandle;
 	UMaterialInstanceDynamic* material = nullptr;
+	float lockFrameTimer = .0f;
+	float lockFPS = 1 / 60.0f;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
 		UStaticMeshComponent* TileMesh = nullptr;
@@ -40,6 +47,7 @@ public:
 protected:
 	bool activated = false;
 	bool enabled = true;
+	bool canActivate = true;
 public:
 	// Sets default values for this actor's properties
 	ATile();
@@ -49,7 +57,8 @@ public:
 
 	UFUNCTION( BlueprintCallable , Category = "Tile" )
 		virtual void deactivate();
-
+	UFUNCTION()
+	virtual void OnGameStateChanged( const CustomGameState gameState );
 	virtual bool isActivated();
 
 	virtual void Enable();
@@ -72,5 +81,5 @@ public:
 
 	//called when the tile is on the moving tile
 	virtual void SetLocationWhenCarried( FVector& location );
-
+	virtual const struct GroundableInfo* GetGroundableInfo() const override;
 };

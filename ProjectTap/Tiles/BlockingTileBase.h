@@ -32,8 +32,16 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds)override;
 
+	bool CanKillBall();
+
+	bool CanStopBall();
+
 	void deactivate() override;
 	void activate() override;
+
+
+
+
 protected:
 	virtual void lerpMaterialColorForCoolDown( const float& beta );
 };

@@ -2,14 +2,14 @@
 
 #include "ProjectTap.h"
 #include "BlockingTileBase.h"
-
+#include "../Pawns/BallPawn.h"
 
 // Sets default values
 ABlockingTileBase::ABlockingTileBase()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	BoxCollision->SetBoxExtent(FVector(1.0f, 1.0f, 1.0f));
+	BoxCollision->SetBoxExtent(FVector(40.0f, 40.0f, 80.0f));
 	BoxCollision->bGenerateOverlapEvents = true;
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
@@ -51,10 +51,11 @@ void ABlockingTileBase::Tick( float DeltaTime )
 	else if (!activated && canDesend)
 	{
 		pos.Z -= move_speed * DeltaTime;
-	}
-	else if (!activated)
-	{
-		pos.Z = original.Z;
+		canDesend = pos.Z - original.Z > FLT_EPSILON;
+		if (!canDesend)
+		{
+			pos.Z = original.Z;
+		}
 	}
 
 	SetActorLocation(pos);
@@ -81,4 +82,16 @@ void ABlockingTileBase::activate()
 {
 	Super::activate();
 	activateSound->Play();
+}
+
+bool ABlockingTileBase::CanKillBall()
+{
+	auto canKillBall = false;
+
+	return canKillBall;
+}
+
+bool ABlockingTileBase::CanStopBall()
+{
+	return activated;
 }

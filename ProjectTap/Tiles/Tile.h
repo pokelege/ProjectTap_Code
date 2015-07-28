@@ -19,6 +19,8 @@ private:
 protected:
 	FDelegateHandle OnGameStateChangedDelegateHandle;
 	UMaterialInstanceDynamic* material = nullptr;
+	float lockFrameTimer = .0f;
+	float lockFPS = 1 / 60.0f;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
 		UStaticMeshComponent* TileMesh = nullptr;

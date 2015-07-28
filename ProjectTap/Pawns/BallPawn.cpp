@@ -183,25 +183,6 @@ void ABallPawn::Tick( float DeltaTime )
 	}
 
 	UpdateResetTransition( DeltaTime );
-	UpdateSweepForDeflectiveTile();
-}
-
-void ABallPawn::UpdateSweepForDeflectiveTile()
-{
-	FHitResult hit;
-	auto start = GetActorLocation();
-	auto castDirection = ADeflectiveTile::clampShortAxis( ballCollision->GetPhysicsLinearVelocity() , true );
-	auto end = start + castDirection * 1000.0f;
-	ballCollision->SweepComponent( hit , start , end , ballCollision->GetCollisionShape() );
-	if ( hit.bBlockingHit )
-	{
-
-		auto deflectiveTile = Cast<ADeflectiveTile>( hit.Actor.Get() );
-		if ( deflectiveTile != nullptr )
-		{
-			deflectiveTile->OnHit( this , Cast<UPrimitiveComponent>( GetRootComponent() ) , hit.ImpactNormal , hit );
-		}
-	}
 }
 
 void ABallPawn::TransitionBallToProperLocation( const FVector& position , const FVector& newVelDir , float _transitionSpeed )

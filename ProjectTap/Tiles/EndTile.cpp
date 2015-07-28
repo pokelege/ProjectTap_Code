@@ -25,8 +25,6 @@ void AEndTile::StartTransporting()
 		transportScalingCurve->GetTimeRange(minTime, transportScalingCurveDuration);
 	}
 	transporting = true;
-
-	BoxCollision->bGenerateOverlapEvents = true;
 }
 
 void AEndTile::PlayTransport(const float &DeltaTime)
@@ -104,6 +102,7 @@ AEndTile::AEndTile() : ATile()
 	audioPlayer = CreateDefaultSubobject<UAudioComponent>( TEXT( "Audio Player" ) );
 	audioPlayer->bAutoActivate = false;
 	audioPlayer->AttachTo( particleComponent );
+	BoxCollision->bGenerateOverlapEvents = true;
 }
 
 void AEndTile::BeginDestroy()

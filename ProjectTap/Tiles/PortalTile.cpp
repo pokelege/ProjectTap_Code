@@ -6,7 +6,7 @@
 #include "Pawns/BallPawn.h"
 #include "Pawns/PawnCastingTrigger.h"
 #include "MagnetTile.h"
-
+const GroundableInfo APortalTile::groundableInfo = GroundableInfo( FVector( 0,0,40 ) , true );
 APortalTile::APortalTile()
 {
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(TEXT("/Game/Models/Portal"));
@@ -49,6 +49,11 @@ APortalTile::APortalTile()
 	teleportSound->SetSound( teleportSoundFile.Object );
 	teleportSound->bAutoActivate = false;
 	teleportSound->AttachTo( BoxCollision );
+}
+
+const GroundableInfo* APortalTile::GetGroundableInfo() const
+{
+	return &APortalTile::groundableInfo;
 }
 
 void APortalTile::AdjustOrientationAndTriggerBoxes()

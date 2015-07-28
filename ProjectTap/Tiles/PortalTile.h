@@ -11,10 +11,11 @@
  * blue portal faces positive X axis
  */
 UCLASS()
-class PROJECTTAP_API APortalTile : public ATile, public ICarriable
+class PROJECTTAP_API APortalTile : public ATile , public ICarriable
 {
 	GENERATED_BODY()
-
+private:
+	static const GroundableInfo groundableInfo;
 	TScriptDelegate<FWeakObjectPtr> beginBlueOverlap;
 	TScriptDelegate<FWeakObjectPtr> endBlueOverlap;
 	TScriptDelegate<FWeakObjectPtr> beginOrangeOverlap;
@@ -88,6 +89,7 @@ public:
 
 	void Enable() override;
 
+	virtual const struct GroundableInfo* GetGroundableInfo() const override;
 private:
 
 	void TransportBallToOrange(class ABallPawn* pawn);

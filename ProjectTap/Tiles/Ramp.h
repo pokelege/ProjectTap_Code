@@ -32,7 +32,7 @@ public:
 	float forceMultiplier= 3000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		float additionalZForce = 3000.0f;
+		float additionalZForce = 3100.0f;
 
 	ARamp();
 

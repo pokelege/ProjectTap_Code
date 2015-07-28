@@ -2,8 +2,9 @@
 
 #include "ProjectTap.h"
 #include "Tile.h"
+#include "ProjectTapGameState.h"
 
-const GroundableInfo ATile::groundableInfo = GroundableInfo(FVector(0,0,-80), false);
+const GroundableInfo ATile::groundableInfo = GroundableInfo( FVector( 0 , 0 , -80 ) , false );
 
 // Sets default values
 ATile::ATile()
@@ -11,19 +12,32 @@ ATile::ATile()
 	PrimaryActorTick.bCanEverTick = true;
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Tile mesh" ) );
 
-	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Tile collision"));
+	BoxCollision = CreateDefaultSubobject<UBoxComponent>( TEXT( "Tile collision" ) );
 	BoxCollision->bGenerateOverlapEvents = true;
-	this->SetRootComponent(BoxCollision);
+	this->SetRootComponent( BoxCollision );
 
-	TileMesh->AttachTo(this->GetRootComponent());
-	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	TileMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	TileMesh->AttachTo( this->GetRootComponent() );
+	TileMesh->SetCollisionEnabled( ECollisionEnabled::NoCollision );
+	TileMesh->SetCollisionResponseToAllChannels( ECollisionResponse::ECR_Ignore );
+	BoxCollision->SetCollisionEnabled( ECollisionEnabled::QueryAndPhysics );
 	BoxCollision->bGenerateOverlapEvents = false;
-	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	BoxCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	BoxCollision->SetNotifyRigidBodyCollision(true);
+	BoxCollision->SetCollisionResponseToAllChannels( ECollisionResponse::ECR_Block );
+	BoxCollision->SetCollisionObjectType( ECollisionChannel::ECC_WorldDynamic );
+	BoxCollision->SetNotifyRigidBodyCollision( true );
 	CancelHighlight();
+}
+
+void ATile::OnGameStateChanged( const CustomGameState gameState )
+{
+	switch ( gameState )
+	{
+		case CustomGameState::GAME_STATE_PLAYING:
+			canActivate = true;
+			break;
+		default:
+			canActivate = false;
+			deactivate();
+	}
 }
 
 const GroundableInfo* ATile::GetGroundableInfo() const
@@ -33,7 +47,7 @@ const GroundableInfo* ATile::GetGroundableInfo() const
 
 void ATile::activate()
 {
-	if (IsEnabled())
+	if ( IsEnabled() && canActivate )
 	{
 		activated = true;
 	}
@@ -66,50 +80,53 @@ bool ATile::IsEnabled()
 
 void ATile::BeginPlay()
 {
-  Super::BeginPlay();
-  material = TileMesh->CreateDynamicMaterialInstance(0);
-  CancelHighlight();
+	Super::BeginPlay();
+	material = TileMesh->CreateDynamicMaterialInstance( 0 );
+	CancelHighlight();
+	UWorld* world = GetWorld();
+	AProjectTapGameState* gameState = world->GetGameState<AProjectTapGameState>();
+	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnGameStateChanged" ) );
 }
 
-void ATile::Tick(float DeltaTime)
+void ATile::Tick( float DeltaTime )
 {
-  Super::Tick(DeltaTime);
+	Super::Tick( DeltaTime );
 }
 
-void ATile::Highlight(bool litTile, bool litEdge)
+void ATile::Highlight( bool litTile , bool litEdge )
 {
-	if (litTile)
+	if ( litTile )
 	{
 		HighlightTile();
 	}
 
-	if (litEdge)
+	if ( litEdge )
 	{
 		HighlightEdge();
 	}
 }
 
-void ATile::CancelHighlight(bool cancelTile, bool cancelEdge)
+void ATile::CancelHighlight( bool cancelTile , bool cancelEdge )
 {
-	if (cancelTile)
+	if ( cancelTile )
 	{
 		CancelHighlightTile();
 	}
 
-	if (cancelEdge)
+	if ( cancelEdge )
 	{
 		CancelHighlightEdge();
 	}
 }
 
 
-void ATile::turnOffHighlight(bool offTile, bool offEdge)
+void ATile::turnOffHighlight( bool offTile , bool offEdge )
 {
-	if(offTile)
+	if ( offTile )
 	{
 		turnOffHighlightTile();
 	}
-	if(offEdge)
+	if ( offEdge )
 	{
 		turnOffHighlightEdge();
 	}
@@ -117,61 +134,61 @@ void ATile::turnOffHighlight(bool offTile, bool offEdge)
 
 void ATile::HighlightTile()
 {
-	if (material != nullptr)
+	if ( material != nullptr )
 	{
-		material->SetScalarParameterValue(TEXT("LerpBaseColorHighlighted"), 1);
-		material->SetScalarParameterValue(TEXT("EnableBaseColor"), 1);
+		material->SetScalarParameterValue( TEXT( "LerpBaseColorHighlighted" ) , 1 );
+		material->SetScalarParameterValue( TEXT( "EnableBaseColor" ) , 1 );
 	}
 }
 
 void ATile::HighlightEdge()
 {
-	if (material != nullptr)
+	if ( material != nullptr )
 	{
-		material->SetScalarParameterValue(TEXT("LerpEdgeColorHighlighted"), 1);
-		material->SetScalarParameterValue(TEXT("LerpEdgePowerHighlighted"), 1);
-		material->SetScalarParameterValue(TEXT("EnableEdgeColor"), 1);
-		material->SetScalarParameterValue(TEXT("EnableEdgePower"), 1);
+		material->SetScalarParameterValue( TEXT( "LerpEdgeColorHighlighted" ) , 1 );
+		material->SetScalarParameterValue( TEXT( "LerpEdgePowerHighlighted" ) , 1 );
+		material->SetScalarParameterValue( TEXT( "EnableEdgeColor" ) , 1 );
+		material->SetScalarParameterValue( TEXT( "EnableEdgePower" ) , 1 );
 	}
 }
 
 void ATile::CancelHighlightTile()
 {
-	if (material != nullptr)
+	if ( material != nullptr )
 	{
-		material->SetScalarParameterValue(TEXT("LerpBaseColorHighlighted"), 0);
-		material->SetScalarParameterValue(TEXT("EnableBaseColor"), 1);
+		material->SetScalarParameterValue( TEXT( "LerpBaseColorHighlighted" ) , 0 );
+		material->SetScalarParameterValue( TEXT( "EnableBaseColor" ) , 1 );
 	}
 }
 
 void ATile::CancelHighlightEdge()
 {
-	if (material != nullptr)
+	if ( material != nullptr )
 	{
-		material->SetScalarParameterValue(TEXT("LerpEdgeColorHighlighted"), 0);
-		material->SetScalarParameterValue(TEXT("LerpEdgePowerHighlighted"), 0);
-		material->SetScalarParameterValue(TEXT("EnableEdgeColor"), 1);
-		material->SetScalarParameterValue(TEXT("EnableEdgePower"), 1);
+		material->SetScalarParameterValue( TEXT( "LerpEdgeColorHighlighted" ) , 0 );
+		material->SetScalarParameterValue( TEXT( "LerpEdgePowerHighlighted" ) , 0 );
+		material->SetScalarParameterValue( TEXT( "EnableEdgeColor" ) , 1 );
+		material->SetScalarParameterValue( TEXT( "EnableEdgePower" ) , 1 );
 	}
 }
 
 void ATile::turnOffHighlightEdge()
 {
-	if (material != nullptr)
+	if ( material != nullptr )
 	{
-		material->SetScalarParameterValue(TEXT("EnableEdgeColor"), 0);
-		material->SetScalarParameterValue(TEXT("EnableEdgePower"), 0);
+		material->SetScalarParameterValue( TEXT( "EnableEdgeColor" ) , 0 );
+		material->SetScalarParameterValue( TEXT( "EnableEdgePower" ) , 0 );
 	}
 }
 void ATile::turnOffHighlightTile()
 {
-	if (material != nullptr)
+	if ( material != nullptr )
 	{
-		material->SetScalarParameterValue(TEXT("EnableBaseColor"), 0);
+		material->SetScalarParameterValue( TEXT( "EnableBaseColor" ) , 0 );
 	}
 }
 
-void ATile::SetLocationWhenCarried(FVector& location)
+void ATile::SetLocationWhenCarried( FVector& location )
 {
-	SetActorLocation(location);
+	SetActorLocation( location );
 }

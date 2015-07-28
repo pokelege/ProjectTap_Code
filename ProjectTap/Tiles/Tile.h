@@ -4,6 +4,7 @@
 
 #include "GameFramework/Actor.h"
 #include "IGroundable.h"
+#include "CustomGameState.h"
 #include "Tile.generated.h"
 
 UCLASS()
@@ -16,6 +17,7 @@ class PROJECTTAP_API ATile : public AActor, public IGroundable
 private:
 	static const GroundableInfo groundableInfo;
 protected:
+	FDelegateHandle OnGameStateChangedDelegateHandle;
 	UMaterialInstanceDynamic* material = nullptr;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
@@ -43,6 +45,7 @@ public:
 protected:
 	bool activated = false;
 	bool enabled = true;
+	bool canActivate = true;
 public:
 	// Sets default values for this actor's properties
 	ATile();
@@ -52,7 +55,8 @@ public:
 
 	UFUNCTION( BlueprintCallable , Category = "Tile" )
 		virtual void deactivate();
-
+	UFUNCTION()
+	virtual void OnGameStateChanged( const CustomGameState gameState );
 	virtual bool isActivated();
 
 	virtual void Enable();

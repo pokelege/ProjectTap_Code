@@ -16,7 +16,6 @@ class PROJECTTAP_API ABallPawn : public APawn
 	FVector transitionNormal;
 	FVector lastAnchorPosition;		
 
-	void UpdateSweepForDeflectiveTile();
 	void SpawnCastingTrigger(BallCastType type);
 private:
 	friend class ADeflectiveTile;

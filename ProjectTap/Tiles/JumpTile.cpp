@@ -45,9 +45,13 @@ void AJumpTile::calculateImpulse()
 {
 	//h = 1/2*a*t^2
 	//t = sqrt(2h/a)
-	float t_up = FMath::Sqrt(2 * height  / -GetWorld()->GetGravityZ()); 
 
-	float fall_height = GetActorLocation().Z + height - target->GetActorLocation().Z;
+	//take ball's radius into account as height difference
+	auto radius = ball->ballCollision->GetScaledSphereRadius();
+	auto goUpHeight = height - radius;
+	float t_up = FMath::Sqrt(2 * goUpHeight / -GetWorld()->GetGravityZ());
+
+	float fall_height = GetActorLocation().Z + goUpHeight - target->GetActorLocation().Z - radius;
 	float t_down = FMath::Sqrt(2 * fall_height / -GetWorld()->GetGravityZ());
 
 	float t = t_up + t_down;
@@ -58,12 +62,12 @@ void AJumpTile::calculateImpulse()
 	float verticalVelocity = -GetWorld()->GetGravityZ() * t_up;
 	auto dir = (target->GetActorLocation() - ball->GetActorLocation()).GetSafeNormal();
 
-	auto startPos = FVector(ball->GetActorLocation().X, ball->GetActorLocation().Y, .0f);// GetActorLocation().Z);
-	auto targetPos = FVector(target->GetActorLocation().X, target->GetActorLocation().Y, .0f);// target->GetActorLocation().Y);
+	auto startPos = FVector(ball->GetActorLocation().X, ball->GetActorLocation().Y, ball->GetActorLocation().Z + radius);
+	auto targetPos = FVector(target->GetActorLocation().X, target->GetActorLocation().Y, target->GetActorLocation().Z + radius);
 	auto distance = FVector::Dist(targetPos, startPos);
 
-	//d = 1/2 * a *t^2
-	//a = 2d / t^2
+	//d = (vi + vf) / 2 * t
+	//vi = 2 * (d/t)
 	auto horizontalSpeed = distance / t;
 
 	//impuls(change in momentum) = f * t

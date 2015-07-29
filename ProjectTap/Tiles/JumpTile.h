@@ -39,7 +39,7 @@ public:
 	OffsetInfo getOffsetInfo() override;
 
 	virtual void BeginPlay() override;
-
+	virtual void Tick(float DeltaTime) override;
 	virtual void activate() override;
 	void calculateImpulse();
 	virtual void HighlightEdge() override;

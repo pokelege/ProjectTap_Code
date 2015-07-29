@@ -14,3 +14,4 @@ Makefile
 *.pri
 *.blend1
 Build/
+*.opensdf

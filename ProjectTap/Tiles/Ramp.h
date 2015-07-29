@@ -6,15 +6,6 @@
 #include "Tiles/BaseRampTile.h"
 #include "Ramp.generated.h"
 
-UENUM(BlueprintType)
-enum class Direction : uint8
-{
-	XPlus,
-	YPlus,
-	xMinus,
-	yMinus
-};
-
 /**
  *
  */
@@ -25,8 +16,6 @@ class PROJECTTAP_API ARamp : public ABaseRampTile
 
 	static const FName RAMP_MESH_PATH;
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-	Direction rotationDirection = Direction::XPlus;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
 	float forceMultiplier= 3000.0f;

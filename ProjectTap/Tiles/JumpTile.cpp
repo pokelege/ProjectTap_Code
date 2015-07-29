@@ -2,7 +2,7 @@
 
 #include "ProjectTap.h"
 #include "JumpTile.h"
-#include "../Pawns/BallPawn.h"
+#include "Pawns/BallPawn.h"
 
 const FName AJumpTile::JUMP_MESH_PATH = FName("/Game/Models/Jump");
 
@@ -11,15 +11,23 @@ AJumpTile::AJumpTile() : ABaseRampTile()
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*JUMP_MESH_PATH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
+	rotationDirection = Direction::Guess;
 }
 
 void AJumpTile::BeginPlay()
 {
+	if ( target != nullptr && rotationDirection == Direction::Guess )
+	{
+		auto dir = ( target->GetActorLocation() - GetActorLocation() ).GetSafeNormal2D();
+		auto xdir = dir.X >= 0 ? Direction::XPlus : Direction::xMinus;
+		auto ydir = dir.Y >= 0 ? Direction::YPlus : Direction::yMinus;
+		rotationDirection = FMath::Abs( dir.X ) >= FMath::Abs( dir.Y ) ? xdir : ydir;
+	}
 	Super::BeginPlay();
 	if ( target != nullptr )
 	{
 		auto dir = ( target->GetActorLocation() - GetActorLocation() ).GetSafeNormal2D();
-		auto rot = dir.Rotation().Yaw / 360;
+		auto rot = (dir.Rotation().GetNormalized().Yaw - GetActorRotation().GetNormalized().Yaw) / 360;
 		material->SetScalarParameterValue( TEXT( "Rotation" ) , 1.0f - rot );
 	}
 }
@@ -30,8 +38,8 @@ void AJumpTile::Tick( float DeltaTime )
 	if ( target != nullptr )
 	{
 		auto dir = ( target->GetActorLocation() - GetActorLocation() ).GetSafeNormal2D();
-		auto rot = dir.Rotation().Yaw / 360;
-		material->SetScalarParameterValue( TEXT( "Rotation" ) ,1.0f - rot );
+		auto rot = ( dir.Rotation().GetNormalized().Yaw - GetActorRotation().GetNormalized().Yaw ) / 360;
+		material->SetScalarParameterValue( TEXT( "Rotation" ) , 1.0f - rot );
 	}
 }
 

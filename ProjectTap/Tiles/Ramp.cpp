@@ -17,22 +17,6 @@ ARamp::ARamp(): ABaseRampTile()
 void ARamp::BeginPlay()
 {
 	Super::BeginPlay();
-	UPrimitiveComponent* pc = Cast<UPrimitiveComponent>(RootComponent);
-	switch(rotationDirection)
-	{
-		case Direction::XPlus:
-			pc->SetWorldRotation(FRotator(0,0,0));
-			break;
-		case Direction::xMinus:
-			pc->SetWorldRotation(FRotator(0,180,0));
-			break;
-		case Direction::YPlus:
-			pc->SetWorldRotation(FRotator(0,90,0));
-			break;
-		case Direction::yMinus:
-			pc->SetWorldRotation(FRotator(0,270,0));
-			break;
-	}
 }
 
 void ARamp::Tick(float DeltaTime)

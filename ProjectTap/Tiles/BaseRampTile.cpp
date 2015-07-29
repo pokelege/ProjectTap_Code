@@ -62,6 +62,23 @@ void ABaseRampTile::Tick(float DeltaTime)
 void ABaseRampTile::BeginPlay()
 {
 	Super::BeginPlay();
+	UPrimitiveComponent* pc = Cast<UPrimitiveComponent>( RootComponent );
+	switch ( rotationDirection )
+	{
+		case Direction::XPlus:
+		case Direction::Guess:
+			pc->SetWorldRotation( FRotator( 0 , 0 , 0 ) );
+			break;
+		case Direction::xMinus:
+			pc->SetWorldRotation( FRotator( 0 , 180 , 0 ) );
+			break;
+		case Direction::YPlus:
+			pc->SetWorldRotation( FRotator( 0 , 90 , 0 ) );
+			break;
+		case Direction::yMinus:
+			pc->SetWorldRotation( FRotator( 0 , 270 , 0 ) );
+			break;
+	}
 }
 
 void ABaseRampTile::activate()

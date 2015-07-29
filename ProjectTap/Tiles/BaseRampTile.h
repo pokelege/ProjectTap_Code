@@ -6,6 +6,16 @@
 #include "CustomGameState.h"
 #include "BaseRampTile.generated.h"
 
+UENUM( BlueprintType )
+enum class Direction : uint8
+{
+	Guess ,
+	XPlus ,
+	YPlus ,
+	xMinus ,
+	yMinus
+};
+
 /**
  *
  */
@@ -23,6 +33,8 @@ protected:
 	class ABallPawn* lastPauseBall = nullptr;
 	USceneComponent* offset =nullptr;
 public:
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
+		Direction rotationDirection = Direction::XPlus;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
 		UCurveFloat* rotationSequence = nullptr;
 

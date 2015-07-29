@@ -142,9 +142,9 @@ void AJumpTile::CancelHighlightTile()
 OffsetInfo AJumpTile::getOffsetInfo()
 {
 	OffsetInfo data;
-	data.offsetForCollision = FVector(0.0f, 0.0f, 20.0f);
-	data.scaleForCollision = FVector(1.0f, 1.0f, 2.0f);
-	data.offsetForCarryOn = FVector(0.0f, 0.0f, 40.0f);
+	data.offsetForCollision = FVector(0.0f, 0.0f, 2.0f);
+	data.scaleForCollision = FVector(1.0f, 1.0f, 1.2f);
+	data.offsetForCarryOn = FVector(0.0f, 0.0f, 12.0f);
 	return data;
 }
 

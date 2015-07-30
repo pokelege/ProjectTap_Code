@@ -57,11 +57,13 @@ ATurretPawn::ATurretPawn()
 	explosionSound->bAutoActivate = false;
 	explosionSound->AttachTo( explosionParticle );
 
-	ConstructorHelpers::FObjectFinder<USoundWave> fireSoundFile( TEXT( "/Game/Sound/S_Gunshot" ) );
-	fireSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Fire Sound" ) );
-	fireSound->SetSound( fireSoundFile.Object );
-	fireSound->bAutoActivate = false;
-	fireSound->AttachTo( TurretGunMesh );
+	ConstructorHelpers::FObjectFinder<USoundBase> fireSoundFile( TEXT( "/Game/Sound/S_Gunshot" ) );
+	fireSound = fireSoundFile.Object;
+	ConstructorHelpers::FObjectFinder<USoundBase> beepSoundFile( TEXT( "/Game/Sound/S_Beep" ) );
+	lockSound = beepSoundFile.Object;
+	nozzleSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Nozzle Sound" ) );
+	nozzleSound->bAutoActivate = false;
+	nozzleSound->AttachTo( TurretGunMesh );
 }
 
 const GroundableInfo* ATurretPawn::GetGroundableInfo() const
@@ -80,7 +82,8 @@ void ATurretPawn::BeginPlay()
 	nozzleLocal = TurretGunMesh->GetSocketLocation( "Nozzle" );
 	nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation( "Nozzle" );
 	laserTag->EmitterInstances[0]->SetBeamSourcePoint( nozzleLocal , 0 );
-	fireSound->SetWorldLocation( nozzleLocal );
+	laserTag->SetVectorParameter( TEXT( "Color" ) , FVector( 0 , 2 , 0 ) );
+	nozzleSound->SetWorldLocation( nozzleLocal );
 	direction = this->GetActorForwardVector();
 	explosionParticle->Deactivate();
 }
@@ -129,17 +132,39 @@ void ATurretPawn::Fire()
 
 	ABullet* bullet = this->GetWorld()->SpawnActor<ABullet>( target->GetActorLocation(), FRotator(0) );
 	target->Kill();
-	fireSound->Play();
+	nozzleSound->Stop();
+	nozzleSound->SetSound(fireSound);
+	nozzleSound->Play();
 }
 
-
-void ATurretPawn::AttemptToFire( const float& DeltaTime )
+bool ATurretPawn::CanRotateToPlayer()
 {
+	auto targetVector = ( target->GetActorLocation() - TurretGunMesh->GetComponentLocation() ).GetSafeNormal();
+	auto targetRotation = targetVector.Rotation();
+	return targetRotation.GetNormalized().Yaw <= GetActorRotation().GetNormalized().Yaw + rotation && targetRotation.GetNormalized().Yaw >= GetActorRotation().GetNormalized().Yaw - rotation;
+}
 
-	if ( currentFireCooldown < fireRate ) return;
+bool ATurretPawn::RotateToPlayer(const float& DeltaTime)
+{
+	auto targetVector = ( target->GetActorLocation() - TurretGunMesh->GetComponentLocation() ).GetSafeNormal();
+	auto targetRotation = targetVector.Rotation();
+	TurretGunMesh->SetWorldRotation( FMath::RInterpTo( TurretGunMesh->GetComponentTransform().Rotator() , targetRotation , DeltaTime , ballSightedRotateSpeed ) );
+	auto dot = FVector::DotProduct( TurretGunMesh->GetForwardVector() , targetVector );
+	return dot > 0 && 1.0f - dot < maxErrorToShoot;
+}
 
-	Fire();
-	currentFireCooldown = 0;
+bool ATurretPawn::LockPlayer( const float& DeltaTime )
+{
+	if ( !wasLocked )
+	{
+		nozzleSound->Stop();
+		nozzleSound->SetSound( lockSound );
+		nozzleSound->Play();
+		laserTag->SetVectorParameter( TEXT( "Color" ) , FVector( 2 , 0 , 0 ) );
+		wasLocked = true;
+	}
+	currentFireDelayTime+= DeltaTime;
+	return  currentFireDelayTime >= fireDelay;
 }
 
 // Called every frame
@@ -153,29 +178,41 @@ void ATurretPawn::Tick( float DeltaTime )
 		laserTag->EmitterInstances[0]->SetBeamTargetPoint( nozzleLocalUpdatable , 0 );
 		return;
 	}
-	currentFireCooldown += DeltaTime;
 	laserTag->EmitterInstances[0]->SetBeamSourcePoint( nozzleLocalUpdatable , 0 );
-	fireSound->SetWorldLocation( nozzleLocalUpdatable );
-	bool found = false;
-	if ( FoundPlayerToHit() )
+	nozzleSound->SetWorldLocation( nozzleLocalUpdatable );
+
+	if ( FoundPlayerToHit() && CanRotateToPlayer() )
 	{
-		auto targetVector = ( target->GetActorLocation() - TurretGunMesh->GetComponentLocation() ).GetSafeNormal();
-		auto targetRotation = targetVector.Rotation();
-		if ( targetRotation.GetNormalized().Yaw <= GetActorRotation().GetNormalized().Yaw + rotation && targetRotation.GetNormalized().Yaw >= GetActorRotation().GetNormalized().Yaw - rotation )
+		if ( RotateToPlayer(DeltaTime) )
 		{
-			found = true;
-			TurretGunMesh->SetWorldRotation( FMath::RInterpTo( TurretGunMesh->GetComponentTransform().Rotator() , targetRotation , DeltaTime , ballSightedRotateSpeed ) );
-			auto dot = FVector::DotProduct( TurretGunMesh->GetForwardVector() , targetVector );
-			if ( dot > 0 && 1.0f - dot < maxErrorToShoot )
-				AttemptToFire( DeltaTime );
+			if ( LockPlayer( DeltaTime ) )
+			{
+				Fire();
+			}
+				
+		}
+		else
+		{
+			if ( wasLocked )
+			{
+				wasLocked = false;
+				currentFireDelayTime = 0;
+				laserTag->SetVectorParameter( TEXT( "Color" ) , FVector( 0 , 2 , 0 ) );
+			}
 		}
 	}
-	if (!found )
+	else
 	{
 		currentTime += ( DeltaTime * idleRotateSpeed );
 		regularRotation = FRotator( 0 , FMath::Sin( currentTime ) * ( rotation * 0.5f ) , 0 );
 		TurretGunMesh->SetRelativeRotation( FMath::RInterpTo( TurretGunMesh->GetRelativeTransform().Rotator() , regularRotation , DeltaTime , idleRotateSpeed ) );
 		nozzleLocalUpdatable = TurretGunMesh->GetSocketLocation( "Nozzle" );
+		if(wasLocked)
+		{
+			wasLocked = false;
+			currentFireDelayTime = 0;
+			laserTag->SetVectorParameter( TEXT( "Color" ) , FVector( 0 , 2 , 0 ) );
+		}
 	}
 	UpdateLaserTag( DeltaTime );
 }

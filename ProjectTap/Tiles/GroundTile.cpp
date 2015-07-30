@@ -33,11 +33,22 @@ void AGroundTile::UpdateAttachedLocation()
 	}
 }
 
+void AGroundTile::AttachActor()
+{
+	auto otherTile = Cast<AGroundTile>( ActorToAttach->ParentComponentActor.Get() );
+	if ( otherTile != nullptr && otherTile != this )
+		otherTile->ActorToAttach = nullptr;
+	ActorToAttach->AttachRootComponentToActor( this );
+	UpdateAttachedLocation();
+	ActorToAttach->SetActorRelativeRotation( FRotator( 0 ) );
+	ActorToAttach->SetActorRelativeScale3D( FVector( 1 ) );
+}
+
 #if WITH_EDITOR
 void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )
 {
 	Super::PostEditChangeProperty( PropertyChangedEvent );
-	if(PropertyChangedEvent.Property == nullptr) return;
+	if ( PropertyChangedEvent.Property == nullptr ) return;
 	if ( PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "GroundVisible" ) ) )
 	{
 		Mesh->SetVisibility( GroundVisible );
@@ -46,13 +57,22 @@ void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChange
 	{
 		if ( ActorToAttach != nullptr )
 		{
-			auto otherTile = Cast<AGroundTile>(ActorToAttach->ParentComponentActor.Get());
-			if(otherTile != nullptr && otherTile != this)
-				otherTile->ActorToAttach = nullptr;
-			ActorToAttach->AttachRootComponentToActor(this);
-			UpdateAttachedLocation();
-			ActorToAttach->SetActorRelativeRotation(FRotator(0));
-			ActorToAttach->SetActorRelativeScale3D(FVector(1));
+			AttachActor();
+		}
+		ActorToCreate = ActorToAttach == nullptr ? nullptr : ActorToAttach->StaticClass();
+	}
+	if ( PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "GenerateActorButton" ) ) )
+	{
+		if ( ActorToAttach != nullptr && ( ActorToCreate == nullptr || !ActorToCreate->StaticClass()->GetFullName().Equals( ActorToAttach->StaticClass()->GetFullName() ) ) )
+		{
+			ActorToAttach->Destroy();
+			ActorToAttach = nullptr;
+		}
+		ActorToCreate = ActorToCreate == nullptr ? nullptr : ActorToCreate->IsChildOf<AActor>() ? ActorToCreate : nullptr;
+		if ( ActorToCreate != nullptr )
+		{
+			ActorToAttach = GetWorld()->SpawnActor<AActor>( ActorToCreate , FVector::ZeroVector , FRotator::ZeroRotator );
+			AttachActor();
 		}
 	}
 }

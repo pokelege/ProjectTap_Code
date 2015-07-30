@@ -12,7 +12,10 @@ AGroupedBlockingTile::AGroupedBlockingTile()
 	FName path("/Game/Models/SM_GroupedBlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
-
+	ConstructorHelpers::FObjectFinder<USoundBase> activateSoundFile( TEXT( "/Game/Sound/S_SoftClicking" ) );
+	ActivateSound = activateSoundFile.Object;
+	ConstructorHelpers::FObjectFinder<USoundBase> deactivateSoundFile( TEXT( "/Game/Sound/S_SoftClickingReverse" ) );
+	DeactivateSound = deactivateSoundFile.Object;
 }
 
 // Called when the game starts or when spawned
@@ -40,11 +43,3 @@ void AGroupedBlockingTile::Tick( float DeltaTime )
 	}
 
 }
-
-
-void AGroupedBlockingTile::deactivate()
-{
-	time_counter = .0f;
-	activated = false;
-}
-

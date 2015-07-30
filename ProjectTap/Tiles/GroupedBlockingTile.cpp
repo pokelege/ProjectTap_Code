@@ -11,8 +11,7 @@ AGroupedBlockingTile::AGroupedBlockingTile()
 	PrimaryActorTick.bCanEverTick = true;
 	FName path("/Game/Models/SM_GroupedBlockingTile");
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*path.ToString());
-	TileMesh->SetStaticMesh(mesh.Object);
-
+	TileMesh->SetStaticMesh(mesh.Object);	
 }
 
 // Called when the game starts or when spawned

@@ -32,6 +32,8 @@ ABaseRampTile::ABaseRampTile() : ATile()
 	flipSound->bAutoActivate = false;
 	flipSound->AttachTo( BoxCollision );
 
+	ResetMeshOrientation();
+
 	CancelHighlight();
 	Disable();
 }
@@ -62,22 +64,28 @@ void ABaseRampTile::Tick(float DeltaTime)
 void ABaseRampTile::BeginPlay()
 {
 	Super::BeginPlay();
-	UPrimitiveComponent* pc = Cast<UPrimitiveComponent>( RootComponent );
-	switch ( rotationDirection )
+	ResetMeshOrientation();
+}
+
+void ABaseRampTile::ResetMeshOrientation()
+{
+	UPrimitiveComponent* pc = Cast<UPrimitiveComponent>(RootComponent);
+
+	switch (rotationDirection)
 	{
-		case Direction::XPlus:
-		case Direction::Guess:
-			pc->SetWorldRotation( FRotator( 0 , 0 , 0 ) );
-			break;
-		case Direction::xMinus:
-			pc->SetWorldRotation( FRotator( 0 , 180 , 0 ) );
-			break;
-		case Direction::YPlus:
-			pc->SetWorldRotation( FRotator( 0 , 90 , 0 ) );
-			break;
-		case Direction::yMinus:
-			pc->SetWorldRotation( FRotator( 0 , 270 , 0 ) );
-			break;
+	case Direction::XPlus:
+	case Direction::Guess:
+		pc->SetWorldRotation(FRotator(0, 0, 0));
+		break;
+	case Direction::xMinus:
+		pc->SetWorldRotation(FRotator(0, 180, 0));
+		break;
+	case Direction::YPlus:
+		pc->SetWorldRotation(FRotator(0, 90, 0));
+		break;
+	case Direction::yMinus:
+		pc->SetWorldRotation(FRotator(0, 270, 0));
+		break;
 	}
 }
 
@@ -141,3 +149,24 @@ void ABaseRampTile::OnGameStateChanged( const CustomGameState newState )
 		ball = nullptr;
 	}
 }
+
+#if WITH_EDITOR
+void ABaseRampTile::PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.Property != nullptr)
+	{
+		auto p = PropertyChangedEvent.Property;
+		auto pName = p->GetName();
+
+		//when currentEditorPathIndex property changes in editor
+		//reset current moving tile's location to desinated node's location
+		if (pName.Equals(TEXT("rotationDirection")))
+		{
+			ResetMeshOrientation();
+		}
+
+	}
+}
+#endif

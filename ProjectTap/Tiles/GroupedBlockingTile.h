@@ -12,7 +12,7 @@ class PROJECTTAP_API AGroupedBlockingTile : public ABlockingTileBase
 public:	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Tile)
-		float activation_time = .5f;
+	float activation_time = .8f;
 
 	// Sets default values for this actor's properties
 	AGroupedBlockingTile();

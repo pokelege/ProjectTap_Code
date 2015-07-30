@@ -58,6 +58,7 @@ public:
 		void SetGameMode( CustomGameMode NewMode , bool notifyListeners = true );
 	UFUNCTION( BlueprintCallable , Category = Camera)
 	void SetCamera(class UProjectTapCameraComponent* camera,  bool notifyListeners = true);
+
 	AMagnetTile* SetMagnetTile( class AMagnetTile* magnet );
 	ABallPawn* GetPlayer();
 	CustomGameState GetState();

@@ -32,6 +32,8 @@ protected:
 	class ABallPawn* ball = nullptr;
 	class ABallPawn* lastPauseBall = nullptr;
 	USceneComponent* offset =nullptr;
+
+	void ResetMeshOrientation();
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Tile )
 		Direction rotationDirection = Direction::XPlus;
@@ -55,4 +57,8 @@ public:
 	virtual void CancelHighlightTile() override;
 	UFUNCTION()
 		virtual void OnGameStateChanged( const CustomGameState gameState ) override;
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
+#endif
 };

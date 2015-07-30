@@ -127,10 +127,8 @@ void ATurretPawn::Fire()
 {
 	if ( target == nullptr ) return;
 
-	ABullet* bullet = this->GetWorld()->SpawnActor<ABullet>( nozzleLocalUpdatable , TurretGunMesh->GetForwardVector().Rotation() );
-
-	UPrimitiveComponent* comp = Cast<UPrimitiveComponent>( bullet->GetRootComponent() );
-	comp->AddImpulse( TurretGunMesh->GetForwardVector() * bulletForce );
+	ABullet* bullet = this->GetWorld()->SpawnActor<ABullet>( target->GetActorLocation(), FRotator(0) );
+	target->Kill();
 	fireSound->Play();
 }
 

@@ -10,15 +10,15 @@ class PROJECTTAP_API ABullet : public AActor
 {
 	GENERATED_BODY()
 
-	static const FName MESH;
-	TScriptDelegate<FWeakObjectPtr> delegate;
+	TScriptDelegate<FWeakObjectPtr> particleDoneDelegate;
+	TScriptDelegate<FWeakObjectPtr> soundDoneDelegate;
+	bool particleDone = false;
+	bool soundDone = false;
 public:
 	// Sets default values for this actor's properties
 	ABullet();
-
 	UFUNCTION()
-	void OnBeginHit(class AActor* OtherActor,
-					class UPrimitiveComponent* OtherComp,
-					FVector NormalImpulse,
-					const FHitResult& Hit);
+	void OnParticleDone( class UParticleSystemComponent* PSystem );
+	UFUNCTION()
+	void OnSoundDone();
 };

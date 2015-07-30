@@ -5,32 +5,34 @@
 #include "Pawns/BallPawn.h"
 #include "Pawns/TurretPawn.h"
 
-const FName ABullet::MESH = FName( "/Game/Models/Bullet" );
 // Sets default values
 ABullet::ABullet()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh( *MESH.ToString() );
-	UStaticMeshComponent* BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Bullet mesh" ) );
-	BulletMesh->SetStaticMesh( mesh.Object );
-	this->SetRootComponent( BulletMesh );
-	BulletMesh->SetNotifyRigidBodyCollision(true);
-	BulletMesh->SetSimulatePhysics(true);
-	BulletMesh->SetEnableGravity(false);
-	delegate.BindUFunction(this, TEXT("OnBeginHit"));
-	BulletMesh->OnComponentHit.Add(delegate);
+	ConstructorHelpers::FObjectFinder<UParticleSystem> particle( TEXT( "/Game/Particles/P_Explosion" ) );
+	UParticleSystemComponent* Explosion = CreateDefaultSubobject<UParticleSystemComponent>( TEXT( "Explosion" ) );
+	Explosion->SetTemplate( particle.Object );
+	Explosion->bAutoActivate = true;
+	particleDoneDelegate.BindUFunction(this , TEXT("OnParticleDone"));
+	Explosion->OnSystemFinished.Add( particleDoneDelegate );
+	this->SetRootComponent( Explosion );
+	ConstructorHelpers::FObjectFinder<USoundBase> explosionSoundFile( TEXT( "/Game/Sound/S_Explosion" ) );
+	UAudioComponent* explosionSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Explosion Sound" ) );
+	explosionSound->SetSound( explosionSoundFile.Object );
+	explosionSound->bAutoActivate = true;
+	soundDoneDelegate.BindUFunction(this , TEXT("OnSoundDone"));
+	explosionSound->OnAudioFinished.Add( soundDoneDelegate );
+	explosionSound->AttachTo( GetRootComponent() );
 }
 
-void ABullet::OnBeginHit(class AActor* OtherActor,
-				class UPrimitiveComponent* OtherComp,
-				FVector NormalImpulse,
-				const FHitResult& Hit)
+void ABullet::OnParticleDone( class UParticleSystemComponent* PSystem )
 {
-	if(Cast<ATurretPawn>(OtherActor) != nullptr) return;
-	ABallPawn* ball = nullptr;
-	if ( ( ball = Cast<ABallPawn>( OtherActor ) ) != nullptr )
-	{
-		ball->Kill();
-	}
-	Destroy();
+	particleDone = true;
+	if ( soundDone ) Destroy();
+}
+
+void ABullet::OnSoundDone()
+{
+	soundDone = true;
+	if ( particleDone ) Destroy();
 }

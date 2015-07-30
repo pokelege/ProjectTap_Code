@@ -18,11 +18,13 @@ ABlockingTileBase::ABlockingTileBase()
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	ConstructorHelpers::FObjectFinder<USoundWave> activateSoundFile( TEXT( "/Game/Sound/S_Swoosh" ) );
-	activateSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Activate Sound" ) );
-	activateSound->SetSound( activateSoundFile.Object );
-	activateSound->bAutoActivate = false;
-	activateSound->AttachTo( BoxCollision );
+	ConstructorHelpers::FObjectFinder<USoundBase> activateSoundFile( TEXT( "/Game/Sound/S_GearClicking" ) );
+	ActivateSound = activateSoundFile.Object;
+	ConstructorHelpers::FObjectFinder<USoundBase> deactivateSoundFile( TEXT( "/Game/Sound/S_GearClickingReverse" ) );
+	DeactivateSound = deactivateSoundFile.Object;
+	SoundPlayer = CreateDefaultSubobject<UAudioComponent>( TEXT( "Activate Sound" ) );
+	SoundPlayer->bAutoActivate = false;
+	SoundPlayer->AttachTo( BoxCollision );
 }
 
 // Called when the game starts or when spawned
@@ -47,6 +49,7 @@ void ABlockingTileBase::Tick( float DeltaTime )
 	else if (activated && !canRise)
 	{
 		pos.Z = original.Z + move_distance_tolerance;
+		if ( SoundPlayer->IsPlaying() ) SoundPlayer->Stop();
 	}
 	else if (!activated && canDesend)
 	{
@@ -77,11 +80,14 @@ void ABlockingTileBase::deactivate()
 	Super::deactivate();
 	time_counter = 0.0f;
 	lerpMaterialColorForCoolDown(1.0f);
+	SoundPlayer->SetSound( DeactivateSound );
+	SoundPlayer->Play();
 }
 void ABlockingTileBase::activate()
 {
 	Super::activate();
-	activateSound->Play();
+	SoundPlayer->SetSound( ActivateSound );
+	SoundPlayer->Play();
 }
 
 bool ABlockingTileBase::CanKillBall()

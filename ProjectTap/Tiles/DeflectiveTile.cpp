@@ -56,7 +56,7 @@ ADeflectiveTile::ADeflectiveTile()
 
 	glowPowerHighlighted = 70.0f;
 
-	ConstructorHelpers::FObjectFinder<USoundWave> ballDeflectSoundFile( TEXT( "/Game/Sound/S_Hit" ) );
+	ConstructorHelpers::FObjectFinder<USoundWave> ballDeflectSoundFile( TEXT( "/Game/Sound/S_MetalHit" ) );
 	ballDeflectSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Ball Deflect Sound" ) );
 	ballDeflectSound->SetSound( ballDeflectSoundFile.Object );
 	ballDeflectSound->bAutoActivate = false;

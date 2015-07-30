@@ -34,9 +34,10 @@ void ATile::OnGameStateChanged( const CustomGameState gameState )
 		case CustomGameState::GAME_STATE_PLAYING:
 			canActivate = true;
 			break;
-		default:
+		case CustomGameState::GAME_STATE_DYING:
+		case CustomGameState::GAME_STATE_GAME_OVER:
 			canActivate = false;
-			deactivate();
+			if(activated) deactivate();
 	}
 }
 

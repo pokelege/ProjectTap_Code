@@ -22,7 +22,5 @@ public:
 	
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
-
-	virtual void deactivate() override;
 	
 };

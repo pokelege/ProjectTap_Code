@@ -4,6 +4,7 @@
 #include "GroundTile.h"
 #include "UnrealType.h"
 #include "IGroundable.h"
+#include "GroundTileManager.h"
 // Sets default values
 AGroundTile::AGroundTile()
 {
@@ -35,7 +36,7 @@ void AGroundTile::UpdateAttachedLocation()
 
 void AGroundTile::AttachActor()
 {
-	auto otherTile = Cast<AGroundTile>( ActorToAttach->ParentComponentActor.Get() );
+	auto otherTile = Cast<AGroundTile>( ActorToAttach->GetAttachParentActor() );
 	if ( otherTile != nullptr && otherTile != this )
 		otherTile->ActorToAttach = nullptr;
 	ActorToAttach->AttachRootComponentToActor( this );
@@ -44,7 +45,25 @@ void AGroundTile::AttachActor()
 	ActorToAttach->SetActorRelativeScale3D( FVector( 1 ) );
 }
 
+void AGroundTile::Destroyed()
+{
+	if ( DestroyActorWithGround && ActorToAttach != nullptr )
+	{
+		ActorToAttach->Destroy();
+	}
+	Super::Destroyed();
+}
+
 #if WITH_EDITOR
+void AGroundTile::EditorKeyPressed( FKey Key ,
+									EInputEvent Event )
+{
+	Super::EditorKeyPressed(Key,Event);
+	if ( Cast<AGroundTileManager>( GetAttachParentActor() ) != nullptr && IsSelected() && Key == EKeys::Enter && Event == EInputEvent::IE_Released )
+	{
+		//todo select parent
+	}
+}
 void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )
 {
 	Super::PostEditChangeProperty( PropertyChangedEvent );

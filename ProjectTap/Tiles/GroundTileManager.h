@@ -25,8 +25,11 @@ public:
 		const float MeshScaleZ = 80.0f;
 		UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Generate)
 		bool ApplyProperties_Button;
+		UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Children )
+		bool DestroyActorsWithGroundManager = true;
 	// Sets default values for this actor's properties
 	AGroundTileManager();
+	virtual void Destroyed();
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent ) override;
 #endif

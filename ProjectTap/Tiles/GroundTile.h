@@ -12,7 +12,7 @@ class PROJECTTAP_API AGroundTile : public AActor
 private:
 public:
 	UPROPERTY()
-		FVector location = FVector( 0 );
+		FVector location = FVector::ZeroVector;
 	UPROPERTY()
 		UStaticMeshComponent* Mesh = nullptr;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Attachment )
@@ -29,7 +29,10 @@ public:
 	AGroundTile();
 	void UpdateAttachedLocation();
 	void AttachActor();
+	virtual void Destroyed();
 #if WITH_EDITOR
+	virtual void EditorKeyPressed( FKey Key ,
+								   EInputEvent Event ) override;
 	virtual void PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent ) override;
 #endif
 };

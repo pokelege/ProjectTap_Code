@@ -4,6 +4,10 @@
 #include "GroundTile.h"
 #include "UnrealType.h"
 #include "IGroundable.h"
+#include "GroundTileManager.h"
+#if WITH_EDITOR
+#include "UnrealEd.h"
+#endif
 // Sets default values
 AGroundTile::AGroundTile()
 {
@@ -33,11 +37,61 @@ void AGroundTile::UpdateAttachedLocation()
 	}
 }
 
+void AGroundTile::AttachActor()
+{
+	auto otherTile = Cast<AGroundTile>( ActorToAttach->GetAttachParentActor() );
+	if ( otherTile != nullptr && otherTile != this )
+		otherTile->ActorToAttach = nullptr;
+	ActorToAttach->AttachRootComponentToActor( this );
+	UpdateAttachedLocation();
+	ActorToAttach->SetActorRelativeRotation( FRotator( 0 ) );
+	ActorToAttach->SetActorRelativeScale3D( FVector( 1 ) );
+}
+
+void AGroundTile::Destroyed()
+{
+	if ( DestroyActorWithGround && ActorToAttach != nullptr )
+	{
+		ActorToAttach->Destroy();
+	}
+	Super::Destroyed();
+}
+
+void AGroundTile::GenerateActor()
+{
+	if ( ActorToAttach != nullptr && ( ActorToCreate == nullptr || !ActorToCreate->StaticClass()->GetFullName().Equals( ActorToAttach->StaticClass()->GetFullName() ) ) )
+	{
+		ActorToAttach->Destroy();
+		ActorToAttach = nullptr;
+	}
+	ActorToCreate = ActorToCreate == nullptr ? nullptr : ActorToCreate->IsChildOf<AActor>() ? ActorToCreate : nullptr;
+	if ( ActorToCreate != nullptr )
+	{
+		ActorToAttach = GetWorld()->SpawnActor<AActor>( ActorToCreate , FVector::ZeroVector , FRotator::ZeroRotator );
+		AttachActor();
+	}
+}
+
 #if WITH_EDITOR
+void AGroundTile::EditorKeyPressed( FKey Key ,
+									EInputEvent Event )
+{
+	Super::EditorKeyPressed( Key , Event );
+	if ( !IsSelected() ) return;
+	if ( Cast<AGroundTileManager>( GetAttachParentActor() ) != nullptr && Key == EKeys::Enter && Event == EInputEvent::IE_Released )
+	{
+		GEditor->SelectNone( true , true );
+		GEditor->SelectActor( GetAttachParentActor() , true , true );
+	}
+	if ( Event == EInputEvent::IE_Released && ( Key == EKeys::LeftShift || Key == EKeys::RightShift ) )
+	{
+		GenerateActor();
+	}
+}
 void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )
 {
 	Super::PostEditChangeProperty( PropertyChangedEvent );
-	if(PropertyChangedEvent.Property == nullptr) return;
+	if ( PropertyChangedEvent.Property == nullptr ) return;
 	if ( PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "GroundVisible" ) ) )
 	{
 		Mesh->SetVisibility( GroundVisible );
@@ -46,14 +100,13 @@ void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChange
 	{
 		if ( ActorToAttach != nullptr )
 		{
-			auto otherTile = Cast<AGroundTile>(ActorToAttach->ParentComponentActor.Get());
-			if(otherTile != nullptr && otherTile != this)
-				otherTile->ActorToAttach = nullptr;
-			ActorToAttach->AttachRootComponentToActor(this);
-			UpdateAttachedLocation();
-			ActorToAttach->SetActorRelativeRotation(FRotator(0));
-			ActorToAttach->SetActorRelativeScale3D(FVector(1));
+			AttachActor();
 		}
+		ActorToCreate = ActorToAttach == nullptr ? nullptr : ActorToAttach->StaticClass();
+	}
+	if ( PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "GenerateActorButton" ) ) || PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "ActorToCreate" ) ) )
+	{
+		GenerateActor();
 	}
 }
 #endif

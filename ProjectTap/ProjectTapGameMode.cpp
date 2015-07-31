@@ -10,6 +10,7 @@
 #include "Pawns/BallPlayerStart.h"
 #include "General/ProjectTapCameraComponent.h"
 #include "General/ProjectTapCamera.h"
+#include "Runtime/Engine/Public/PhysicsPublic.h"
 
 AProjectTapGameMode::AProjectTapGameMode( const FObjectInitializer& initializer ): Super( initializer )
 {
@@ -32,6 +33,8 @@ void AProjectTapGameMode::BeginPlay()
 	auto gameState = GetGameState<AProjectTapGameState>();
 	OnCameraChangedDelegateHandle = gameState->CameraChanged.AddUFunction( this , TEXT( "OnCameraChanged" ) );
 	OnGameStateChangedDelegateHandle = gameState->GameStateChanged.AddUFunction( this , TEXT( "OnStateChanged" ) );
+	auto physicsWorld = GetWorld()->GetPhysicsScene();
+	auto scene = physicsWorld->GetPhysXScene(0);
 }
 
 

@@ -82,8 +82,9 @@ OffsetInfo AMagnetTile::getOffsetInfo()
 void AMagnetTile::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+	lockFrameTimer += DeltaTime;
 
-	if ( enabled )
+	if ( enabled && lockFrameTimer >= lockFPS)
 	{
 		FHitResult hit;
 		auto hitActor = GetMagnetHitActor( hit );
@@ -102,6 +103,8 @@ void AMagnetTile::Tick( float DeltaTime )
 			magnetEndPos = hit.bBlockingHit ? hit.ImpactPoint : GetClampedForwardVector( true ) + GetActorLocation();
 			magnetParticle->EmitterInstances[0]->SetBeamTargetPoint( magnetEndPos , 0 );
 		}
+
+		lockFrameTimer = .0f;
 	}
 
 }
@@ -169,7 +172,6 @@ class UPrimitiveComponent* OtherComp ,
 		{
 			material->SetScalarParameterValue( TEXT( "KilledBall" ) , 1 );
 		}
-		Disable();
 	}
 }
 

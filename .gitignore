@@ -10,5 +10,8 @@ CMakeLists.txt
 Makefile
 *.kdev4
 *.pro
+*.pro.user
 *.pri
+*.blend1
 Build/
+*.opensdf

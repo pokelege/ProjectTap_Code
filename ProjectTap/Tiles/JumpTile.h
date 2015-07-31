@@ -3,14 +3,13 @@
 #pragma once
 
 #include "Tiles/BaseRampTile.h"
-#include "ICarriable.h"
 #include "JumpTile.generated.h"
 
 /**
  *
  */
 UCLASS()
-class PROJECTTAP_API AJumpTile : public ABaseRampTile, public ICarriable
+class PROJECTTAP_API AJumpTile : public ABaseRampTile
 {
 	GENERATED_BODY()
 
@@ -20,7 +19,7 @@ class PROJECTTAP_API AJumpTile : public ABaseRampTile, public ICarriable
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
-	float height = 400;
+	float height = 380.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Jump)
 	float ballLandingForceStrength = 2000.0f;
@@ -36,10 +35,9 @@ public:
 
 	void SetWaitForBall();
 
-	OffsetInfo getOffsetInfo() override;
 
 	virtual void BeginPlay() override;
-
+	virtual void Tick(float DeltaTime) override;
 	virtual void activate() override;
 	void calculateImpulse();
 	virtual void HighlightEdge() override;

@@ -19,34 +19,57 @@ AGroundTileManager::AGroundTileManager()
 	Collision->SetMobility( EComponentMobility::Static );
 }
 
+void AGroundTileManager::Destroyed()
+{
+	if ( DestroyActorsWithGroundManager )
+	{
+		for ( TActorIterator<AActor> ActorItr( GetWorld() ); ActorItr; ++ActorItr )
+		{
+			if ( ActorItr->IsAttachedTo( this ) ) ActorItr->Destroy();
+		}
+	}
+	Super::Destroyed();
+}
+
 void AGroundTileManager::Generate()
 {
 	FVector boxExtent( ( float ) NumTilesX * MeshScaleX , ( float ) NumTilesY * MeshScaleY , MeshScaleZ );
 	Collision->SetBoxExtent( boxExtent );
-	TArray<AGroundTile*> GroundTiles;
+	TMap<FVector,AGroundTile*> GroundTiles;
+
 	for ( TActorIterator<AGroundTile> ActorItr( GetWorld() ); ActorItr; ++ActorItr )
 	{
-		if ( ActorItr->IsAttachedTo(this) ) GroundTiles.Add(*ActorItr);
+		if ( ActorItr->IsAttachedTo(this) )
+		{
+			if ( ActorItr->location.Equals( FVector::ZeroVector ) || GroundTiles.Contains(ActorItr->location) )
+			{
+				ActorItr->Destroy();
+			}
+			else
+			{
+				GroundTiles.Add( ActorItr->location, *ActorItr );
+			}
+		}
 	}
-	auto meshesIndex = 0;
 
 	for ( int x = 1; x <= NumTilesX; ++x )
 	{
 		for ( int y = 1; y <= NumTilesY; ++y )
 		{
 			AGroundTile* newGround = nullptr;
-			if ( meshesIndex < GroundTiles.Num() )
+			FVector currentLocation( x , y , 0 );
+			if ( GroundTiles.Contains(currentLocation))
 			{
-				newGround = Cast<AGroundTile>( GroundTiles[meshesIndex++] );
+				newGround = *GroundTiles.Find(currentLocation);
 				newGround->AttachRootComponentToActor( this );
 				newGround->UpdateAttachedLocation();
+				GroundTiles.Remove(currentLocation);
 			}
 			else
 			{
 				newGround = GetWorld()->SpawnActor<AGroundTile>();
+				newGround->location = currentLocation;
 				newGround->AttachRootComponentToActor(this);
-				GroundTiles.Add(newGround);
-				++meshesIndex;
 			}
 			FVector translation( 0 );
 			//todo optimize if possible
@@ -59,13 +82,24 @@ void AGroundTileManager::Generate()
 			newGround->SetActorRelativeScale3D(FVector(1));
 		}
 	}
-	while ( meshesIndex < GroundTiles.Num() )
+	for ( auto toDelete = GroundTiles.CreateIterator(); toDelete; ++toDelete )
 	{
-		GroundTiles.Pop()->Destroy();
+		toDelete->Value->Destroy();
 	}
 }
 
 #if WITH_EDITOR
+void AGroundTileManager::EditorKeyPressed( FKey Key ,
+									EInputEvent Event )
+{
+	Super::EditorKeyPressed( Key , Event );
+	if ( !IsSelected() ) return;
+	if ( Event == EInputEvent::IE_Released && Key == EKeys::Enter  )
+	{
+		Generate();
+	}
+}
+
 void AGroundTileManager::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )
 {
 	if(PropertyChangedEvent.Property != nullptr && PropertyChangedEvent.Property->GetNameCPP().Equals("ApplyProperties_Button"))

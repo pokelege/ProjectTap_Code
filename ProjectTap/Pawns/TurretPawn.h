@@ -22,21 +22,17 @@ class PROJECTTAP_API ATurretPawn : public APawn, public IGroundable
 	FVector direction;
 	FRotator regularRotation;
 	class ABallPawn* target = nullptr;
+	UAudioComponent* explosionSound = nullptr;
+	UAudioComponent* nozzleSound = nullptr;
+	USoundBase* fireSound = nullptr;
+	USoundBase* lockSound = nullptr;
+	UStaticMeshComponent* TurretGunMesh;
+	UParticleSystemComponent* laserTag;
+	UParticleSystemComponent* explosionParticle;
 public:
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
-		UAudioComponent* explosionSound = nullptr;
-
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Audio )
-		UAudioComponent* fireSound = nullptr;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
-		UStaticMeshComponent* TurretGunMesh;
-
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
-		UParticleSystemComponent* laserTag;
-
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
-		UParticleSystemComponent* explosionParticle;
+		float fireDelay = 0.5f;
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
 		float maxErrorToShoot = 0.01f;
@@ -54,18 +50,13 @@ public:
 		float FOV = 60.0f;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
 		float maxDistance = 300.0f;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
-		float updateInterval = 0.2f;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
-		float fireRate = 2.0f;
 
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Turret )
-		float bulletForce = 2000.0f;
 private:
-	float currentFireCooldown = 0;
 	float current_hp = MAX_HEALTH;
 	float currentTime = 0;
+	float currentFireDelayTime = 0;
 	bool died = false;
+	bool wasLocked = false;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Turret)
 	bool activated = true;
@@ -81,9 +72,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
-	void AttemptToFire(const float& DeltaTime);
-
 	bool FoundPlayerToHit();
+
+	bool CanRotateToPlayer();
+
+	bool RotateToPlayer( const float& DeltaTime );
+
+	bool LockPlayer(const float& DeltaTime);
 
 	void Fire();
 

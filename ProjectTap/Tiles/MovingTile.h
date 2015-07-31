@@ -51,6 +51,14 @@ public:
 	virtual void EditorKeyPressed(FKey Key,
 				                  EInputEvent Event) override;
 
+	virtual void EditorApplyTranslation
+	(
+	const FVector & DeltaTranslation,
+	bool bAltDown,
+	bool bShiftDown,
+	bool bCtrlDown
+	) override;
+
 	void AddCurrentLocation();
 
 	void UpdateCurrentLocation();

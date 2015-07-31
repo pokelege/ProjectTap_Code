@@ -2,7 +2,7 @@
 
 #include "ProjectTap.h"
 #include "JumpTile.h"
-#include "../Pawns/BallPawn.h"
+#include "Pawns/BallPawn.h"
 
 const FName AJumpTile::JUMP_MESH_PATH = FName("/Game/Models/Jump");
 
@@ -11,15 +11,36 @@ AJumpTile::AJumpTile() : ABaseRampTile()
 	PrimaryActorTick.bCanEverTick = true;
 	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh(*JUMP_MESH_PATH.ToString());
 	TileMesh->SetStaticMesh(mesh.Object);
+	rotationDirection = Direction::Guess;
 }
 
 void AJumpTile::BeginPlay()
 {
+	if ( target != nullptr && rotationDirection == Direction::Guess )
+	{
+		auto dir = ( target->GetActorLocation() - GetActorLocation() ).GetSafeNormal2D();
+		auto xdir = dir.X >= 0 ? Direction::XPlus : Direction::xMinus;
+		auto ydir = dir.Y >= 0 ? Direction::YPlus : Direction::yMinus;
+		rotationDirection = FMath::Abs( dir.X ) >= FMath::Abs( dir.Y ) ? xdir : ydir;
+	}
 	Super::BeginPlay();
-	if(target == nullptr) return;
-	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
-	UPrimitiveComponent* pc = Cast<UPrimitiveComponent>(RootComponent);
-	pc->SetWorldRotation(dir.Rotation());
+	if ( target != nullptr )
+	{
+		auto dir = ( target->GetActorLocation() - GetActorLocation() ).GetSafeNormal2D();
+		auto rot = (dir.Rotation().GetNormalized().Yaw - GetActorRotation().GetNormalized().Yaw) / 360;
+		material->SetScalarParameterValue( TEXT( "Rotation" ) , 1.0f - rot );
+	}
+}
+
+void AJumpTile::Tick( float DeltaTime )
+{
+	Super::Tick(DeltaTime);
+	if ( target != nullptr )
+	{
+		auto dir = ( target->GetActorLocation() - GetActorLocation() ).GetSafeNormal2D();
+		auto rot = ( dir.Rotation().GetNormalized().Yaw - GetActorRotation().GetNormalized().Yaw ) / 360;
+		material->SetScalarParameterValue( TEXT( "Rotation" ) , 1.0f - rot );
+	}
 }
 
 void AJumpTile::SetWaitForBall()
@@ -45,9 +66,13 @@ void AJumpTile::calculateImpulse()
 {
 	//h = 1/2*a*t^2
 	//t = sqrt(2h/a)
-	float t_up = FMath::Sqrt(2 * height  / -GetWorld()->GetGravityZ()); 
 
-	float fall_height = GetActorLocation().Z + height - target->GetActorLocation().Z;
+	//take ball's radius into account as height difference
+	auto radius = ball->ballCollision->GetScaledSphereRadius();
+	auto goUpHeight = height - radius;
+	float t_up = FMath::Sqrt(2 * goUpHeight / -GetWorld()->GetGravityZ());
+
+	float fall_height = GetActorLocation().Z + goUpHeight - target->GetActorLocation().Z - radius;
 	float t_down = FMath::Sqrt(2 * fall_height / -GetWorld()->GetGravityZ());
 
 	float t = t_up + t_down;
@@ -56,14 +81,14 @@ void AJumpTile::calculateImpulse()
 	//vf == 0
 	//vi = -at
 	float verticalVelocity = -GetWorld()->GetGravityZ() * t_up;
-	auto dir = (target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	auto dir = (target->GetActorLocation() - ball->GetActorLocation()).GetSafeNormal();
 
-	auto startPos = FVector(GetActorLocation().X, GetActorLocation().Y, .0f);// GetActorLocation().Z);
-	auto targetPos = FVector(target->GetActorLocation().X, target->GetActorLocation().Y, .0f);// target->GetActorLocation().Y);
+	auto startPos = FVector(ball->GetActorLocation().X, ball->GetActorLocation().Y, ball->GetActorLocation().Z + radius);
+	auto targetPos = FVector(target->GetActorLocation().X, target->GetActorLocation().Y, target->GetActorLocation().Z + radius);
 	auto distance = FVector::Dist(targetPos, startPos);
 
-	//d = 1/2 * a *t^2
-	//a = 2d / t^2
+	//d = (vi + vf) / 2 * t
+	//vi = 2 * (d/t)
 	auto horizontalSpeed = distance / t;
 
 	//impuls(change in momentum) = f * t
@@ -114,14 +139,7 @@ void AJumpTile::CancelHighlightTile()
 	}
 }
 
-OffsetInfo AJumpTile::getOffsetInfo()
-{
-	OffsetInfo data;
-	data.offsetForCollision = FVector(0.0f, 0.0f, 20.0f);
-	data.scaleForCollision = FVector(1.0f, 1.0f, 2.0f);
-	data.offsetForCarryOn = FVector(0.0f, 0.0f, 40.0f);
-	return data;
-}
+
 
 
 #if WITH_EDITOR

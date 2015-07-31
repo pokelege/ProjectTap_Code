@@ -34,10 +34,8 @@ AEndTile::AEndTile() : ATile()
 
 	ConstructorHelpers::FObjectFinder<USoundBase> sound1( TEXT( "/Game/Sound/S_Warp1" ) );
 	ConstructorHelpers::FObjectFinder<USoundBase> sound2( TEXT( "/Game/Sound/S_Warp2" ) );
-	ConstructorHelpers::FObjectFinder<USoundBase> sound3( TEXT( "/Game/Sound/S_Warp3" ) );
 	sounds.Add( sound1.Object );
 	sounds.Add( sound2.Object );
-	sounds.Add( sound3.Object );
 	audioPlayer = CreateDefaultSubobject<UAudioComponent>( TEXT( "Audio Player" ) );
 	audioPlayer->bAutoActivate = false;
 	audioPlayer->AttachTo( particleComponent );

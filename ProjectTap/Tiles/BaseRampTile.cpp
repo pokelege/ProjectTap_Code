@@ -73,19 +73,19 @@ void ABaseRampTile::ResetMeshOrientation()
 
 	switch (rotationDirection)
 	{
-	case Direction::XPlus:
-	case Direction::Guess:
-		pc->SetWorldRotation(FRotator(0, 0, 0));
-		break;
-	case Direction::xMinus:
-		pc->SetWorldRotation(FRotator(0, 180, 0));
-		break;
-	case Direction::YPlus:
-		pc->SetWorldRotation(FRotator(0, 90, 0));
-		break;
-	case Direction::yMinus:
-		pc->SetWorldRotation(FRotator(0, 270, 0));
-		break;
+		case Direction::XPlus:
+		case Direction::Guess:
+			pc->SetWorldRotation(FRotator(0, 0, 0));
+			break;
+		case Direction::xMinus:
+			pc->SetWorldRotation(FRotator(0, 180, 0));
+			break;
+		case Direction::YPlus:
+			pc->SetWorldRotation(FRotator(0, 90, 0));
+			break;
+		case Direction::yMinus:
+			pc->SetWorldRotation(FRotator(0, 270, 0));
+			break;
 	}
 }
 
@@ -97,6 +97,14 @@ void ABaseRampTile::activate()
 	flipSound->Play();
 }
 
+OffsetInfo ABaseRampTile::getOffsetInfo()
+{
+	OffsetInfo data;
+	data.offsetForCollision = FVector(0.0f, 0.0f, 5.0f);
+	data.scaleForCollision = FVector(1.0f, 1.0f, 1.4f);
+	data.offsetForCarryOn = FVector(0.0f, 0.0f, 11.3f);
+	return data;
+}
 
 void ABaseRampTile::HighlightEdge()
 {

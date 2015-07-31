@@ -12,10 +12,6 @@ ADraggableMoveTile::ADraggableMoveTile()
 	PrimaryActorTick.bCanEverTick = true;
 	arrowMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Arrow mesh"));
 
-	SetRootComponent(TileMesh);
-	TileMesh->DetachFromParent();
-	BoxCollision->AttachChildren.Remove(TileMesh);
-	BoxCollision->AttachTo(TileMesh);
 	BoxCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 

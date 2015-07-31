@@ -4,6 +4,7 @@
 
 #include "Tiles/Tile.h"
 #include "CustomGameState.h"
+#include "ICarriable.h"
 #include "BaseRampTile.generated.h"
 
 UENUM( BlueprintType )
@@ -20,7 +21,7 @@ enum class Direction : uint8
  *
  */
 UCLASS()
-class PROJECTTAP_API ABaseRampTile : public ATile
+class PROJECTTAP_API ABaseRampTile : public ATile, public ICarriable
 {
 	GENERATED_BODY()
 
@@ -46,6 +47,7 @@ protected:
 	float time = 0;
 public:
 	ABaseRampTile();
+	OffsetInfo getOffsetInfo() override;
 
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;

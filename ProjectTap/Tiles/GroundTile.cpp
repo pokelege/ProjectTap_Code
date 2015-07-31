@@ -104,7 +104,7 @@ void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChange
 		}
 		ActorToCreate = ActorToAttach == nullptr ? nullptr : ActorToAttach->StaticClass();
 	}
-	if ( PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "GenerateActorButton" ) ) )
+	if ( PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "GenerateActorButton" ) ) || PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "ActorToCreate" ) ) )
 	{
 		GenerateActor();
 	}

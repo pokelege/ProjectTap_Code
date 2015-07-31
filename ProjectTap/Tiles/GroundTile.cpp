@@ -5,6 +5,9 @@
 #include "UnrealType.h"
 #include "IGroundable.h"
 #include "GroundTileManager.h"
+#if WITH_EDITOR
+#include "UnrealEd.h"
+#endif
 // Sets default values
 AGroundTile::AGroundTile()
 {
@@ -61,7 +64,8 @@ void AGroundTile::EditorKeyPressed( FKey Key ,
 	Super::EditorKeyPressed(Key,Event);
 	if ( Cast<AGroundTileManager>( GetAttachParentActor() ) != nullptr && IsSelected() && Key == EKeys::Enter && Event == EInputEvent::IE_Released )
 	{
-		//todo select parent
+		GEditor->SelectNone(true,true);
+		GEditor->SelectActor( GetAttachParentActor(), true, true );
 	}
 }
 void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )

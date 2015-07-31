@@ -23,7 +23,7 @@ public:
 	const float MeshScaleX = 40.0f;
 	const float MeshScaleY = 40.0f;
 	const float MeshScaleZ = 80.0f;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Generate , meta = ( ToolTip = "Button to generate the ground tiles." ) )
+	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Generate , meta = ( ToolTip = "Button to generate the ground tiles. (Enter)" ) )
 		bool ApplyProperties_Button;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Children , meta = ( ToolTip = "Enable destroying child actors." ) )
 		bool DestroyActorsWithGroundManager = true;
@@ -31,6 +31,8 @@ public:
 	AGroundTileManager();
 	virtual void Destroyed();
 #if WITH_EDITOR
+	virtual void EditorKeyPressed( FKey Key ,
+								   EInputEvent Event ) override;
 	virtual void PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent ) override;
 #endif
 private:

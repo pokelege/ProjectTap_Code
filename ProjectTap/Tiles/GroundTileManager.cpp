@@ -89,6 +89,17 @@ void AGroundTileManager::Generate()
 }
 
 #if WITH_EDITOR
+void AGroundTileManager::EditorKeyPressed( FKey Key ,
+									EInputEvent Event )
+{
+	Super::EditorKeyPressed( Key , Event );
+	if ( !IsSelected() ) return;
+	if ( Event == EInputEvent::IE_Released && Key == EKeys::Enter  )
+	{
+		Generate();
+	}
+}
+
 void AGroundTileManager::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )
 {
 	if(PropertyChangedEvent.Property != nullptr && PropertyChangedEvent.Property->GetNameCPP().Equals("ApplyProperties_Button"))

@@ -366,6 +366,10 @@ void AMainMenuContainer::SetGraphicsScalability(const FString& quality, UGameUse
 void AMainMenuContainer::SetGraphcisScalabilityNumber(UGameUserSettings* settings, int32 quality)
 {
 	settings->ScalabilityQuality.SetFromSingleQualityLevel(quality);
+	if (quality == 0)
+	{
+		settings->ScalabilityQuality.ShadowQuality = 1;
+	}
 }
 
 

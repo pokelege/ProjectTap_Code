@@ -181,7 +181,6 @@ void ADeflectiveTile::Spin(float dt)
 	{
 		ballCanTouch = true;
 	}
-
 }
 
 void ADeflectiveTile::turnOffHighlight(bool offTile , bool offEdge )

@@ -5,6 +5,9 @@
 #include "UnrealType.h"
 #include "IGroundable.h"
 #include "GroundTileManager.h"
+#if WITH_EDITOR
+#include "UnrealEd.h"
+#endif
 // Sets default values
 AGroundTile::AGroundTile()
 {
@@ -54,14 +57,35 @@ void AGroundTile::Destroyed()
 	Super::Destroyed();
 }
 
+void AGroundTile::GenerateActor()
+{
+	if ( ActorToAttach != nullptr && ( ActorToCreate == nullptr || !ActorToCreate->StaticClass()->GetFullName().Equals( ActorToAttach->StaticClass()->GetFullName() ) ) )
+	{
+		ActorToAttach->Destroy();
+		ActorToAttach = nullptr;
+	}
+	ActorToCreate = ActorToCreate == nullptr ? nullptr : ActorToCreate->IsChildOf<AActor>() ? ActorToCreate : nullptr;
+	if ( ActorToCreate != nullptr )
+	{
+		ActorToAttach = GetWorld()->SpawnActor<AActor>( ActorToCreate , FVector::ZeroVector , FRotator::ZeroRotator );
+		AttachActor();
+	}
+}
+
 #if WITH_EDITOR
 void AGroundTile::EditorKeyPressed( FKey Key ,
 									EInputEvent Event )
 {
-	Super::EditorKeyPressed(Key,Event);
-	if ( Cast<AGroundTileManager>( GetAttachParentActor() ) != nullptr && IsSelected() && Key == EKeys::Enter && Event == EInputEvent::IE_Released )
+	Super::EditorKeyPressed( Key , Event );
+	if ( !IsSelected() ) return;
+	if ( Cast<AGroundTileManager>( GetAttachParentActor() ) != nullptr && Key == EKeys::Enter && Event == EInputEvent::IE_Released )
 	{
-		//todo select parent
+		GEditor->SelectNone( true , true );
+		GEditor->SelectActor( GetAttachParentActor() , true , true );
+	}
+	if ( Event == EInputEvent::IE_Released && ( Key == EKeys::LeftShift || Key == EKeys::RightShift ) )
+	{
+		GenerateActor();
 	}
 }
 void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )
@@ -82,17 +106,7 @@ void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChange
 	}
 	if ( PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "GenerateActorButton" ) ) )
 	{
-		if ( ActorToAttach != nullptr && ( ActorToCreate == nullptr || !ActorToCreate->StaticClass()->GetFullName().Equals( ActorToAttach->StaticClass()->GetFullName() ) ) )
-		{
-			ActorToAttach->Destroy();
-			ActorToAttach = nullptr;
-		}
-		ActorToCreate = ActorToCreate == nullptr ? nullptr : ActorToCreate->IsChildOf<AActor>() ? ActorToCreate : nullptr;
-		if ( ActorToCreate != nullptr )
-		{
-			ActorToAttach = GetWorld()->SpawnActor<AActor>( ActorToCreate , FVector::ZeroVector , FRotator::ZeroRotator );
-			AttachActor();
-		}
+		GenerateActor();
 	}
 }
 #endif

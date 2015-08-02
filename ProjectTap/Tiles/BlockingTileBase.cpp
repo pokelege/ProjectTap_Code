@@ -18,10 +18,10 @@ ABlockingTileBase::ABlockingTileBase()
 	BoxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	TileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	ConstructorHelpers::FObjectFinder<USoundBase> activateSoundFile( TEXT( "/Game/Sound/S_GearClicking" ) );
-	ActivateSound = activateSoundFile.Object;
 	ConstructorHelpers::FObjectFinder<USoundBase> deactivateSoundFile( TEXT( "/Game/Sound/S_GearClickingReverse" ) );
 	DeactivateSound = deactivateSoundFile.Object;
+	ActivateSound = deactivateSoundFile.Object;
+
 	SoundPlayer = CreateDefaultSubobject<UAudioComponent>( TEXT( "Activate Sound" ) );
 	SoundPlayer->bAutoActivate = false;
 	SoundPlayer->AttachTo( BoxCollision );

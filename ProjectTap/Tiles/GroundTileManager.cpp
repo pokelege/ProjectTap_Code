@@ -35,19 +35,19 @@ void AGroundTileManager::Generate()
 {
 	FVector boxExtent( ( float ) NumTilesX * MeshScaleX , ( float ) NumTilesY * MeshScaleY , MeshScaleZ );
 	Collision->SetBoxExtent( boxExtent );
-	TMap<FVector,AGroundTile*> GroundTiles;
+	TMap<FVector , AGroundTile*> GroundTiles;
 
 	for ( TActorIterator<AGroundTile> ActorItr( GetWorld() ); ActorItr; ++ActorItr )
 	{
-		if ( ActorItr->IsAttachedTo(this) )
+		if ( ActorItr->IsAttachedTo( this ) )
 		{
-			if ( ActorItr->location.Equals( FVector::ZeroVector ) || GroundTiles.Contains(ActorItr->location) )
+			if ( ActorItr->location.Equals( FVector::ZeroVector ) || GroundTiles.Contains( ActorItr->location ) )
 			{
 				ActorItr->Destroy();
 			}
 			else
 			{
-				GroundTiles.Add( ActorItr->location, *ActorItr );
+				GroundTiles.Add( ActorItr->location , *ActorItr );
 			}
 		}
 	}
@@ -58,28 +58,28 @@ void AGroundTileManager::Generate()
 		{
 			AGroundTile* newGround = nullptr;
 			FVector currentLocation( x , y , 0 );
-			if ( GroundTiles.Contains(currentLocation))
+			if ( GroundTiles.Contains( currentLocation ) )
 			{
-				newGround = *GroundTiles.Find(currentLocation);
+				newGround = *GroundTiles.Find( currentLocation );
 				newGround->AttachRootComponentToActor( this );
 				newGround->UpdateAttachedLocation();
-				GroundTiles.Remove(currentLocation);
+				GroundTiles.Remove( currentLocation );
 			}
 			else
 			{
 				newGround = GetWorld()->SpawnActor<AGroundTile>();
 				newGround->location = currentLocation;
-				newGround->AttachRootComponentToActor(this);
+				newGround->AttachRootComponentToActor( this );
 			}
 			FVector translation( 0 );
 			//todo optimize if possible
 			//translation.X = ( ( x - 1 ) * ( MeshScaleX * 2.0f ) ) - ( ( ( NumTilesX - 1 ) * ( MeshScaleX * 2.0f ) ) / 2.0f );
-			translation.X = MeshScaleX * ((2.0f * x) - NumTilesX - 1);
+			translation.X = MeshScaleX * ( ( 2.0f * x ) - NumTilesX - 1 );
 			//translation.Y = ( ( y - 1 ) * ( MeshScaleY * 2.0f ) ) - ( ( ( NumTilesY - 1 ) * ( MeshScaleY * 2.0f ) ) / 2.0f );
-			translation.Y = MeshScaleY * ((2.0f * y) - NumTilesY - 1);
-			newGround->SetActorRelativeLocation(translation);
-			newGround->SetActorRelativeRotation(FRotator(0));
-			newGround->SetActorRelativeScale3D(FVector(1));
+			translation.Y = MeshScaleY * ( ( 2.0f * y ) - NumTilesY - 1 );
+			newGround->SetActorRelativeLocation( translation );
+			newGround->SetActorRelativeRotation( FRotator( 0 ) );
+			newGround->SetActorRelativeScale3D( FVector( 1 ) );
 		}
 	}
 	for ( auto toDelete = GroundTiles.CreateIterator(); toDelete; ++toDelete )
@@ -90,11 +90,11 @@ void AGroundTileManager::Generate()
 
 #if WITH_EDITOR
 void AGroundTileManager::EditorKeyPressed( FKey Key ,
-									EInputEvent Event )
+										   EInputEvent Event )
 {
 	Super::EditorKeyPressed( Key , Event );
 	if ( !IsSelected() ) return;
-	if ( Event == EInputEvent::IE_Released && Key == EKeys::Enter  )
+	if ( Event == EInputEvent::IE_Released && Key == EKeys::Enter )
 	{
 		Generate();
 	}
@@ -102,8 +102,10 @@ void AGroundTileManager::EditorKeyPressed( FKey Key ,
 
 void AGroundTileManager::PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent )
 {
-	if(PropertyChangedEvent.Property != nullptr && PropertyChangedEvent.Property->GetNameCPP().Equals("ApplyProperties_Button"))
-		Generate();
+	if ( PropertyChangedEvent.Property != nullptr && PropertyChangedEvent.Property->GetNameCPP().Equals( "ApplyProperties_Button" ) ||
+		 PropertyChangedEvent.Property->GetNameCPP().Equals( "NumTilesX" ) ||
+		 PropertyChangedEvent.Property->GetNameCPP().Equals( "NumTilesY" ) )
+		 Generate();
 	Super::PostEditChangeProperty( PropertyChangedEvent );
 }
 #endif

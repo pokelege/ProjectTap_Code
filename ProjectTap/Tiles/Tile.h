@@ -67,7 +67,7 @@ public:
 
 	virtual void BeginPlay();
 	virtual void Tick( float DeltaTime );
-
+	virtual void Destroyed() override;
 	virtual void Highlight( bool litTile = true , bool litEdge = true );
 	virtual void HighlightTile();
 	virtual void HighlightEdge();

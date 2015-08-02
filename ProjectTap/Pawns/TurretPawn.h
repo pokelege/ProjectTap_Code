@@ -26,6 +26,7 @@ class PROJECTTAP_API ATurretPawn : public APawn, public IGroundable
 	UAudioComponent* nozzleSound = nullptr;
 	USoundBase* fireSound = nullptr;
 	USoundBase* lockSound = nullptr;
+	USoundBase* unlockSound = nullptr;
 	UStaticMeshComponent* TurretGunMesh;
 	UParticleSystemComponent* laserTag;
 	UParticleSystemComponent* explosionParticle;

@@ -61,6 +61,8 @@ ATurretPawn::ATurretPawn()
 	fireSound = fireSoundFile.Object;
 	ConstructorHelpers::FObjectFinder<USoundBase> beepSoundFile( TEXT( "/Game/Sound/S_Beep" ) );
 	lockSound = beepSoundFile.Object;
+	ConstructorHelpers::FObjectFinder<USoundBase> beep2SoundFile(TEXT("/Game/Sound/S_UnBeep"));
+	unlockSound = beep2SoundFile.Object;
 	nozzleSound = CreateDefaultSubobject<UAudioComponent>( TEXT( "Nozzle Sound" ) );
 	nozzleSound->bAutoActivate = false;
 	nozzleSound->AttachTo( TurretGunMesh );
@@ -196,6 +198,9 @@ void ATurretPawn::Tick( float DeltaTime )
 			if ( wasLocked )
 			{
 				wasLocked = false;
+				nozzleSound->Stop();
+				nozzleSound->SetSound(unlockSound);
+				nozzleSound->Play();
 				currentFireDelayTime = 0;
 				laserTag->SetVectorParameter( TEXT( "Color" ) , FVector( 0 , 2 , 0 ) );
 			}
@@ -210,6 +215,9 @@ void ATurretPawn::Tick( float DeltaTime )
 		if(wasLocked)
 		{
 			wasLocked = false;
+			nozzleSound->Stop();
+			nozzleSound->SetSound(unlockSound);
+			nozzleSound->Play();
 			currentFireDelayTime = 0;
 			laserTag->SetVectorParameter( TEXT( "Color" ) , FVector( 0 , 2 , 0 ) );
 		}

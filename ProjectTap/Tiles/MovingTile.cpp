@@ -23,6 +23,7 @@ AMovingTile::AMovingTile()
 	TileMesh->DetachFromParent();
 	BoxCollision->AttachChildren.Remove(TileMesh);
 	BoxCollision->AttachTo(TileMesh);
+	BoxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 
 	ConstructorHelpers::FObjectFinder<UCurveFloat> curve(TEXT("/Game/Curves/MovementLinear"));
 	if (curve.Object != nullptr) moveCurve = curve.Object;

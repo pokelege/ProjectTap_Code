@@ -33,9 +33,9 @@ void AWhiteTile::Tick( float DeltaTime )
 OffsetInfo AWhiteTile::getOffsetInfo()
 {
 	OffsetInfo data;
-	data.offsetForCollision = FVector(0.0f, 0.0f, 40.0f);
-	data.scaleForCollision = FVector(1.2f, 1.2f, 5.0f);
-	data.offsetForCarryOn = FVector(0.0f, 0.0f, 85.0f);
+	data.offsetForCollision = FVector(0.0f, 0.0f, 0.0f);
+	data.scaleForCollision = FVector(1.f, 1.f, 1.0f);
+	data.offsetForCarryOn = FVector(0.0f, 0.0f, 90.0f);
 	return data;
 }
 

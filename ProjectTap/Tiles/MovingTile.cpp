@@ -58,9 +58,16 @@ void AMovingTile::reset()
 void AMovingTile::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-	UpdateMovement(DeltaTime);
-	UpdateCarryOn(DeltaTime);
 
+	if (delayTimeCounter >= startDelay)
+	{
+		UpdateMovement(DeltaTime);
+		UpdateCarryOn(DeltaTime);
+	}
+	else
+	{
+		delayTimeCounter += DeltaTime;
+	}
 }
 
 void AMovingTile::UpdateMovement(float dt)
@@ -78,6 +85,7 @@ void AMovingTile::UpdateMovement(float dt)
 
 		moveCurve->GetTimeRange(min, max);		
 
+
 		if (!reachedNext)
 		{
 			auto speedFactor = moveCurve->GetFloatValue(1.0f - remainingDistSq / distanceBetweenCurrentNodes);
@@ -91,21 +99,7 @@ void AMovingTile::UpdateMovement(float dt)
 			{
 				SetActorLocation(nextPos);
 				IncrementIndex();
-				reset();
 			}
-		}
-		else if (pauseTimeCounter < pauseBetweenNodes)
-		{
-			if (pauseTimeCounter == 0.0f)
-			{
-				SetActorLocation(nextPos);
-			}
-			pauseTimeCounter += dt;
-		}
-		else
-		{
-			IncrementIndex();
-			reset();
 		}
 	}
 }
@@ -125,14 +119,22 @@ int32 AMovingTile::NextIndex()
 
 int32 AMovingTile::IncrementIndex()
 {
-	bool exceedEnd = NextIndex() >= path.Num() - 1;
-	bool exceedBegining = NextIndex() == 0;
-
-	currNode = NextIndex();
-
-	if ((exceedEnd || exceedBegining) && reverseRouteWhenDone)
+	if (pauseTimeCounter < pauseBetweenNodes)
 	{
-		pathReversed = !pathReversed;
+		pauseTimeCounter += GetWorld()->DeltaTimeSeconds;
+	}
+	else
+	{
+		bool exceedEnd = NextIndex() >= path.Num() - 1;
+		bool exceedBegining = NextIndex() == 0;
+
+		currNode = NextIndex();
+
+		if ((exceedEnd || exceedBegining) && reverseRouteWhenDone)
+		{
+			pathReversed = !pathReversed;
+		}
+		reset();
 	}
 
 	return currNode;

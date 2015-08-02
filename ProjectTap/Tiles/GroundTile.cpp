@@ -5,6 +5,7 @@
 #include "UnrealType.h"
 #include "IGroundable.h"
 #include "GroundTileManager.h"
+#include "Tile.h"
 #if WITH_EDITOR
 #include "UnrealEd.h"
 #endif

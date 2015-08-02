@@ -26,6 +26,8 @@ public:
 		UBoxComponent* tileOverlapCollision;
 private:
 	bool canTrigger = true;
+	friend class ABallPawn;
+	bool isOverlaping = false;
 public:
 	BallCastType castType = BallCastType::CAST_RAMP;
 

@@ -29,16 +29,18 @@ public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
 		float speed = 50.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
+		float startDelay = .0f;
+
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
 		float pauseBetweenNodes = 2.0f;
 private:
 	float pauseTimeCounter = 0.0f;
 	float beta = 0.0f;
-
+	float delayTimeCounter = .0f;
 protected:
-	int32 currNode = 0;
 	bool pathReversed = false;
-
+	int32 currNode = 0;
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)

@@ -77,6 +77,7 @@ void AGroundTile::GenerateActor()
 	{
 		ActorToAttach->Destroy();
 		ActorToAttach = nullptr;
+		ActorToCreate = nullptr;
 	}
 	ActorToCreate = ActorToCreate == nullptr ? nullptr : ActorToCreate->IsChildOf<AActor>() ? ActorToCreate : nullptr;
 	if ( ActorToCreate != nullptr )

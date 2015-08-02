@@ -17,6 +17,9 @@ public:
 protected:
 	FVector currDir;
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
+		TSubclassOf<AActor> ActorToCreate = nullptr;
+
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
 		AActor* carryOn = nullptr;
 
@@ -68,6 +71,8 @@ public:
 	void DeleteCurrentLocation();
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
+
+	void GenerateActor();
 
 #endif 
 	// Sets default values for this actor's properties

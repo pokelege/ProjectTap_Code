@@ -18,7 +18,7 @@ public:
 	UPROPERTY()
 		UStaticMeshComponent* SelectAssistMesh = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attachment, meta = (ToolTip = "The actor class to generate and attach as a child."))
-		UClass* ActorToCreate = nullptr;
+		TSubclassOf<AActor> ActorToCreate = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attachment, meta = (ToolTip = "The actor to attach if existing."))
 		AActor* ActorToAttach = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attachment, meta = (ToolTip = "Enable destroying the child actor on destroy."))

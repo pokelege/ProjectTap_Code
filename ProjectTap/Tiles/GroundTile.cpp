@@ -5,6 +5,7 @@
 #include "UnrealType.h"
 #include "IGroundable.h"
 #include "GroundTileManager.h"
+#include "Tile.h"
 #if WITH_EDITOR
 #include "UnrealEd.h"
 #endif
@@ -76,6 +77,7 @@ void AGroundTile::GenerateActor()
 	{
 		ActorToAttach->Destroy();
 		ActorToAttach = nullptr;
+		ActorToCreate = nullptr;
 	}
 	ActorToCreate = ActorToCreate == nullptr ? nullptr : ActorToCreate->IsChildOf<AActor>() ? ActorToCreate : nullptr;
 	if ( ActorToCreate != nullptr )

@@ -279,8 +279,33 @@ void AMovingTile::PostEditChangeProperty(FPropertyChangedEvent & PropertyChanged
 				carryOn->SetActorLocation(GetActorLocation() + info.offsetForCarryOn);
 			}
 		}
+		else if (pName.Equals(TEXT("ActorToCreate")))
+		{
+			GenerateActor();
+		}
 	}
 }
 
+
+void AMovingTile::GenerateActor()
+{
+	if (carryOn != nullptr && (ActorToCreate == nullptr || !ActorToCreate->StaticClass()->GetFullName().Equals(carryOn->StaticClass()->GetFullName())))
+	{
+		carryOn->Destroy();
+		carryOn = nullptr;
+		ActorToCreate = nullptr;
+	}
+	ActorToCreate = ActorToCreate == nullptr ? nullptr : ActorToCreate->IsChildOf<AActor>() ? ActorToCreate : nullptr;
+	if (ActorToCreate != nullptr)
+	{
+		carryOn = GetWorld()->SpawnActor<AActor>(ActorToCreate, FVector::ZeroVector, FRotator::ZeroRotator);
+		if (auto tile = Cast<ICarriable>(carryOn))
+		{
+			auto info = tile->getOffsetInfo();
+			BoxCollision->SetWorldScale3D(info.scaleForCollision);
+			carryOn->SetActorLocation(GetActorLocation() + info.offsetForCarryOn);
+		}
+	}
+}
 
 #endif 

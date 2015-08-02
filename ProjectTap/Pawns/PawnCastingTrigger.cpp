@@ -59,6 +59,7 @@ void APawnCastingTrigger::OnBeginTriggerOverlap(AActor* OtherActor,
 		OnEndTriggerOverlap( OtherActor , OtherComp , OtherBodyIndex , bFromSweep , SweepResult );
 		return;
 	}
+	isOverlaping = true;
 
 	if (castType == BallCastType::CAST_BLOCKING)
 	{
@@ -119,6 +120,8 @@ void APawnCastingTrigger::OnEndTriggerOverlap(AActor* OtherActor,
 			ramp->ball = nullptr;			
 		}
 	}
+
+	isOverlaping = false;
 }
 void APawnCastingTrigger::OnStateChanged( const CustomGameState newState )
 {

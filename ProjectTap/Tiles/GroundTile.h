@@ -15,15 +15,17 @@ public:
 		FVector location = FVector::ZeroVector;
 	UPROPERTY()
 		UStaticMeshComponent* Mesh = nullptr;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Attachment , meta = ( ToolTip = "The actor class to generate and attach as a child." ) )
+	UPROPERTY()
+		UStaticMeshComponent* SelectAssistMesh = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attachment, meta = (ToolTip = "The actor class to generate and attach as a child."))
 		UClass* ActorToCreate = nullptr;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Attachment , meta = ( ToolTip = "The actor to attach if existing." ) )
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attachment, meta = (ToolTip = "The actor to attach if existing."))
 		AActor* ActorToAttach = nullptr;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Attachment , meta = ( ToolTip = "Enable destroying the child actor on destroy." ) )
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attachment, meta = (ToolTip = "Enable destroying the child actor on destroy."))
 		bool DestroyActorWithGround = true;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Attachment , meta = ( ToolTip = "Button to re-generate the child actor based on the ActorToCreate property. (Shift)" ) )
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Attachment, meta = (ToolTip = "Button to re-generate the child actor based on the ActorToCreate property. (Shift)"))
 		bool GenerateActorButton = false;
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Mesh , meta = ( ToolTip = "Toggle ground mesh visibility." ) )
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh, meta = (ToolTip = "Toggle ground mesh visibility."))
 		bool GroundVisible = true;
 	// Sets default values for this actor's properties
 	AGroundTile();
@@ -31,9 +33,11 @@ public:
 	void AttachActor();
 	void GenerateActor();
 	virtual void Destroyed();
+	UFUNCTION(BlueprintCallable, Category = Visibility)
+		void SetGroundVisible(const bool isVisible);
 #if WITH_EDITOR
-	virtual void EditorKeyPressed( FKey Key ,
-								   EInputEvent Event ) override;
-	virtual void PostEditChangeProperty( FPropertyChangedEvent & PropertyChangedEvent ) override;
+	virtual void EditorKeyPressed(FKey Key,
+		EInputEvent Event) override;
+	virtual void PostEditChangeProperty(FPropertyChangedEvent & PropertyChangedEvent) override;
 #endif
 };

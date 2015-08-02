@@ -3,6 +3,7 @@
 #include "ProjectTap.h"
 #include "Tile.h"
 #include "ProjectTapGameState.h"
+#include "GroundTile.h"
 
 const GroundableInfo ATile::groundableInfo = GroundableInfo( FVector( 0 , 0 , -80 ) , false );
 
@@ -39,6 +40,13 @@ void ATile::OnGameStateChanged( const CustomGameState gameState )
 			canActivate = false;
 			if(activated) deactivate();
 	}
+}
+
+void ATile::Destroyed()
+{
+	auto ground = Cast<AGroundTile>(GetAttachParentActor());
+	if(ground != nullptr) ground->SetGroundVisible(true);
+	Super::Destroyed();
 }
 
 const GroundableInfo* ATile::GetGroundableInfo() const

@@ -14,11 +14,18 @@ AGroundTile::AGroundTile()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "Meshes" ) );
-	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh( *FName( "/Game/Models/GroundTiles/1x1" ).ToString() );
+	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh( TEXT( "/Game/Models/GroundTiles/1x1" ) );
+	ConstructorHelpers::FObjectFinder<UStaticMesh> mesh2( TEXT( "/Game/Models/GroundBall" ) );
 	Mesh->SetStaticMesh( mesh.Object );
 	Mesh->SetMobility( EComponentMobility::Static );
 	SetRootComponent( Mesh );
 	Mesh->SetVisibility( GroundVisible );
+	SelectAssistMesh = CreateDefaultSubobject<UStaticMeshComponent>( TEXT( "SelectAssistMesh" ) );
+	SelectAssistMesh->SetStaticMesh( mesh2.Object );
+	SelectAssistMesh->SetMobility( EComponentMobility::Static );
+	SelectAssistMesh->AttachTo(GetRootComponent());
+	SelectAssistMesh->SetHiddenInGame(true);
+	SelectAssistMesh->SetVisibility( !GroundVisible );
 }
 
 void AGroundTile::UpdateAttachedLocation()
@@ -31,8 +38,7 @@ void AGroundTile::UpdateAttachedLocation()
 		{
 			auto stuff = groundableActor->GetGroundableInfo();
 			ActorToAttach->AddActorLocalOffset( stuff->offset );
-			GroundVisible = stuff->defaultGroundVisibility;
-			Mesh->SetVisibility( GroundVisible );
+			SetGroundVisible(stuff->defaultGroundVisibility);
 		}
 	}
 }
@@ -55,6 +61,13 @@ void AGroundTile::Destroyed()
 		ActorToAttach->Destroy();
 	}
 	Super::Destroyed();
+}
+
+void AGroundTile::SetGroundVisible(const bool isVisible)
+{
+	GroundVisible = isVisible;
+	SelectAssistMesh->SetVisibility(!GroundVisible);
+	Mesh->SetVisibility(GroundVisible);
 }
 
 void AGroundTile::GenerateActor()
@@ -95,12 +108,17 @@ void AGroundTile::PostEditChangeProperty( FPropertyChangedEvent & PropertyChange
 	if ( PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "GroundVisible" ) ) )
 	{
 		Mesh->SetVisibility( GroundVisible );
+		SelectAssistMesh->SetVisibility( !GroundVisible );
 	}
 	if ( PropertyChangedEvent.Property->GetNameCPP().Equals( FString( "ActorToAttach" ) ) )
 	{
 		if ( ActorToAttach != nullptr )
 		{
 			AttachActor();
+		}
+		else
+		{
+			SetGroundVisible(true);
 		}
 		ActorToCreate = ActorToAttach == nullptr ? nullptr : ActorToAttach->StaticClass();
 	}

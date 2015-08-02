@@ -303,7 +303,6 @@ OffsetInfo ALaser::getOffsetInfo()
 
 void ALaser::SetLaserLocationWithDefaultHitLocation(const FVector& location)
 {
-
 	SetActorLocation(location);
 	laserParticle->EmitterInstances[0]->SetBeamSourcePoint(location, 0);
 	laserParticle->EmitterInstances[0]->SetBeamTargetPoint(currHitPoint, 0);

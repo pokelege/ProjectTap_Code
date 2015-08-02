@@ -74,7 +74,6 @@ public:
 	void UpdateResetTransition(float dt);
 
 	UFUNCTION(BlueprintCallable, Category = "Ball")
-
 	void AddVelocity(const FVector& vel, bool clearForce = true);
 	void AddVelocity(const FVector& vel, const FVector& resetPos, bool clearForce = true);
 
@@ -89,7 +88,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
 	virtual void FellOutOfWorld(const class UDamageType & dmgType) override;
-
+	UFUNCTION( BlueprintCallable , Category = "Ball" )
 	void Kill();
 
 	bool isDying();

@@ -328,6 +328,11 @@ void ABallPawn::Kill()
 		gameState->SetGameState( CustomGameState::GAME_STATE_DYING );
 		dieSound->Play();
 		dying = true;
+		spring->lockX = true;
+		spring->lockY = true;
+		spring->lockZ = true;
+		spring->SetLockPosition( GetActorLocation() );
+		//spring->SetTargetOffsetCustom( cameraComponent->RelativeLocation );
 	}
 }
 

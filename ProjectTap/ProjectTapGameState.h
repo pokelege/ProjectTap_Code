@@ -60,8 +60,11 @@ public:
 	void SetCamera(class UProjectTapCameraComponent* camera,  bool notifyListeners = true);
 
 	AMagnetTile* SetMagnetTile( class AMagnetTile* magnet );
+	UFUNCTION( BlueprintCallable , Category = Player )
 	ABallPawn* GetPlayer();
+	UFUNCTION( BlueprintCallable , Category = GameState )
 	CustomGameState GetState();
+	UFUNCTION( BlueprintCallable , Category = GameMode )
 	CustomGameMode GetMode();
 	float getCameraSaturation() const;
 	void setCameraSaturation(float value);

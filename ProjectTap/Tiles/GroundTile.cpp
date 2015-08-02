@@ -27,6 +27,11 @@ AGroundTile::AGroundTile()
 	SelectAssistMesh->AttachTo(GetRootComponent());
 	SelectAssistMesh->SetHiddenInGame(true);
 	SelectAssistMesh->SetVisibility( !GroundVisible );
+	SelectAssistMesh->SetCastShadow(false);
+	SelectAssistMesh->bAffectDynamicIndirectLighting = false;
+	SelectAssistMesh->bAffectDistanceFieldLighting = false;
+	SelectAssistMesh->bCastDynamicShadow = false;
+	SelectAssistMesh->bCastDynamicShadow = false;
 }
 
 void AGroundTile::UpdateAttachedLocation()

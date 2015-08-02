@@ -73,7 +73,7 @@ void AMovingTile::Tick( float DeltaTime )
 
 void AMovingTile::UpdateMovement(float dt)
 {
-	if (enabled && path.Num() > 0)
+	if (enabled && path.Num() > 1)
 	{
 		auto next = NextIndex();
 		auto nextPos = path[next];

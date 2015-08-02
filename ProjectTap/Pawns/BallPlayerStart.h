@@ -4,15 +4,18 @@
 
 #include "GameFramework/PlayerStart.h"
 #include "CustomGameMode.h"
+#include "Tiles/IGroundable.h"
 #include "BallPlayerStart.generated.h"
 
 /**
  *
  */
 UCLASS()
-class PROJECTTAP_API ABallPlayerStart : public APlayerStart
+class PROJECTTAP_API ABallPlayerStart : public APlayerStart, public IGroundable
 {
 	GENERATED_BODY()
+	
+	static const GroundableInfo groundableInfo;
 public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Ball )
 		FVector initialVelocity = FVector( 0.0f , 0.0f , 0.0f );
@@ -40,4 +43,6 @@ public:
 		bool lockY = false;
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Camera )
 		bool lockZ = true;
+
+	virtual const struct GroundableInfo* GetGroundableInfo() const override;
 };

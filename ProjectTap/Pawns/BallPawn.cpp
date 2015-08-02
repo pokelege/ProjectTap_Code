@@ -189,13 +189,15 @@ void ABallPawn::Tick( float DeltaTime )
 	{
 		auto currentBallVelocity = ballCollision->GetPhysicsLinearVelocity();
 		auto velMagnitude = currentBallVelocity.Size();
-		if (velMagnitude < 80.0f)
+		if (velMagnitude < 60.0f)
 		{
 			auto clearXYVelocity = FVector(.0f, .0f, currentBallVelocity.Z);
 			ballCollision->SetPhysicsLinearVelocity(clearXYVelocity);
 		}
+
 		ballCollision->WakeRigidBody();
 	}
+
 }
 
 void ABallPawn::TransitionBallToProperLocation( const FVector& position , const FVector& newVelDir , float _transitionSpeed )

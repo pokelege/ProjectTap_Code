@@ -37,8 +37,19 @@ void AMovingTile::BeginPlay()
 
 	if (path.Num() > 1 && enabled)
 	{
-		currDir = (path[NextIndex()] - path[currNode]).GetSafeNormal();
-		SetActorLocation(path[currNode]);
+		if (currentPathIndex >= path.Num() - 1)
+		{
+			bool exceedEnd = NextIndex() >= path.Num() - 1;
+			bool exceedBegining = NextIndex() == 0;
+
+			if ((exceedEnd || exceedBegining) && reverseRouteWhenDone)
+			{
+				pathReversed = !pathReversed;
+			}
+		}
+		auto next = NextIndex();
+		currDir = (path[next] - path[currentPathIndex]).GetSafeNormal();
+		SetActorLocation(path[currentPathIndex]);
 	}
 
 	if (carryOn != nullptr)
@@ -63,7 +74,7 @@ void AMovingTile::Tick( float DeltaTime )
 	if (delayTimeCounter >= startDelay)
 	{
 		UpdateMovement(DeltaTime);
-		UpdateCarryOn(DeltaTime);
+		UpdateCarryOn();
 	}
 	else
 	{
@@ -81,7 +92,7 @@ void AMovingTile::UpdateMovement(float dt)
 		auto checkDirection = nextPos - GetActorLocation();
 		bool reachedNext = FVector::DotProduct(checkDirection, currDir) < 0.0f;
 
-		auto distanceBetweenCurrentNodes = FVector::DistSquared(nextPos, path[currNode]);
+		auto distanceBetweenCurrentNodes = FVector::DistSquared(nextPos, path[currentPathIndex]);
 		float min, max;
 
 		moveCurve->GetTimeRange(min, max);		
@@ -110,11 +121,11 @@ int32 AMovingTile::NextIndex()
 	if (reverseRouteWhenDone)
 	{
 		int dir = pathReversed ? -1 : 1;
-		return currNode + dir;
+		return currentPathIndex + dir;
 	}
 	else
 	{
-		return (currNode + 1) % path.Num();
+		return (currentPathIndex + 1) % path.Num();
 	}
 }
 
@@ -129,28 +140,30 @@ int32 AMovingTile::IncrementIndex()
 		bool exceedEnd = NextIndex() >= path.Num() - 1;
 		bool exceedBegining = NextIndex() == 0;
 
-		currNode = NextIndex();
+		currentPathIndex = NextIndex();
 
 		if ((exceedEnd || exceedBegining) && reverseRouteWhenDone)
 		{
 			pathReversed = !pathReversed;
 		}
+
+
 		reset();
 	}
 
-	return currNode;
+	return currentPathIndex;
 }
 
 
 FVector AMovingTile::NextDirection()
 {
-	auto currPos = path[currNode];
+	auto currPos = path[currentPathIndex];
 	auto nextPos = path[NextIndex()];
 
 	return (nextPos - currPos).GetSafeNormal();
 }
 
-void AMovingTile::UpdateCarryOn(float dt)
+void AMovingTile::UpdateCarryOn()
 {
 	auto pos = GetActorLocation();
 
@@ -180,15 +193,15 @@ void AMovingTile::EditorKeyPressed(FKey Key, EInputEvent Event)
 
 	if (Event == EInputEvent::IE_Released)
 	{
-		if (keyname.Equals("Enter"))
+		if (Key == EKeys::Enter)
 		{
 			AddCurrentLocation();
 		}
-		else if (keyname.Equals("LeftShift") || keyname.Equals("RightShift"))
+		else if (Key == EKeys::C)
 		{
 			UpdateCurrentLocation();
 		}
-		else if (keyname.Equals("C"))
+		else if (Key == EKeys::V)
 		{
 			DeleteCurrentLocation();
 		}
@@ -197,17 +210,17 @@ void AMovingTile::EditorKeyPressed(FKey Key, EInputEvent Event)
 
 void AMovingTile::DeleteCurrentLocation()
 {
-	if (currentEditorPathIndex >= 0 && currentEditorPathIndex < path.Num())
+	if (currentPathIndex >= 0 && currentPathIndex < path.Num())
 	{
-		path.RemoveAt(currentEditorPathIndex);
+		path.RemoveAt(currentPathIndex);
 		if (path.Num() == 0)
 		{
-			currentEditorPathIndex = -1;
+			currentPathIndex = -1;
 		}
 		else
 		{
-			currentEditorPathIndex = 0;			
-			SetActorLocation(path[currentEditorPathIndex]);
+			currentPathIndex = 0;			
+			SetActorLocation(path[currentPathIndex]);
 		}
 	}
 }
@@ -215,14 +228,14 @@ void AMovingTile::DeleteCurrentLocation()
 void AMovingTile::AddCurrentLocation()
 {
 	path.Add(GetActorLocation());
-	currentEditorPathIndex = path.Num() - 1;
+	currentPathIndex = path.Num() - 1;
 }
 
 void AMovingTile::UpdateCurrentLocation()
 {
 	if (path.Num() > 0)
 	{
-		path[currentEditorPathIndex] = GetActorLocation();
+		path[currentPathIndex] = GetActorLocation();
 	}
 }
 
@@ -252,36 +265,38 @@ void AMovingTile::PostEditChangeProperty(FPropertyChangedEvent & PropertyChanged
 		auto p = PropertyChangedEvent.Property;
 		auto pName = p->GetName();
 
-		//when currentEditorPathIndex property changes in editor
+		//when currentPathIndex property changes in editor
 		//reset current moving tile's location to desinated node's location
-		if (pName.Equals(TEXT("currentEditorPathIndex")))
+		if (pName.Equals(TEXT("currentPathIndex")))
 		{
-			if (currentEditorPathIndex >= 0 && currentEditorPathIndex < path.Num())
+			if (currentPathIndex >= 0 && currentPathIndex < path.Num())
 			{
-				auto newLocation = path[currentEditorPathIndex];
+				auto newLocation = path[currentPathIndex];
 				SetActorLocation(newLocation);
+
+				UpdateCarryOn();
 			}
 			else
 			{
-				currentEditorPathIndex = 0;
-				auto newLocation = path[currentEditorPathIndex];
+				currentPathIndex = 0;
+				auto newLocation = path[currentPathIndex];
 				SetActorLocation(newLocation);
 			}
+
 			Super::PostEditChange();
 
 		}
 		else if (pName.Equals(TEXT("carryOn")))
 		{
-			if (auto tile = Cast<ICarriable>(carryOn))
-			{
-				auto info = tile->getOffsetInfo();
-				BoxCollision->SetWorldScale3D(info.scaleForCollision);
-				carryOn->SetActorLocation(GetActorLocation() + info.offsetForCarryOn);
-			}
+			UpdateCarryOn();
 		}
 		else if (pName.Equals(TEXT("ActorToCreate")))
 		{
 			GenerateActor();
+		}
+		else if (pName.Equals(TEXT("path")))
+		{
+			currentPathIndex = path.Num() > 0 ? path.Num() - 1 : 0;
 		}
 	}
 }
@@ -299,12 +314,7 @@ void AMovingTile::GenerateActor()
 	if (ActorToCreate != nullptr)
 	{
 		carryOn = GetWorld()->SpawnActor<AActor>(ActorToCreate, FVector::ZeroVector, FRotator::ZeroRotator);
-		if (auto tile = Cast<ICarriable>(carryOn))
-		{
-			auto info = tile->getOffsetInfo();
-			BoxCollision->SetWorldScale3D(info.scaleForCollision);
-			carryOn->SetActorLocation(GetActorLocation() + info.offsetForCarryOn);
-		}
+		UpdateCarryOn();
 	}
 }
 

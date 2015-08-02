@@ -296,7 +296,7 @@ void ADraggableMoveTile::UpdateDragMove(float dt)
 
 FVector ADraggableMoveTile::calculateCurrentDir()
 {
-	auto startNode = path[currNode];
+	auto startNode = path[currentPathIndex];
 	return FVector();
 }
 

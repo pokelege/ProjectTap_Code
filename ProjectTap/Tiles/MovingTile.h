@@ -26,8 +26,9 @@ public:
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
 		UCurveFloat* moveCurve = nullptr;
 
-	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
-		int32 currentEditorPathIndex = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
+		int32 currentPathIndex = 0;
+
 
 	UPROPERTY( EditAnywhere , BlueprintReadWrite , Category = Path )
 		float speed = 50.0f;
@@ -43,7 +44,6 @@ private:
 	float delayTimeCounter = .0f;
 protected:
 	bool pathReversed = false;
-	int32 currNode = 0;
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Path)
@@ -84,7 +84,7 @@ public:
 	// Called every frame
 	virtual void Tick( float DeltaSeconds ) override;
 
-	void UpdateCarryOn(float dt);
+	void UpdateCarryOn();
 protected:
 	void reset();
 	void UpdateMovement( float dt );

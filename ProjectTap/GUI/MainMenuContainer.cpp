@@ -30,7 +30,7 @@ void AMainMenuContainer::InitializeOptionsMenu(
 	int32& currResolutionIndex,
 	UCheckBox* fullScreenBox,
 	USlider* volumeSlider)
-{
+{					
 	InitGraphicsWidgets(btnLow, btnMid, btnHigh, btnUltra, graphicsDescribButton, prevGraphicsButton);
 	InitResolutionWidgets(resolution, currResolutionIndex, resolutionStrings);
 	InitFullScreenWidget(fullScreenBox);

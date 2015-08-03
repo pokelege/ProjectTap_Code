@@ -43,7 +43,7 @@ void ADraggableMoveTile::Initialize()
 	if (currentVertex != nullptr)
 	{
 		auto newLocation = currentVertex->GetActorLocation();
-		newLocation.Z -= 10.0f;
+		newLocation.Z += dragTileverticalOffset;
 		SetActorLocation(newLocation);
 		currentVertex->SetOccupied(true);
 	}
@@ -251,6 +251,7 @@ void ADraggableMoveTile::DragTo(const FHitResult& hit,
 			if (canSnap)
 			{
 				newGoalPos = mostPossibleVertex->GetActorLocation();
+				newGoalPos.Z += dragTileverticalOffset;
 				goalVertex = mostPossibleVertex;
 			}
 			else

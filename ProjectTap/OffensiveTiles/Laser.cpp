@@ -263,6 +263,7 @@ void ALaser::SpawnSubLaser(const FVector& start, const FVector& normal)
 	nextLaser->SetLaserDepth(currentDepth + 1);
 	nextLaser->mesh->SetHiddenInGame(true);
 	nextLaser->dir = newDir;
+	nextLaser->length = length;
 	nextLaser->laserParticle->EmitterInstances[0]->SetBeamSourcePoint(start, 0);
 	nextLaser->laserParticle->EmitterInstances[0]->SetBeamTargetPoint(start + newDir * length, 0);
 }

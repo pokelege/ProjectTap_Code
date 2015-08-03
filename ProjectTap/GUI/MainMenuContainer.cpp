@@ -10,6 +10,7 @@
 #include "Runtime/UMG/Public/Components/WidgetComponent.h"
 #include "Runtime/Engine/Public/AudioDevice.h"
 #include "Tiles/Ramp.h"
+#include "Tiles/EndTile.h"
 
 AMainMenuContainer::AMainMenuContainer()
 {
@@ -234,7 +235,14 @@ void AMainMenuContainer::ToLevelSelect()
 void AMainMenuContainer::ToCredits()
 {
 	//currentMenuState = MenuState::CREDITS;
-	TransitionToMenu(creditsPlacable, creditMenuShowLocation);
+	/*TransitionToMenu(creditsPlacable, creditMenuShowLocation);*/
+	for (TActorIterator<AEndTile> v_itr(GetWorld()); v_itr; ++v_itr)
+	{
+		v_itr->loadLevelName = TEXT("DCredits");
+		break;
+	}
+
+	StartNewGame();
 }
 
 void AMainMenuContainer::TransitionToMenu(AActor* menuPlaceable, const FVector& pos)
